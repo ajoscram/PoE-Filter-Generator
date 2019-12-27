@@ -1,4 +1,4 @@
-from rule import Rule 
+from .rule import Rule 
 
 class Section:
     """A Section is a collection of lines (strings) in a filter, which may include rules in them.
@@ -15,6 +15,10 @@ class Section:
         self.line_number = line_number
         self.lines = []
         self.rules = []
+
+    def is_empty(self):
+        """Returns true if the section has no lines. False if it has any."""
+        return len(self.lines) == 0
 
     def append(self, line: str):
         """Appends the line at the end of the section. If any rules are present, they are extracted. Multiline strings are not allowed."""

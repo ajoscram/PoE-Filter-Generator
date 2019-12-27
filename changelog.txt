@@ -1,9 +1,16 @@
 To do:
     add testing modules
-    add strictness generator
-    add ssf generator
-    add chaos recipe generator
+    add economy handler (very daunting)
 
 1.0:
-    Added Section class
-    Added Rule class
+    Added the Section class
+    Added the Rule class
+    Added the Generator class
+    Added the generate.py script, used to run the program
+    calls should look like:
+        python generator.py "input_and_output.filter" .strict 3
+        python generator.py "input.filter" "output.filter" .chaos
+    Added a strictness handler (strictness.py)
+    Added an ssf handler (ssf.py)
+    Added a chaos recipe handler (chaos.py)
+    Added a chance handler (chance.py)

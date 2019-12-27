@@ -55,9 +55,9 @@ class RuleError(Exception):
     """Class for rule exception handling."""
 
     #Error message constants
-    EMPTY_TAG = "Empty tag"
-    EMPTY_DESCRIPTION = "Empty description"
-    TOO_MANY_FIELDS = "Too many fields"
+    EMPTY_TAG = "Empty tag (probably an extra '.')"
+    EMPTY_DESCRIPTION = "Empty description (probably an extra ':' or forgot a description to a rule)"
+    TOO_MANY_FIELDS = "Too many fields (probably an extra ':')"
 
     def __init__(self, line_number: int, message: str):
         """Takes a message from the caller and a line number where the error occurred."""

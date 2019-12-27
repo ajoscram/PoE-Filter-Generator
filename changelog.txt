@@ -1,6 +1,9 @@
 To do:
-    finish section class
     add testing modules
     add strictness generator
     add ssf generator
     add chaos recipe generator
+
+1.0:
+    Added Section class
+    Added Rule class

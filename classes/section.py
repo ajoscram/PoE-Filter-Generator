@@ -55,6 +55,13 @@ class Section:
             line = line.split(self.COMMENT_START)[0]
             if pattern in line:
                 self.lines[i] = "#" + self.lines[i]
+    
+    def uncomment(self, pattern):
+        """Removes the left-most # (hashtag) in every line that has the pattern inside a comment."""
+        for i in range(len(self.lines)):
+            split_line = self.lines[i].split(self.COMMENT_START, 1)
+            if len(split_line) == 2 and pattern in split_line[1]:
+                self.lines[i] = split_line[0] + split_line[1]
 
     def swap(self, pattern: str, line: str):
         """Swaps out every line with the specified pattern outside comments in them for the line provided. Multiline strings are not allowed."""

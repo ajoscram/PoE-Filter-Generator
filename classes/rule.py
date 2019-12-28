@@ -4,7 +4,7 @@ class Rule:
     Rules have these fields:
         line_number: the file line number where the rule is found.
         tag: the tag which identifies the rule.
-        description: any extra data needed for the rule. Can be empty.
+        description: any extra data needed for the rule. Can be omitted.
     Rules are included in comments inside lines and start with #. (hashtag and a dot).
     Multiple rules can be declared in the same line, separated by . (dot).
     Tags and descriptions in a rule are separated by : (colon), like tag:description.

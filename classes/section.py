@@ -57,12 +57,11 @@ class Section:
                 self.lines[i] = "#" + self.lines[i]
 
     def swap(self, pattern: str, line: str):
-        """Swaps out every line with the specified pattern outside comments in them for the line provided. If the old line(s) included any rules, they are removed. If the new line includes any rules, they are added. Multiline strings are not allowed."""
+        """Swaps out every line with the specified pattern outside comments in them for the line provided. Multiline strings are not allowed."""
         for i in range(len(self.lines)):
-            old_line = self.lines[i]
-            #remove the comment from the line
-            old_line = old_line.split(self.COMMENT_START)[0]
-            if pattern in old_line:
+            #split the old line into actual line and comment
+            old_line = self.lines[i].split(self.COMMENT_START, 1)
+            if pattern in old_line[0]:
                 #all rules associated with the old line must be removed
                 for rule in reversed(self.rules):
                     if rule.line_number == self.line_number + i:
@@ -70,8 +69,11 @@ class Section:
                 #new rules associated with the new line must be added
                 rules = Rule.extract(i, line)
                 self.rules.extend(rules)
-                #finally the line is swapped
-                self.lines[i] = line
+                #finally the line is swapped, with the comment readded if it had one
+                if len(old_line) == 1:
+                    self.lines[i] = line
+                elif len(old_line) > 1:
+                    self.lines[i] = line + self.COMMENT_START + old_line[1]
     
     def __str__(self):
         line_number = self.line_number

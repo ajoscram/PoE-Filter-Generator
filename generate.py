@@ -7,6 +7,7 @@ import sys, traceback
 from classes.generator import Generator, GeneratorError
 from classes.section import SectionError
 from classes.rule import RuleError
+from classes.handler_error import HandlerError
 
 class CommandError(Exception):
     """Class for command line parsing exception handling."""
@@ -78,15 +79,20 @@ try:
     sections = generator.sectionize(input_file)
     print("Generating filter(s)...")
     generator.generate(output_file, sections, handler, options)
-    print("Done!")
+    print("\nDone!")
 except CommandError as e:
     print("\nERROR: " + e.message + '\n\n' + HELP_WARNING)
 except GeneratorError as e:
     print("\nERROR: " + e.message + "\n\n\tOn file: " + e.filepath + "\n\n" + HELP_WARNING)
-except SectionError as e:
+except (SectionError, RuleError) as e:
     print("\nERROR: " + e.message + "\n\n\tOn line: " + str(e.line_number) + "\n\n" + HELP_WARNING)
-except RuleError as e:
-    print("\nERROR: " + e.message + "\n\n\tOn line: " + str(e.line_number) + "\n\n" + HELP_WARNING)
+except HandlerError as e:
+    error = ""
+    if e.has_line_number():
+        error = "\nERROR: " + e.message + "\n\n\tOn line: " + str(e.line_number) + "\n\n" + HELP_WARNING
+    else:
+        error = print("\nERROR: " + e.message + '\n\n' + HELP_WARNING)
+    print(error)
 except Exception as e:
     print("\nUNKNOWN ERROR: Oopsie, my bad\n\n" + UNKNOWN_ERROR_WARNING + "\n")
     traceback.print_tb(e.__traceback__)

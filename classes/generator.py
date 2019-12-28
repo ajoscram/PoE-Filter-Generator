@@ -2,7 +2,7 @@ import importlib
 from .section import Section
 
 class Generator:
-    """The generator is simply a mediator class that invokes handlers with the filter data.
+    """The generator is a mediator class that invokes handlers with the filter data.
     The sectionize function reads a file and returns a list of Section objects found in that file.
     The generate function loads a module with the 'handler' name and calls a function 'handle' on it. It is up to the handler any processing required."""
 

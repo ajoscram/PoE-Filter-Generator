@@ -1,13 +1,15 @@
 To do:
     add testing modules
     add economy handler (very daunting)
+    add docstring on generate.py
+    add help on generate.py
+    retain comments on section swap function
 
 1.0:
     Added the Section class
     Added the Rule class
     Added the Generator class
-    Added the generate.py script, used to run the program
-    calls should look like:
+    Added the generate.py script, used to run the program. Calls should look like:
         python generator.py "input_and_output.filter" .strict 3
         python generator.py "input.filter" "output.filter" .chaos
     Added a strictness handler (strictness.py)

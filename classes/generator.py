@@ -1,3 +1,4 @@
+"""Module that exports the Generator class only."""
 import importlib
 from .section import Section
 

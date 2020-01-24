@@ -1,3 +1,5 @@
+"""Module that exports the Rule class only."""
+
 class Rule:
     """A rule is a bit of data that can be parsed by generators.
     

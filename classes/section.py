@@ -1,3 +1,4 @@
+"""Module that exports the Section class only."""
 from .rule import Rule 
 
 class Section:

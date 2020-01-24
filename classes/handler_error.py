@@ -1,3 +1,5 @@
+"""Module that exports the HandlerError class only. Every handler exception should be a subclass of HandlerError."""
+
 class HandlerError(Exception):
     """Class for handler exceptions. Every handler exception should be a subclass of this class."""
 

@@ -1,9 +1,6 @@
 To do:
-    add testing modules
     add economy handler (very daunting)
-    add docstring on generate.py
     add help on generate.py
-    retain comments on section swap function
 
 1.0:
     Added the Section class
@@ -13,6 +10,5 @@ To do:
         python generator.py "input_and_output.filter" .strict 3
         python generator.py "input.filter" "output.filter" .chaos
     Added a strictness handler (strictness.py)
-    Added an ssf handler (ssf.py)
     Added a chaos recipe handler (chaos.py)
-    Added a chance handler (chance.py)
+    Documented every modules

@@ -21,7 +21,7 @@ from classes.handler_error import HandlerError
 from .__functions__ import hide_section
 from .__functions__ import show_section
 
-TAG = "strictness"
+TAG = "strict"
 
 def handle(filepath:str, sections: list, options:list = []):
     """Handles creation of strictness recipe subfilters. This function is always called by a Generator object.

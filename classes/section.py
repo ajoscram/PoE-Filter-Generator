@@ -75,14 +75,11 @@ class Section:
                     if rule.line_number == self.line_number + i:
                         self.rules.remove(rule)
                 #new rules associated with the new line must be added
-                rules = Rule.extract(i, line)
+                rules = Rule.extract(self.line_number + i, line)
                 self.rules.extend(rules)
-                #finally the line is swapped, with the comment readded if it had one
-                if len(old_line) == 1:
-                    self.lines[i] = line
-                elif len(old_line) > 1:
-                    self.lines[i] = line + self.COMMENT_START + old_line[1]
-    
+                #finally the line is swapped
+                self.lines[i] = line
+                
     def __str__(self):
         line_number = self.line_number
         string = "Line Number: " + str(line_number) + '\n'

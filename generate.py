@@ -1,4 +1,7 @@
-"""PoE Filter Generator
+"""PoE Filter Generator Main Script
+
+This script is the one called to run the program.
+For more information run "python generate.py -h".
 """
 
 # Standard libs
@@ -30,7 +33,28 @@ HELP_WARNING = "Use -help or -h for more information."
 HELP_ARG_SHORT = "-h"
 HELP_ARG = "-help"
 HELP = """
-This is help"""
+Usage:
+
+    python generate.py input.filter [output.filter] .handler [option1 option2 optionN]
+
+If you're using the .exe distribution:
+
+    poe-filter-generator input.filter [output.filter] .handler [option1 option2 optionN]
+
+Note: items inside square brackets are optional.
+
+Where:
+    input.filter:
+        The filter file used as an input.
+        If the file is in a different directory you must provide the entire path to the file.
+    output.filter:
+        The name of the file to output the results to.
+        You can provide a path to another directory here as well if you like.
+        If ommited then the results are output to the input.filter file.
+    .handler:
+        The name of the handler used to modify the filter.
+        For more information on handlers visit the project's wiki at https://github.com/ajoscram/PoE-Filter-Generator/wiki/Handlers#what-are-handlers.
+        Handlers may receive options, which can be provided after the handler's name."""
 
 try:
     args = sys.argv[1:]

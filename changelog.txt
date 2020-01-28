@@ -1,7 +1,5 @@
 To do:
-    add help on generate.py
     investigate why standard hardcore is not supported on poe.ninja
-    filter generation must be atomic: if an error happens then the filter remains the same.
 
 1.0:
     Included the requests library
@@ -15,3 +13,5 @@ To do:
     Added a chaos recipe handler (chaos.py)
     Added an economy handler (econ.py)
     Documented every module
+    Atomized write opetarions on the same filter file.
+    Added help on generate.py

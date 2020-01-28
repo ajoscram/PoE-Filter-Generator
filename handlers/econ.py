@@ -6,7 +6,7 @@ Usage:
 Output:
     - output.filter
 """
-import os, requests
+import requests
 
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 from classes.section import Section
@@ -60,52 +60,61 @@ def __parse__(rule: Rule):
     """Parses the description string from a rule into three components:
         - the item type to query for in poe.ninja (defined in the TYPES dictionary)
         - the price lower bound to look for in chaos, inclusive
-        - the price upper bound to look for in chaos, exclusive
+        - the price upper bound to look for in chaos, exclusive (optional)
     Returns a dictionary that looks like this:
         {type: string, lower: number, upper: number}
     """
     parts = rule.description.split()
-    if(len(parts) != 3):
-        raise HandlerError(rule.line_number, "The .econ rule expects 3 paramaters in its description, got "+str(len(parts))+".")
+    if(len(parts) < 2 or len(parts) > 3):
+        raise HandlerError(rule.line_number, "The .econ rule expects 2 or 3 paramaters in its description, got "+str(len(parts))+".")
     try:
-        return {
-            "type": TYPES[parts[0]],
-            "lower": float(parts[1]),
-            "upper": float(parts[2])
-        }
+        if(len(parts) == 2):
+            return {
+                "type": TYPES[parts[0]],
+                "lower": float(parts[1]),
+                "upper": None
+            }
+        else:
+            return {
+                "type": TYPES[parts[0]],
+                "lower": float(parts[1]),
+                "upper": float(parts[2])
+            }
     except KeyError:
         raise HandlerError(rule.line_number, "The .econ rule expects a valid type, got '" + parts[0]+"'.")
     except ValueError:
         raise HandlerError(rule.line_number, "The .econ rule expects a lower and upper bound as numbers, got '" + parts[1] + "' and '" + parts[2]+"' respectively.")
 
-def __get_base_types__(league: str, type_: str, lower: float, upper: float, cache: dict = {}):
-    """Fetches all BaseType item names needed
+def __get_base_types__(league: str, type_: str, lower: float, upper: float = None, cache: dict = {}):
+    """Fetches all BaseType item names from PoE Ninja's API, for a particular league and item type.
+    The items must also be greater than or equal to the lower bound, and optionally an upper bound can be passed. The uppper bound is excluded.
+    The cache parameter is a dictionary which will be looked up for repeated requests instead of re-requesting, so it will be mutated.
     """
     try:
-        #get the lines list with every base type and their prices
+        #get the lines list from poe.ninja's API with every base type and their prices
+        #if it's already in the cache use that instead
         lines = []
-        if cache.has_key(type_):
-            lines = cache[type_]["lines"]
+        if type_ in cache:
+            lines = cache[type_]
         else:
-            response = requests.get(ITEM_API_LINK, params={"league": league, "type": type_})
+            response = requests.get(ITEM_API_URL, params={"league": league, "type": type_})
             response.raise_for_status()
             lines = response.json()["lines"]
             cache[type_] = lines
-        #go through every line and add every base which is inside the bound
+        #go through every line and get every base which is inside the bound
         bases = []
         for line in lines:
-            
+            #get the base type's name and price
             name_lookup = None
             value = None
-            
-            if line.has_key("chaosEquivalent"):
+            if "chaosEquivalent" in line:
                 value = line["chaosEquivalent"]
                 name_lookup = "currencyTypeName"
             else:
                 value = line["chaosValue"]
                 name_lookup = "name"
-            
-            if value >= lower and value < upper:
+            #finally if it's between the lower and upper bounds add it to the list
+            if value >= lower and (not upper or (upper and value < upper)):
                 bases.append(line[name_lookup])
         return bases
     except HTTPError as error:
@@ -124,15 +133,24 @@ def handle(filepath:str, sections: list, options:list = []):
             - if 'hc' is passed then the hardcore temp league is queried, if not softcore
             - if 'std' is passed then standard is queried, if not temp league
     """
+    #get the selected league name
     league = __get_league__(options)
     filter_file = open(filepath, 'w+')
+    #create a cache for repeated requests
     cache = {}
     for section in sections:
         for rule in section.rules:
             if rule.tag == TAG:
+                #get the parameters from the rule's description
                 params = __parse__(rule)
+                #fetch the list of bases for those parameters
                 bases = __get_base_types__(league, params["type"], params["lower"], params["upper"], cache)
+                #create the string to swap into
+                bases_string = "\tBaseType"
+                for base in bases:
+                    bases_string += " \"" + base + "\""
                 #do the actual swap of base types
+                section.swap("BaseType", bases_string)
         for line in section.lines:
             filter_file.write(line + '\n')
     filter_file.close()

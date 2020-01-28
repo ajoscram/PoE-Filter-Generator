@@ -2,7 +2,7 @@
 """
 
 # Standard libs
-import sys, traceback
+import sys, traceback, copy
 # Local
 from classes.generator import Generator, GeneratorError
 from classes.section import SectionError
@@ -77,6 +77,7 @@ try:
     generator = Generator()
     print("\nExtracting sections from file...")
     sections = generator.sectionize(input_file)
+    sections_copy = copy.deepcopy(sections)
     print("Generating filter(s)...")
     generator.generate(output_file, sections, handler, options)
     print("\nDone!")
@@ -87,6 +88,13 @@ except GeneratorError as e:
 except (SectionError, RuleError) as e:
     print("\nERROR: " + e.message + "\n\n\tOn line: " + str(e.line_number) + "\n\n" + HELP_WARNING)
 except HandlerError as e:
+    #the file must be returned to its original state if its the same
+    if input_file == output_file:
+        filter_file = open(input_file, 'w+')
+        for section in sections_copy:
+            for line in section.lines:
+                filter_file.write(line + '\n')
+    #print the error
     error = ""
     if e.has_line_number():
         error = "\nERROR: " + e.message + "\n\n\tOn line: " + str(e.line_number) + "\n\n" + HELP_WARNING

@@ -46,7 +46,7 @@ def handle(filepath:str, sections: list, options:list = []):
                 filter_file = open(filepath, 'w+')
             for section in sections:
                 for rule in section.rules:
-                    if rule.tag == TAG:
+                    if rule.name == TAG:
                         if base in rule.description:
                             show_section(section)
                         elif not base in rule.description:

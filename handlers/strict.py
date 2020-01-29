@@ -24,7 +24,7 @@ from .__functions__ import show_section
 TAG = "strict"
 
 def handle(filepath:str, sections: list, options:list = []):
-    """Handles creation of strictness recipe subfilters. This function is always called by a Generator object.
+    """Handles creation of strictness subfilters. This function is always called by a Generator object.
     
     Arguments:
         filepath: filepath where the filter should be output to
@@ -36,11 +36,6 @@ def handle(filepath:str, sections: list, options:list = []):
         for tier in options:
             if not tier.isdigit():
                 raise HandlerError(None, "Only integer values are accepted as strictness options.")
-        #making sure all rule descriptions include only include integers
-        for section in sections:
-            for rule in section.rules:
-                if rule.tag == TAG and not rule.description.isdigit():
-                        raise HandlerError(rule.line_number, "Strictness rules must only include a single integer value.")
         #create a folder called the same as the file if it doesn't exist
         if len(options) > 1:
             filepath += " - " + TAG
@@ -56,7 +51,9 @@ def handle(filepath:str, sections: list, options:list = []):
                 filter_file = open(filepath, 'w+')
             for section in sections:
                 for rule in section.rules:
-                    if rule.tag == TAG:
+                    if rule.name == TAG:
+                        if not rule.description.isdigit():
+                            raise HandlerError(rule.line_number, "Strictness rules must only include a single integer value.")
                         if int(rule.description) >= int(tier):
                             show_section(section)
                         else:

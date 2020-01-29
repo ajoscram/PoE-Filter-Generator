@@ -53,7 +53,7 @@ Where:
         If ommited then the results are output to the input.filter file.
     .handler:
         The name of the handler used to modify the filter.
-        For more information on handlers visit the project's wiki at https://github.com/ajoscram/PoE-Filter-Generator/wiki/Handlers#what-are-handlers.
+        For more information on handlers visit the project's wiki at https://github.com/ajoscram/PoE-Filter-Generator/wiki/Handlers.
         Handlers may receive options, which can be provided after the handler's name."""
 
 try:
@@ -62,7 +62,7 @@ try:
     for arg in args:
         if arg == HELP_ARG or arg == HELP_ARG_SHORT:
             print(HELP)
-            exit()
+            sys.exit()
     #at least 2 arguments must be provided:
     #   1) the name of the input file, always first
     #   2) the name of the output filepath (optional)

@@ -20,7 +20,9 @@ class Generator:
             line_count = 1
             current = Section(line_count)
             for line in lines:
-                if line.startswith(self.SHOW) or line.startswith(self.HIDE):
+                #check if the line starts with show or hide, if so start a new section
+                line_stripped = line.lstrip()
+                if line_stripped.startswith(self.SHOW) or line_stripped.startswith(self.HIDE):
                     if not current.is_empty():
                         sections.append(current)
                     current = Section(line_count)

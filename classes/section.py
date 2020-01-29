@@ -57,7 +57,7 @@ class Section:
             if pattern in line:
                 self.lines[i] = "#" + self.lines[i]
     
-    def uncomment(self, pattern):
+    def uncomment(self, pattern: str):
         """Removes the left-most # (hashtag) in every line that has the pattern inside a comment."""
         for i in range(len(self.lines)):
             split_line = self.lines[i].split(self.COMMENT_START, 1)

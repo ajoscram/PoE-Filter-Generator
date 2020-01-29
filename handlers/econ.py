@@ -32,7 +32,8 @@ TYPES = {
     "ess":"Essence",
     "div":"DivinationCard",
     "pro":"Prophecy",
-    "bea":"Beasts"
+    "bea":"Beast",
+    "wat":"Watchstone"
 }
 
 def __get_league__(options: list = []):
@@ -140,7 +141,7 @@ def handle(filepath:str, sections: list, options:list = []):
     cache = {}
     for section in sections:
         for rule in section.rules:
-            if rule.tag == TAG:
+            if rule.name == TAG:
                 #get the parameters from the rule's description
                 params = __parse__(rule)
                 #fetch the list of bases for those parameters

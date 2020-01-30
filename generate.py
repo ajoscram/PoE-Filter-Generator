@@ -39,9 +39,7 @@ Usage:
 
 If you're using the .exe distribution:
 
-    poe-filter-generator input.filter [output.filter] .handler [option1 option2 optionN]
-
-Note: items inside square brackets are optional.
+    pfg input.filter [output.filter] .handler [option1 option2 optionN]
 
 Where:
     input.filter:

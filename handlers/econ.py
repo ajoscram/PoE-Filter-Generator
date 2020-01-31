@@ -146,12 +146,16 @@ def handle(filepath:str, sections: list, options:list = []):
                 params = __parse__(rule)
                 #fetch the list of bases for those parameters
                 bases = __get_base_types__(league, params["type"], params["lower"], params["upper"], cache)
+                if params["type"] == TYPES["pro"]:
+                    identifier = "Prophecy" #special case for prophecies
+                else:
+                    identifier = "BaseType"
                 #create the string to swap into
-                bases_string = "\tBaseType"
+                bases_string = "\t" + identifier + " =="
                 for base in bases:
                     bases_string += " \"" + base + "\""
                 #do the actual swap of base types
-                section.swap("BaseType", bases_string)
+                section.swap(identifier, bases_string)
         for line in section.lines:
             filter_file.write(line + '\n')
     filter_file.close()

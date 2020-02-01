@@ -21,6 +21,7 @@ LEAGUE_NAME_STANDARD_INDEX = 0
 LEAGUE_NAME_TEMP_INDEX = 4
 LEAGUE_NAME_TEMP_HC_INDEX = 5
 ITEM_API_URL = "https://poe.ninja/api/data/itemoverview"
+CURRENCY_API_URL = "https://poe.ninja/api/data/currencyoverview"
 TYPES = {
     "cur":"Currency",
     "fra":"Fragment",
@@ -98,7 +99,10 @@ def __get_base_types__(league: str, type_: str, lower: float, upper: float = Non
         if type_ in cache:
             lines = cache[type_]
         else:
-            response = requests.get(ITEM_API_URL, params={"league": league, "type": type_})
+            if type_ == TYPES["cur"] or type_ == TYPES["fra"]:
+                response = requests.get(CURRENCY_API_URL, params={"league": league, "type": type_})
+            else:
+                response = requests.get(ITEM_API_URL, params={"league": league, "type": type_})
             response.raise_for_status()
             lines = response.json()["lines"]
             cache[type_] = lines
@@ -115,7 +119,7 @@ def __get_base_types__(league: str, type_: str, lower: float, upper: float = Non
                 value = line["chaosValue"]
                 name_lookup = "name"
             #finally if it's between the lower and upper bounds add it to the list
-            if value >= lower and (not upper or (upper and value < upper)):
+            if value >= lower and (not upper or value < upper):
                 bases.append(line[name_lookup])
         return bases
     except HTTPError as error:

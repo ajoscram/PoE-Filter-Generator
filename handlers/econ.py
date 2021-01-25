@@ -44,7 +44,8 @@ def __get_league__(options: list = []):
     Note that Hardcore Standard is not supported because poe.ninja doesn't support it.
     """
     try:
-        response = requests.get(LEAGUE_NAME_API_URL)
+        headers = {'User-Agent': 'PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/'}
+        response = requests.get(LEAGUE_NAME_API_URL, headers=headers)
         response.raise_for_status()
         leagues = response.json()
         if STANDARD_TAG in options:

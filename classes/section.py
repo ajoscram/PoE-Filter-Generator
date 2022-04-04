@@ -18,9 +18,9 @@ class Section:
 
     def __init__(self, line_number: int):
         """Section constructor which only receives the line number where the section starts."""
-        self.line_number = line_number
-        self.lines = []
-        self.rules = []
+        self.line_number: int = line_number
+        self.lines: list[str] = []
+        self.rules: list[Rule] = []
 
     @classmethod
     def extract(cls, lines: list):

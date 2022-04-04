@@ -24,9 +24,9 @@ class Rule:
 
     def __init__(self, line_number: int, name: str, description: str):
         """Rule constructor which receives the line_number where the rule is found, the name which identifies the rule and its description optionally for any additional data."""
-        self.line_number = line_number
-        self.name = name
-        self.description = description
+        self.line_number: int = line_number
+        self.name: str = name
+        self.description: str = description
     
     def __str__(self):
         return '[' + str(self.line_number) + '] "' + self.name + '" : "' + self.description + '"'

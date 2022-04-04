@@ -13,8 +13,8 @@ class Filter:
 
     def __init__(self, filepath: str, sections: list = None):
         """Filter constructor which receives the filepath where the filter is found."""
-        self.filepath = filepath
-        self.sections = sections or self.__get_sections__(filepath)
+        self.filepath: str = filepath
+        self.sections: list[Section] = sections or self.__get_sections__(filepath)
 
     def __get_sections__(self, filepath):
         try:

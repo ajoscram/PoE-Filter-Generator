@@ -2,4 +2,3 @@
 *.filter
 __pycache__/
 build/
-test.py

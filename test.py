@@ -1,7 +1,8 @@
-"""Dummy script intended only for testing purposes."""
-
 import handlers.econ as econ
+import handlers.tag as tag
 from classes.rule import Rule
 from classes.section import Section
-from classes.handler_error import HandlerError
 
+description = "   10  "
+print(description.isdigit())
+print(int(description))

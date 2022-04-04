@@ -1,27 +1,42 @@
 """Handles creation of real-time economy modified subfilters.
-Data is obtained via poe.ninja's API. Hardcore standard is not supported because poe.ninja doesn't support it.
+Data is obtained via poe.ninja's API.
+Hardcore standard is not supported because poe.ninja doesn't support it.
 
 Usage:
-    python generate.py input.filter [output.filter] .econ [hc]
+    python generate.py input.filter [output.filter] .econ [hc | std]
 Output:
     - output.filter
 """
 import requests
+from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout
+from classes.generator_error import GeneratorError
 
-from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 from classes.section import Section
 from classes.rule import Rule
-from classes.handler_error import HandlerError
 
-TAG = "econ"
+NAME = "econ"
 STANDARD_TAG = "std"
 HARDCORE_TAG = "hc"
+BASE_TYPE_IDENTIFIER = "BaseType"
+
+POE_FILTER_GENERATOR_USER_AGENT = "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/"
+CURRENCY_API_URL = "https://poe.ninja/api/data/currencyoverview"
+ITEM_API_URL = "https://poe.ninja/api/data/itemoverview"
 LEAGUE_NAME_API_URL = "https://api.pathofexile.com/leagues?type=main&realm=pc"
 LEAGUE_NAME_STANDARD_INDEX = 0
 LEAGUE_NAME_TEMP_INDEX = 4
 LEAGUE_NAME_TEMP_HC_INDEX = 5
-ITEM_API_URL = "https://poe.ninja/api/data/itemoverview"
-CURRENCY_API_URL = "https://poe.ninja/api/data/currencyoverview"
+
+ERROR_MESSAGE_PREFIX = "Error while getting the {0}.\n"
+HTTP_ERROR_MESSAGE = ERROR_MESSAGE_PREFIX + "You might want to report this error to @ajoscram on Github with this text:\n\n{1}"
+CONNECTION_ERROR_MESSAGE = ERROR_MESSAGE_PREFIX + "Please make sure you have an active internet connection."
+RULE_PARAMETER_COUNT_ERROR_MESSAGE = "The .econ rule expects 2 or 3 paramaters in its description, got {0}."
+RULE_TYPE_ERROR_MESSAGE = "The .econ rule expects a valid type, got '{0}'."
+RULE_BOUNDS_ERROR_MESSAGE = "The .econ rule expects a lower and upper bound as numbers, got '{0}' and '{1}' respectively."
+
+LEAGUE_NAMES_ERROR_TEXT = "league names from GGG's API"
+POE_NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
+
 TYPES = {
     "cur":"Currency",
     "fra":"Fragment",
@@ -32,44 +47,52 @@ TYPES = {
     "res":"Resonator",
     "ess":"Essence",
     "div":"DivinationCard",
-    "pro":"Prophecy",
     "bea":"Beast",
     "wat":"Watchstone"
 }
 
-def __get_league__(options: list = []):
-    """Returns the current temporal softcore league name as a string.
-    If 'std' is passed as an option then the standard league name is returned.
-    If 'hc' is passed as an option then the hardcore temporal league name is returned.
-    Note that Hardcore Standard is not supported because poe.ninja doesn't support it.
-    """
-    try:
-        headers = {'User-Agent': 'PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/'}
-        response = requests.get(LEAGUE_NAME_API_URL, headers=headers)
-        response.raise_for_status()
-        leagues = response.json()
-        if STANDARD_TAG in options:
-            return leagues[LEAGUE_NAME_STANDARD_INDEX]["id"]
-        elif HARDCORE_TAG in options:
-            return leagues[LEAGUE_NAME_TEMP_HC_INDEX]["id"]
-        else:
-            return leagues[LEAGUE_NAME_TEMP_INDEX]["id"]
-    except HTTPError as error:
-        raise HandlerError(None, f"Error while getting the league names from GGG's API.\nYou might wanna report this error to @ajoscram on github or twitter with this text:\n\n{error}")
-    except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
-        raise HandlerError(None, "Error while getting the league names from GGG's API.\nPlease make sure you have an active internet connection.")
+poe_ninja_cache = {}
+current_league = None
 
-def __parse__(rule: Rule):
-    """Parses the description string from a rule into three components:
-        - the item type to query for in poe.ninja (defined in the TYPES dictionary)
-        - the price lower bound to look for in chaos, inclusive
-        - the price upper bound to look for in chaos, exclusive (optional)
-    Returns a dictionary that looks like this:
-        {type: string, lower: number, upper: number}
+def handle(_, section: Section, options: list):
+    """Handles creation of economy adjusted filters.
+    Hardcore standard is not supported because poe.ninja doesn't support it.
+    Options: 
+        - if 'hc' is passed then the hardcore temp league is queried, if not softcore
+        - if 'std' is passed then standard is queried, if not temp league
     """
+    for rule in section.get_rules(NAME):
+        rule_parameters = __parse_rule_parameters__(rule)
+        league = __get_league__(options)
+        base_types = __get_base_types__(league, rule_parameters["type"], rule_parameters["lower"], rule_parameters["upper"])
+        base_types_string = __get_base_types_string__(base_types)
+        section.swap(BASE_TYPE_IDENTIFIER, base_types_string)
+    return [ section ]
+
+def __get_league__(options: list = []):
+    global current_league
+    try:
+        if not current_league:
+            headers = {'User-Agent': POE_FILTER_GENERATOR_USER_AGENT}
+            response = requests.get(LEAGUE_NAME_API_URL, headers=headers)
+            response.raise_for_status()
+            leagues = response.json()
+            if STANDARD_TAG in options:
+                current_league = leagues[LEAGUE_NAME_STANDARD_INDEX]["id"]
+            elif HARDCORE_TAG in options:
+                current_league = leagues[LEAGUE_NAME_TEMP_HC_INDEX]["id"]
+            else:
+                current_league = leagues[LEAGUE_NAME_TEMP_INDEX]["id"]
+        return current_league
+    except HTTPError as error:
+        raise GeneratorError(HTTP_ERROR_MESSAGE.format(LEAGUE_NAMES_ERROR_TEXT, error))
+    except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
+        raise GeneratorError(CONNECTION_ERROR_MESSAGE.format(LEAGUE_NAMES_ERROR_TEXT))
+
+def __parse_rule_parameters__(rule: Rule):
     parts = rule.description.split()
     if(len(parts) < 2 or len(parts) > 3):
-        raise HandlerError(rule.line_number, "The .econ rule expects 2 or 3 paramaters in its description, got "+str(len(parts))+".")
+        raise GeneratorError(RULE_PARAMETER_COUNT_ERROR_MESSAGE.format(len(parts)), rule.line_number)
     try:
         if(len(parts) == 2):
             return {
@@ -84,83 +107,37 @@ def __parse__(rule: Rule):
                 "upper": float(parts[2])
             }
     except KeyError:
-        raise HandlerError(rule.line_number, "The .econ rule expects a valid type, got '" + parts[0]+"'.")
+        raise GeneratorError(RULE_TYPE_ERROR_MESSAGE.format(parts[0]), rule.line_number)
     except ValueError:
-        raise HandlerError(rule.line_number, "The .econ rule expects a lower and upper bound as numbers, got '" + parts[1] + "' and '" + parts[2]+"' respectively.")
+        raise GeneratorError(RULE_BOUNDS_ERROR_MESSAGE.format(parts[1], parts[2]), rule.line_number)
 
-def __get_base_types__(league: str, type_: str, lower: float, upper: float = None, cache: dict = {}):
-    """Fetches all BaseType item names from PoE Ninja's API, for a particular league and item type.
-    The items must also be greater than or equal to the lower bound, and optionally an upper bound can be passed. The uppper bound is excluded.
-    The cache parameter is a dictionary which will be looked up for repeated requests instead of re-requesting, so it will be mutated.
-    """
+def __get_base_types__(league: str, type: str, lower: float, upper: float = None):
+    poe_ninja_lines = __get_poe_ninja_lines__(league, type)    
+    base_types = []
+    for line in poe_ninja_lines:
+        name_lookup = "currencyTypeName" if "chaosEquivalent" in line else "name"
+        value = line["chaosEquivalent"] if "chaosEquivalent" in line else line["chaosValue"]
+        if value >= lower and (not upper or value < upper):
+            base_types.append(line[name_lookup])
+    return base_types
+
+def __get_poe_ninja_lines__(league: str, type: str):
+    global poe_ninja_cache
     try:
-        #get the lines list from poe.ninja's API with every base type and their prices
-        #if it's already in the cache use that instead
-        lines = []
-        if type_ in cache:
-            lines = cache[type_]
-        else:
-            if type_ == TYPES["cur"] or type_ == TYPES["fra"]:
-                response = requests.get(CURRENCY_API_URL, params={"league": league, "type": type_})
-            else:
-                response = requests.get(ITEM_API_URL, params={"league": league, "type": type_})
+        if type not in poe_ninja_cache:
+            type_is_currency_or_frags = type == TYPES["cur"] or type == TYPES["fra"]
+            url = CURRENCY_API_URL if type_is_currency_or_frags else ITEM_API_URL
+            response = requests.get(url, params={"league": league, "type": type})
             response.raise_for_status()
-            lines = response.json()["lines"]
-            cache[type_] = lines
-        #go through every line and get every base which is inside the bound
-        bases = []
-        for line in lines:
-            #get the base type's name and price
-            name_lookup = None
-            value = None
-            if "chaosEquivalent" in line:
-                value = line["chaosEquivalent"]
-                name_lookup = "currencyTypeName"
-            else:
-                value = line["chaosValue"]
-                name_lookup = "name"
-            #finally if it's between the lower and upper bounds add it to the list
-            if value >= lower and (not upper or value < upper):
-                bases.append(line[name_lookup])
-        return bases
+            poe_ninja_cache[type] = response.json()["lines"]
+        return poe_ninja_cache[type]
     except HTTPError as error:
-        raise HandlerError(None, f"Error while getting data from poe.ninja.\nYou might wanna report this error to @ajoscram on github or twitter with this text:\n\n{error}")
+        raise GeneratorError(HTTP_ERROR_MESSAGE.format(POE_NINJA_DATA_ERROR_TEXT, error))
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
-        raise HandlerError(None, "Error while getting data from poe.ninja.\nPlease make sure you have an active internet connection.")
+        raise GeneratorError(CONNECTION_ERROR_MESSAGE.format(POE_NINJA_DATA_ERROR_TEXT))
 
-def handle(filepath:str, sections: list, options:list = []):
-    """Handles creation of economy adjusted filters. This function is always called by a Generator object.
-    Hardcore standard is not supported because poe.ninja doesn't support it.
-
-    Arguments:
-        filepath: filepath where the filter should be output to
-        sections: list of Section objects which represent the input file
-        options: 
-            - if 'hc' is passed then the hardcore temp league is queried, if not softcore
-            - if 'std' is passed then standard is queried, if not temp league
-    """
-    #get the selected league name
-    league = __get_league__(options)
-    filter_file = open(filepath, 'w+')
-    #create a cache for repeated requests
-    cache = {}
-    for section in sections:
-        for rule in section.rules:
-            if rule.name == TAG:
-                #get the parameters from the rule's description
-                params = __parse__(rule)
-                #fetch the list of bases for those parameters
-                bases = __get_base_types__(league, params["type"], params["lower"], params["upper"], cache)
-                if params["type"] == TYPES["pro"]:
-                    identifier = "Prophecy" #special case for prophecies
-                else:
-                    identifier = "BaseType"
-                #create the string to swap into
-                bases_string = "\t" + identifier + " =="
-                for base in bases:
-                    bases_string += " \"" + base + "\""
-                #do the actual swap of base types
-                section.swap(identifier, bases_string)
-        for line in section.lines:
-            filter_file.write(line + '\n')
-    filter_file.close()
+def __get_base_types_string__(base_types):
+    base_types_string = f"\t{BASE_TYPE_IDENTIFIER} =="
+    for base in base_types:
+        base_types_string += f" \"{base}\""
+    return base_types_string

@@ -1,5 +1,7 @@
 """Module that exports the Rule class only."""
 
+from classes.generator_error import GeneratorError
+
 class Rule:
     """A rule is a bit of data that can be parsed by generators.
     
@@ -12,11 +14,15 @@ class Rule:
     Names and descriptions in a rule are separated by : (colon), like name:description.
     """
 
-    RULE_START = '#.'
     RULE_SEPARATOR = '.'
+    RULE_START = '#' + RULE_SEPARATOR
     RULE_FIELD_SEPARATOR = ':'
 
-    def __init__(self, line_number: int, name: str, description: str = ""):
+    EMPTY_NAME_ERROR = "Empty name (probably an extra '.')"
+    EMPTY_DESCRIPTION_ERROR = "Empty description (probably an extra ':' or forgot a description to a rule)"
+    TOO_MANY_FIELDS_ERROR = "Too many fields (probably an extra ':')"
+
+    def __init__(self, line_number: int, name: str, description: str):
         """Rule constructor which receives the line_number where the rule is found, the name which identifies the rule and its description optionally for any additional data."""
         self.line_number = line_number
         self.name = name
@@ -30,38 +36,23 @@ class Rule:
         """Returns all rules in a line as a list of rules."""
         rules = []
         try:
-            line = line[line.index(cls.RULE_START) + len(cls.RULE_START):]
-            rule_strings = line.split(cls.RULE_SEPARATOR)
+            line = line[line.index(Rule.RULE_START) + len(Rule.RULE_START):]
+            rule_strings = line.split(Rule.RULE_SEPARATOR)
             for rule_string in rule_strings:
-                fields = rule_string.split(cls.RULE_FIELD_SEPARATOR)
-                if(len(fields) == 1):
-                    fields[0] = fields[0].strip()
-                    if(fields[0] == ''):
-                        raise RuleError(line_number, RuleError.EMPTY_NAME)
-                    rules.append(Rule(line_number, fields[0]))
-                elif(len(fields) == 2):
-                    fields[0] = fields[0].strip()
-                    fields[1] = fields[1].strip()
-                    if(fields[0] == ''):
-                        raise RuleError(line_number, RuleError.EMPTY_NAME)
-                    if(fields[1] == ''):
-                        raise RuleError(line_number, RuleError.EMPTY_DESCRIPTION)
-                    rules.append(Rule(line_number, fields[0], fields[1]))
-                else:
-                    raise RuleError(line_number, RuleError.TOO_MANY_FIELDS)
+                
+                fields = rule_string.split(Rule.RULE_FIELD_SEPARATOR)
+                if len(fields) > 2:
+                    raise GeneratorError(Rule.TOO_MANY_FIELDS_ERROR, line_number)
+
+                name = fields[0].strip()
+                if name == '':
+                    raise GeneratorError(Rule.EMPTY_NAME_ERROR, line_number)
+                
+                description = fields[1].strip() if len(fields) == 2 else ""
+                if description == '' and len(fields) == 2:
+                    raise GeneratorError(Rule.EMPTY_DESCRIPTION_ERROR, line_number)
+                
+                rules.append(Rule(line_number, name, description))
         except ValueError:
             pass
         return rules
-
-class RuleError(Exception):
-    """Class for rule exception handling."""
-
-    #Error message constants
-    EMPTY_NAME = "Empty name (probably an extra '.')"
-    EMPTY_DESCRIPTION = "Empty description (probably an extra ':' or forgot a description to a rule)"
-    TOO_MANY_FIELDS = "Too many fields (probably an extra ':')"
-
-    def __init__(self, line_number: int, message: str):
-        """Takes a message from the caller and a line number where the error occurred."""
-        self.message = message
-        self.line_number = line_number

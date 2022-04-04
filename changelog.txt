@@ -1,6 +1,9 @@
 To do:
     investigate why standard hardcore is not supported on poe.ninja
 
+    refactor for a Filter class, and have each handler return a list of Filter instead of writing the files themselves
+    in that way we can still generate multiple files on a single command and maybe pipe commands in the future
+
 1.0:
     Included the requests library
     Added the Section class
@@ -13,5 +16,5 @@ To do:
     Added a chaos recipe handler (chaos.py)
     Added an economy handler (econ.py)
     Documented every module
-    Atomized write opetarions on the same filter file.
+    Atomized write operations on the same filter file.
     Added help on generate.py

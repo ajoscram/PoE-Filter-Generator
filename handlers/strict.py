@@ -4,63 +4,40 @@ If multiple options are passed then a folder is created instead, with one filter
 The higher the tier the better.
 
 Usage:
-    python generate.py input.filter [output.filter] .strictness tier1 [tier2 tierN]
-Output (single file):
+    python generate.py input.filter [output.filter] .strict tier
+Output:
     - output.filter
-Output (multifile):
-    output.filter (folder)
-    - option1.filter
-    - option2.filter
-    - optionN.filter
 """
-import os
-
+from classes.generator_error import GeneratorError
 from classes.section import Section
-from classes.rule import Rule
-from classes.handler_error import HandlerError
-from .__functions__ import hide_section
-from .__functions__ import show_section
 
-TAG = "strict"
+NAME = "strict"
+INCORRECT_STRICTNESS_PREFIX = "You must provide only 1 integer value for the strictness {0}."
+INCORRECT_STRICTNESS_ARG_COUNT = INCORRECT_STRICTNESS_PREFIX + " You've provided {1} arguments."
+INCORRECT_STRICTNESS_ARG_TYPE =  INCORRECT_STRICTNESS_PREFIX + " You've provided '{1}'."
 
-def handle(filepath:str, sections: list, options:list = []):
-    """Handles creation of strictness subfilters. This function is always called by a Generator object.
-    
-    Arguments:
-        filepath: filepath where the filter should be output to
-        sections: list of Section objects which represent the input file
-        options: list of numbers where each determines a strictness value (higher is better)
+def handle(_, section: Section, options:list):
+    """Handles creation of strictness subfilters.
+    Only one option is accepted and it should include the strictness value to use.
     """
-    try:
-        #making sure all options passed are numbers
-        for tier in options:
-            if not tier.isdigit():
-                raise HandlerError(None, "Only integer values are accepted as strictness options.")
-        #create a folder called the same as the file if it doesn't exist
-        if len(options) > 1:
-            filepath += " - " + TAG
-            if not os.path.isdir(filepath):
-                os.mkdir(filepath)
-        #generate a different filter for every strictness tier listed as an option
-        for tier in options:
-            #make a new file to write to
-            filter_file = None
-            if len(options) > 1:
-                filter_file = open(filepath + "/" + tier + ".filter", "w+")
-            else:
-                filter_file = open(filepath, 'w+')
-            for section in sections:
-                for rule in section.rules:
-                    if rule.name == TAG:
-                        if not rule.description.isdigit():
-                            raise HandlerError(rule.line_number, "Strictness rules must only include a single integer value.")
-                        if int(rule.description) >= int(tier):
-                            show_section(section)
-                        else:
-                            hide_section(section)
-                #Write every line in the section to the new file
-                for line in section.lines:
-                    filter_file.write(line + '\n')
-            filter_file.close()
-    except FileExistsError:
-        raise HandlerError(None, "The path '" + filepath + "' corresponds to an already existing file")
+
+    if len(options) != 1:
+        raise GeneratorError(INCORRECT_STRICTNESS_ARG_COUNT.format("handler", len(options)))
+
+    if not options[0].strip().isdigit():
+        raise GeneratorError(INCORRECT_STRICTNESS_ARG_TYPE.format("handler", options[0]))
+
+    command_strictness = int(options[0])
+
+    for rule in section.get_rules(NAME):
+        if not rule.description.strip().isdigit():
+            raise GeneratorError(INCORRECT_STRICTNESS_ARG_TYPE.format("rule", rule.description), rule.line_number)
+        
+        rule_strictness = int(rule.description)
+        
+        if rule_strictness >= command_strictness:
+            section.show()
+        else:
+            section.hide()
+
+    return [ section ]

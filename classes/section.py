@@ -1,4 +1,5 @@
 """Module that exports the Section class only."""
+from classes.generator_error import GeneratorError
 from .rule import Rule 
 
 class Section:
@@ -9,13 +10,36 @@ class Section:
     Rules are automatically extracted from lines when new lines are added.
     """
 
+    SHOW = "Show"
+    HIDE = "Hide"
     COMMENT_START = '#'
+
+    MULTILINE_STRING_ERROR = "Multiline string"
 
     def __init__(self, line_number: int):
         """Section constructor which only receives the line number where the section starts."""
         self.line_number = line_number
         self.lines = []
         self.rules = []
+
+    @classmethod
+    def extract(cls, lines: list):
+        sections = []
+        line_count = 1
+        current = Section(line_count)
+        for line in lines:
+            #check if the line starts with show or hide, if so start a new section
+            line_stripped = line.lstrip()
+            if line_stripped.startswith(Section.SHOW) or line_stripped.startswith(Section.HIDE):
+                if not current.is_empty():
+                    sections.append(current)
+                current = Section(line_count)
+            current.append(line.rstrip())
+            line_count +=1
+        #this is the last section in the file and is omitted in the loop
+        if not current.is_empty():
+            sections.append(current)
+        return sections
 
     def is_empty(self):
         """Returns true if the section has no lines. False if it has any."""
@@ -25,7 +49,7 @@ class Section:
         """Appends the line at the end of the section. If any rules are present, they are extracted. Multiline strings are not allowed."""
         line_number = self.line_number + len(self.lines)
         if '\n' in line:
-            raise SectionError(SectionError.MULTILINE_STRING, line_number)
+            raise GeneratorError(Section.MULTILINE_STRING_ERROR, line_number)
         rules = Rule.extract(line_number, line)
         self.rules.extend(rules)
         self.lines.append(line)
@@ -79,7 +103,28 @@ class Section:
                 self.rules.extend(rules)
                 #finally the line is swapped
                 self.lines[i] = line
-                
+    
+    def hide(self):
+        """Attempts to completely hide a section by setting it to 'Hide' and
+        commenting out the lines that show effects on the screen if they are present."""
+        self.swap("Show", "Hide")
+        self.comment("PlayAlertSoundPositional")
+        self.comment("MinimapIcon")
+        self.comment("PlayEffect")
+    
+    def show(self):
+        """Attempts to show a section fully, by setting it to 'Show' and un-commenting out
+        the lines that show effects on the screen if they are present.
+        This is the reverse function to hide."""
+        self.swap("Hide", "Show")
+        self.uncomment("PlayAlertSoundPositional")
+        self.uncomment("MinimapIcon")
+        self.uncomment("PlayEffect")
+
+    def get_rules(self, rule_name):
+        """Gets all the rules in the section with name equals to rule_name."""
+        return [ rule for rule in self.rules if rule.name == rule_name ]
+                    
     def __str__(self):
         line_number = self.line_number
         string = "Line Number: " + str(line_number) + '\n'
@@ -94,14 +139,3 @@ class Section:
             string += '\n[' + str(line_number) + '] ' + line
             line_number += 1
         return string
-
-class SectionError(Exception):
-    """Class for section exception handling."""
-
-    #Error message constants
-    MULTILINE_STRING = "Multiline string"
-
-    def __init__(self, line_number: int, message: str):
-        """Takes a message from the caller and a line number where the error occurred."""
-        self.message = message
-        self.line_number = line_number

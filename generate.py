@@ -62,11 +62,8 @@ try:
 
     print("\nDone!")
 
-# move these error messages to each error's tostring
-# consider merging all these different errors into just generator_error
-# use fstring formatting instead of adding up strings for this
 except GeneratorError as error:
-    print(f"\nERROR: {error}\n\n {HELP_WARNING}")
+    print(f"\nERROR: {error}\n\n{HELP_WARNING}")
 except Exception as e:
     print(f"\nUNKNOWN ERROR: Oopsie, my bad\n\n{UNKNOWN_ERROR_WARNING}\n")
     traceback.print_tb(e.__traceback__)

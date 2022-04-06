@@ -1,4 +1,3 @@
-"""Module that exports the Section class only."""
 from classes.generator_error import GeneratorError
 from .rule import Rule 
 
@@ -17,14 +16,14 @@ class Section:
     MULTILINE_STRING_ERROR = "Multiline string"
 
     def __init__(self, line_number: int):
-        """Section constructor which only receives the line number where the section starts."""
         self.line_number: int = line_number
         self.lines: list[str] = []
         self.rules: list[Rule] = []
 
     @classmethod
-    def extract(cls, lines: list):
-        sections = []
+    def extract(cls, lines: list[str]):
+        "Returns all sections in a from a list of text lines as a "
+        sections: list[Section] = []
         line_count = 1
         current = Section(line_count)
         for line in lines:
@@ -121,7 +120,7 @@ class Section:
         self.uncomment("MinimapIcon")
         self.uncomment("PlayEffect")
 
-    def get_rules(self, rule_name):
+    def get_rules(self, rule_name: str):
         """Gets all the rules in the section with name equals to rule_name."""
         return [ rule for rule in self.rules if rule.name == rule_name ]
                     

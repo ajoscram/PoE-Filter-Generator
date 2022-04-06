@@ -1,5 +1,3 @@
-"""Module that exports the Rule class only."""
-
 from classes.generator_error import GeneratorError
 
 class Rule:
@@ -16,7 +14,6 @@ class Rule:
 
     RULE_SEPARATOR = '.'
     RULE_START = '#' + RULE_SEPARATOR
-    RULE_FIELD_SEPARATOR = ':'
 
     EMPTY_NAME_ERROR = "Empty name (probably an extra '.')"
     EMPTY_DESCRIPTION_ERROR = "Empty description (probably an extra ':' or forgot a description to a rule)"
@@ -28,9 +25,6 @@ class Rule:
         self.name: str = name
         self.description: str = description
     
-    def __str__(self):
-        return '[' + str(self.line_number) + '] "' + self.name + '" : "' + self.description + '"'
-
     @classmethod
     def extract(cls, line_number: int, line: str):
         """Returns all rules in a line as a list of rules."""
@@ -40,7 +34,7 @@ class Rule:
             rule_strings = line.split(Rule.RULE_SEPARATOR)
             for rule_string in rule_strings:
                 
-                fields = rule_string.split(Rule.RULE_FIELD_SEPARATOR)
+                fields = rule_string.split(maxsplit=1)
                 if len(fields) > 2:
                     raise GeneratorError(Rule.TOO_MANY_FIELDS_ERROR, line_number)
 
@@ -56,3 +50,6 @@ class Rule:
         except ValueError:
             pass
         return rules
+
+    def __str__(self):
+        return f'[{self.line_number}] "{self.name}" -> "{self.description}"'

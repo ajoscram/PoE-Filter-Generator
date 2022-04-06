@@ -1,12 +1,3 @@
-"""Handles creation of real-time economy modified subfilters.
-Data is obtained via poe.ninja's API.
-Hardcore standard is not supported because poe.ninja doesn't support it.
-
-Usage:
-    python generate.py input.filter [output.filter] .econ [hc | std]
-Output:
-    - output.filter
-"""
 import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout
 from classes.generator_error import GeneratorError
@@ -47,8 +38,7 @@ TYPES = {
     "res":"Resonator",
     "ess":"Essence",
     "div":"DivinationCard",
-    "bea":"Beast",
-    "wat":"Watchstone"
+    "bea":"Beast"
 }
 
 poe_ninja_cache = {}
@@ -59,8 +49,7 @@ def handle(_, section: Section, options: list):
     Hardcore standard is not supported because poe.ninja doesn't support it.
     Options: 
         - if 'hc' is passed then the hardcore temp league is queried, if not softcore
-        - if 'std' is passed then standard is queried, if not temp league
-    """
+        - if 'std' is passed then standard is queried, if not temp league"""
     for rule in section.get_rules(NAME):
         rule_parameters = __parse_rule_parameters__(rule)
         league = __get_league__(options)
@@ -69,7 +58,7 @@ def handle(_, section: Section, options: list):
         section.swap(BASE_TYPE_IDENTIFIER, base_types_string)
     return [ section ]
 
-def __get_league__(options: list = []):
+def __get_league__(options: list[str]):
     global current_league
     try:
         if not current_league:

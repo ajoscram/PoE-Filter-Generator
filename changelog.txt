@@ -1,8 +1,10 @@
 To do:
     investigate why standard hardcore is not supported on poe.ninja
+    use single underscore for private instead of double underscore
 
-    refactor for a Filter class, and have each handler return a list of Filter instead of writing the files themselves
-    in that way we can still generate multiple files on a single command and maybe pipe commands in the future
+1.1
+    Refactored and cleaned up the code significantly, so that future work is simpler
+    Implemented the import handler
 
 1.0:
     Included the requests library

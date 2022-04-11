@@ -19,11 +19,11 @@ LEAGUE_NAME_TEMP_INDEX = 4
 LEAGUE_NAME_TEMP_HC_INDEX = 5
 
 ERROR_MESSAGE_PREFIX = "Error while getting the {0}.\n"
-HTTP_ERROR_MESSAGE = ERROR_MESSAGE_PREFIX + "You might want to report this error to @ajoscram on Github with this text:\n\n{1}"
-CONNECTION_ERROR_MESSAGE = ERROR_MESSAGE_PREFIX + "Please make sure you have an active internet connection."
-RULE_PARAMETER_COUNT_ERROR_MESSAGE = "The .econ rule expects 2 or 3 paramaters in its description, got {0}."
-RULE_TYPE_ERROR_MESSAGE = "The .econ rule expects a valid type, got '{0}'."
-RULE_BOUNDS_ERROR_MESSAGE = "The .econ rule expects a lower and upper bound as numbers, got '{0}' and '{1}' respectively."
+HTTP_ERROR = ERROR_MESSAGE_PREFIX + "You might want to report this error to @ajoscram on Github with this text:\n\n{1}"
+CONNECTION_ERROR = ERROR_MESSAGE_PREFIX + "Please make sure you have an active internet connection."
+RULE_PARAMETER_COUNT_ERROR = "The .econ rule expects 2 or 3 paramaters in its description, got {0}."
+RULE_TYPE_ERROR = "The .econ rule expects a valid type, got '{0}'."
+RULE_BOUNDS_ERROR = "The .econ rule expects a lower and upper bound as numbers, got '{0}' and '{1}' respectively."
 
 LEAGUE_NAMES_ERROR_TEXT = "league names from GGG's API"
 POE_NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
@@ -74,16 +74,16 @@ def __get_league__(options: list[str]):
                 current_league = leagues[LEAGUE_NAME_TEMP_INDEX]["id"]
         return current_league
     except HTTPError as error:
-        raise GeneratorError(HTTP_ERROR_MESSAGE.format(LEAGUE_NAMES_ERROR_TEXT, error))
+        raise GeneratorError(HTTP_ERROR.format(LEAGUE_NAMES_ERROR_TEXT, error))
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
-        raise GeneratorError(CONNECTION_ERROR_MESSAGE.format(LEAGUE_NAMES_ERROR_TEXT))
+        raise GeneratorError(CONNECTION_ERROR.format(LEAGUE_NAMES_ERROR_TEXT))
 
 def __parse_rule_parameters__(rule: Rule):
     parts = rule.description.split()
-    if(len(parts) < 2 or len(parts) > 3):
-        raise GeneratorError(RULE_PARAMETER_COUNT_ERROR_MESSAGE.format(len(parts)), rule.line_number)
+    if len(parts) < 2 or len(parts) > 3:
+        raise GeneratorError(RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
     try:
-        if(len(parts) == 2):
+        if len(parts) == 2:
             return {
                 "type": TYPES[parts[0]],
                 "lower": float(parts[1]),
@@ -96,9 +96,9 @@ def __parse_rule_parameters__(rule: Rule):
                 "upper": float(parts[2])
             }
     except KeyError:
-        raise GeneratorError(RULE_TYPE_ERROR_MESSAGE.format(parts[0]), rule.line_number)
+        raise GeneratorError(RULE_TYPE_ERROR.format(parts[0]), rule.line_number)
     except ValueError:
-        raise GeneratorError(RULE_BOUNDS_ERROR_MESSAGE.format(parts[1], parts[2]), rule.line_number)
+        raise GeneratorError(RULE_BOUNDS_ERROR.format(parts[1], parts[2]), rule.line_number)
 
 def __get_base_types__(league: str, type: str, lower: float, upper: float = None):
     poe_ninja_lines = __get_poe_ninja_lines__(league, type)    
@@ -121,9 +121,9 @@ def __get_poe_ninja_lines__(league: str, type: str):
             poe_ninja_cache[type] = response.json()["lines"]
         return poe_ninja_cache[type]
     except HTTPError as error:
-        raise GeneratorError(HTTP_ERROR_MESSAGE.format(POE_NINJA_DATA_ERROR_TEXT, error))
+        raise GeneratorError(HTTP_ERROR.format(POE_NINJA_DATA_ERROR_TEXT, error))
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
-        raise GeneratorError(CONNECTION_ERROR_MESSAGE.format(POE_NINJA_DATA_ERROR_TEXT))
+        raise GeneratorError(CONNECTION_ERROR.format(POE_NINJA_DATA_ERROR_TEXT))
 
 def __get_base_types_string__(base_types):
     base_types_string = f"\t{BASE_TYPE_IDENTIFIER} =="

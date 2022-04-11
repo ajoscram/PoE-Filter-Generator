@@ -1,6 +1,12 @@
 from classes.generator_error import GeneratorError
 from .rule import Rule 
 
+_SHOW = "Show"
+_HIDE = "Hide"
+_COMMENT_START = '#'
+
+_MULTILINE_STRING_ERROR = "Multiline string"
+
 class Section:
     """A Section is a collection of lines (strings) in a filter, which may include rules in them.
     
@@ -8,12 +14,6 @@ class Section:
     Sections may have rules which can be obtained from this class.
     Rules are automatically extracted from lines when new lines are added.
     """
-
-    SHOW = "Show"
-    HIDE = "Hide"
-    COMMENT_START = '#'
-
-    MULTILINE_STRING_ERROR = "Multiline string"
 
     def __init__(self, line_number: int):
         self.line_number: int = line_number
@@ -29,7 +29,7 @@ class Section:
         for line in lines:
             #check if the line starts with show or hide, if so start a new section
             line_stripped = line.lstrip()
-            if line_stripped.startswith(Section.SHOW) or line_stripped.startswith(Section.HIDE):
+            if line_stripped.startswith(_SHOW) or line_stripped.startswith(_HIDE):
                 if not current.is_empty():
                     sections.append(current)
                 current = Section(line_count)
@@ -48,7 +48,7 @@ class Section:
         """Appends the line at the end of the section. If any rules are present, they are extracted. Multiline strings are not allowed."""
         line_number = self.line_number + len(self.lines)
         if '\n' in line:
-            raise GeneratorError(Section.MULTILINE_STRING_ERROR, line_number)
+            raise GeneratorError(_MULTILINE_STRING_ERROR, line_number)
         rules = Rule.extract(line_number, line)
         self.rules.extend(rules)
         self.lines.append(line)
@@ -76,14 +76,14 @@ class Section:
         for i in range(len(self.lines)):
             line = self.lines[i]
             #remove the comment from the line
-            line = line.split(self.COMMENT_START)[0]
+            line = line.split(_COMMENT_START)[0]
             if pattern in line:
                 self.lines[i] = "#" + self.lines[i]
     
     def uncomment(self, pattern: str):
         """Removes the left-most # (hashtag) in every line that has the pattern inside a comment."""
         for i in range(len(self.lines)):
-            split_line = self.lines[i].split(self.COMMENT_START, 1)
+            split_line = self.lines[i].split(_COMMENT_START, 1)
             if len(split_line) == 2 and pattern in split_line[1]:
                 self.lines[i] = split_line[0] + split_line[1]
 
@@ -91,7 +91,7 @@ class Section:
         """Swaps out every line with the specified pattern outside comments in them for the line provided. Multiline strings are not allowed."""
         for i in range(len(self.lines)):
             #split the old line into actual line and comment
-            old_line = self.lines[i].split(self.COMMENT_START, 1)
+            old_line = self.lines[i].split(_COMMENT_START, 1)
             if pattern in old_line[0]:
                 #all rules associated with the old line must be removed
                 for rule in reversed(self.rules):

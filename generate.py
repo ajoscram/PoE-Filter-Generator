@@ -57,8 +57,7 @@ try:
     filter = generator.generate(filter, args.handler, args.options)
     
     print(f"Saving filter file to '{args.output_filepath}'...")
-    filter.filepath = args.output_filepath
-    filter.save()
+    filter.save(args.output_filepath)
 
     print("\nDone!")
 

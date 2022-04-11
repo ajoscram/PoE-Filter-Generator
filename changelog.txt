@@ -1,10 +1,10 @@
 To do:
     investigate why standard hardcore is not supported on poe.ninja
-    use single underscore for private instead of double underscore
 
 1.1
     Refactored and cleaned up the code significantly, so that future work is simpler
-    Implemented the import handler
+    Implemented the import and append handlers
+    Use single underscore for private instead of double underscore
 
 1.0:
     Included the requests library

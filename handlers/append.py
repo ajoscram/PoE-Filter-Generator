@@ -1,5 +1,6 @@
 import os.path
 
+import classes.section
 from common import util
 from classes.filter import Filter
 from classes.generator_error import GeneratorError
@@ -82,8 +83,8 @@ def _get_section(filter: Filter, section_name: str):
     raise GeneratorError(_SECTION_NOT_FOUND_ERROR.format(section_name), filepath=filter.filepath)
 
 def _line_is_valid(line: str):
-    show_start = line.lstrip().startswith(Section.SHOW)
-    hide_start = line.lstrip().startswith(Section.HIDE)
+    show_start = line.lstrip().startswith(classes.section._SHOW)
+    hide_start = line.lstrip().startswith(classes.section._HIDE)
     return not show_start and not hide_start
 
 def _are_params_equal(first: dict[str, str], second: dict[str, str]):

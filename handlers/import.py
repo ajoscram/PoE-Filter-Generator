@@ -5,7 +5,7 @@ from classes.rule import Rule
 from classes.section import Section
 from common import util
 
-NAME = "import"
+_NAME = "import"
 
 def handle(filter: Filter, section: Section, _):
     """Handles imports of other filter files' sections. Options are ignored."""
@@ -13,7 +13,7 @@ def handle(filter: Filter, section: Section, _):
 
 def _import_sections(section: Section, filepaths: list[str]):
     new_sections = [ section ]
-    for rule in section.get_rules(NAME):
+    for rule in section.get_rules(_NAME):
         filter = _load_filter(rule, filepaths)
         for section in filter.sections:
             new_sections += _import_sections(section, filepaths + [ filter.filepath ])

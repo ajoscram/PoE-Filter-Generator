@@ -1,5 +1,12 @@
 from classes.generator_error import GeneratorError
 
+_RULE_SEPARATOR = '.'
+_RULE_START = '#' + _RULE_SEPARATOR
+
+_EMPTY_NAME_ERROR = "Empty name (probably an extra '.')"
+_EMPTY_DESCRIPTION_ERROR = "Empty description (probably an extra ':' or forgot a description to a rule)"
+_TOO_MANY_FIELDS_ERROR = "Too many fields (probably an extra ':')"
+
 class Rule:
     """A rule is a bit of data that can be parsed by generators.
     
@@ -12,13 +19,6 @@ class Rule:
     Names and descriptions in a rule are separated by : (colon), like name:description.
     """
 
-    RULE_SEPARATOR = '.'
-    RULE_START = '#' + RULE_SEPARATOR
-
-    EMPTY_NAME_ERROR = "Empty name (probably an extra '.')"
-    EMPTY_DESCRIPTION_ERROR = "Empty description (probably an extra ':' or forgot a description to a rule)"
-    TOO_MANY_FIELDS_ERROR = "Too many fields (probably an extra ':')"
-
     def __init__(self, line_number: int, name: str, description: str):
         """Rule constructor which receives the line_number where the rule is found, the name which identifies the rule and its description optionally for any additional data."""
         self.line_number: int = line_number
@@ -29,26 +29,24 @@ class Rule:
     def extract(cls, line_number: int, line: str):
         """Returns all rules in a line as a list of rules."""
         rules = []
-        try:
-            line = line[line.index(Rule.RULE_START) + len(Rule.RULE_START):]
-            rule_strings = line.split(Rule.RULE_SEPARATOR)
+        if _RULE_START in line:
+            line = line[line.index(_RULE_START) + len(_RULE_START):]
+            rule_strings = line.split(_RULE_SEPARATOR)
             for rule_string in rule_strings:
                 
                 fields = rule_string.split(maxsplit=1)
                 if len(fields) > 2:
-                    raise GeneratorError(Rule.TOO_MANY_FIELDS_ERROR, line_number)
+                    raise GeneratorError(_TOO_MANY_FIELDS_ERROR, line_number)
 
                 name = fields[0].strip()
                 if name == '':
-                    raise GeneratorError(Rule.EMPTY_NAME_ERROR, line_number)
+                    raise GeneratorError(_EMPTY_NAME_ERROR, line_number)
                 
                 description = fields[1].strip() if len(fields) == 2 else ""
                 if description == '' and len(fields) == 2:
-                    raise GeneratorError(Rule.EMPTY_DESCRIPTION_ERROR, line_number)
+                    raise GeneratorError(_EMPTY_DESCRIPTION_ERROR, line_number)
                 
                 rules.append(Rule(line_number, name, description))
-        except ValueError:
-            pass
         return rules
 
     def __str__(self):

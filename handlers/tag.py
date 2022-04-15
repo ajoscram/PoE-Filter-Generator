@@ -13,19 +13,23 @@ def handle(_, section: Section, options:list[str]):
 
     command_category = options[:-1]
     command_tag = options[-1]
+    tag_index = len(options) - 1
 
     for rule in section.get_rules(_NAME):
         split_description = rule.description.split()
+        
         if split_description == []:
             raise GeneratorError(_EMPTY_TAG_ERROR.format("rule"), rule.line_number)
 
-        rule_category = split_description[:-1]
-        rule_tag = split_description[-1]
+        if len(split_description) <= tag_index:
+            continue
+
+        rule_category = split_description[:tag_index]
+        rule_tag = split_description[tag_index]
 
         if command_category == rule_category:
             if command_tag == rule_tag:
                 section.show()
             else:
                 section.hide()
-
     return [ section ]

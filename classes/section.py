@@ -21,10 +21,9 @@ class Section:
         self.rules: list[Rule] = []
 
     @classmethod
-    def extract(cls, lines: list[str]):
-        "Returns all sections in a from a list of text lines as a "
+    def extract(cls, lines: list[str], line_count: int = 1):
+        "Returns all sections in a from a list of text lines."
         sections: list[Section] = []
-        line_count = 1
         current = Section(line_count)
         for line in lines:
             #check if the line starts with show or hide, if so start a new section

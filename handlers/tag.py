@@ -1,11 +1,11 @@
 from classes.generator_error import GeneratorError
-from classes.section import Section
+from classes.block import Block
 
 _NAME = "tag"
 _EMPTY_TAG_ERROR = "You must provide at least a tag for the 'tag' {0}."
 
-def handle(_, section: Section, options:list[str]):
-    """Hides or shows sections based on their tags.
+def handle(_, block: Block, options:list[str]):
+    """Hides or shows blocks based on their tags.
     Every option with the exception of the last is treated as a tag category.
     The last option is the tag inside that category."""
     if options == []:
@@ -15,7 +15,7 @@ def handle(_, section: Section, options:list[str]):
     command_tag = options[-1]
     tag_index = len(options) - 1
 
-    for rule in section.get_rules(_NAME):
+    for rule in block.get_rules(_NAME):
         split_description = rule.description.split()
         
         if split_description == []:
@@ -29,7 +29,7 @@ def handle(_, section: Section, options:list[str]):
 
         if command_category == rule_category:
             if command_tag == rule_tag:
-                section.show()
+                block.show()
             else:
-                section.hide()
-    return [ section ]
+                block.hide()
+    return [ block ]

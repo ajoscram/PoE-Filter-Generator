@@ -2,7 +2,7 @@ import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout
 from classes.generator_error import GeneratorError
 
-from classes.section import Section
+from classes.block import Block
 from classes.rule import Rule
 
 _NAME = "econ"
@@ -44,19 +44,19 @@ _TYPES = {
 _poe_ninja_cache = {}
 _current_league = None
 
-def handle(_, section: Section, options: list):
+def handle(_, block: Block, options: list):
     """Handles creation of economy adjusted filters.
     Hardcore standard is not supported because poe.ninja doesn't support it.
     Options: 
         - if 'hc' is passed then the hardcore temp league is queried, if not softcore
         - if 'std' is passed then standard is queried, if not temp league"""
-    for rule in section.get_rules(_NAME):
-        params = _parse_rule_parameters(rule)
+    for rule in block.get_rules(_NAME):
+        params = _parse_rule_params(rule)
         league = _get_league(options)
         base_types = _get_base_types(league, params["type"], params["lower"], params["upper"])
         base_types_string = _get_base_types_string(base_types)
-        section.swap(_BASE_TYPE_IDENTIFIER, base_types_string)
-    return [ section ]
+        block.swap(_BASE_TYPE_IDENTIFIER, base_types_string)
+    return [ block ]
 
 def _get_league(options: list[str]):
     global _current_league
@@ -78,7 +78,7 @@ def _get_league(options: list[str]):
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
         raise GeneratorError(_CONNECTION_ERROR.format(_LEAGUE_NAMES_ERROR_TEXT))
 
-def _parse_rule_parameters(rule: Rule):
+def _parse_rule_params(rule: Rule):
     parts = rule.description.split()
     if len(parts) < 2 or len(parts) > 3:
         raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)

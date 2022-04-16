@@ -1,12 +1,12 @@
 from classes.generator_error import GeneratorError
-from classes.section import Section
+from classes.block import Block
 
 _NAME = "strict"
 _STRICTNESS_ERROR_PREFIX = "You must provide only 1 integer value for the strictness {0}."
 _STRICTNESS_ARG_COUNT_ERROR = _STRICTNESS_ERROR_PREFIX + " You've provided {1} arguments."
 _STRICTNESS_ARG_TYPE_ERROR =  _STRICTNESS_ERROR_PREFIX + " You've provided '{1}'."
 
-def handle(_, section: Section, options:list[str]):
+def handle(_, block: Block, options:list[str]):
     """Handles creation of strictness subfilters.
     Only one option is accepted and it should include the strictness value to use."""
     if len(options) != 1:
@@ -17,15 +17,15 @@ def handle(_, section: Section, options:list[str]):
 
     command_strictness = int(options[0])
 
-    for rule in section.get_rules(_NAME):
+    for rule in block.get_rules(_NAME):
         if not rule.description.strip().isdigit():
             raise GeneratorError(_STRICTNESS_ARG_TYPE_ERROR.format("rule", rule.description), rule.line_number)
         
         rule_strictness = int(rule.description)
         
         if rule_strictness >= command_strictness:
-            section.show()
+            block.show()
         else:
-            section.hide()
+            block.hide()
 
-    return [ section ]
+    return [ block ]

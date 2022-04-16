@@ -10,6 +10,7 @@
 * investigate why standard hardcore is not supported on poe.ninja.
 
 # 1.1
+* Renamed sections to blocks as that's the GGG standard name.
 * Refactored and cleaned up the code significantly, so that future work is simpler
 * Implemented the import handlers
 * Used single underscore for private instead of double underscore

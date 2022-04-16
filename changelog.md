@@ -1,16 +1,15 @@
 # To do:
-* Add invitations, vials and delirium orbs to .econ handler.
+* Merge the append and import rules into a single rule
+* Add single line imports
 
-* Merge the append and import rules into a single rule.
-* Add single line imports.
-
-* investigate why standard hardcore is not supported on poe.ninja.
+* Investigate why standard hardcore is not supported on poe.ninja
 
 # 1.1
-* `.econ` now comments out blocks if the poe.ninja query returns no `BaseType`s for those parameters.
-* Renamed sections to blocks as that's the GGG standard name.
+* `.econ` now supports invitations, vials and delirium orbs
+* `.econ` now comments out blocks if no `BaseType`s are found for the rule parameters
+* Added the new `.import` handler, which allows importing of entire filters, blocks, or lines within blocks
+* Renamed sections to blocks as that's the GGG standard name
 * Refactored and cleaned up the code significantly, so that future work is simpler
-* Implemented the import handlers
 * Used single underscore for private instead of double underscore
 
 # 1.0:

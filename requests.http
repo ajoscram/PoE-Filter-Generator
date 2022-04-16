@@ -1,0 +1,9 @@
+@league = Archnemesis
+@item_type = DeliriumOrb
+@currency_type = Currency
+
+### poe ninja currency or frags
+GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currency_type}}
+
+### poe ninja items
+GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}

@@ -29,16 +29,19 @@ _LEAGUE_NAMES_ERROR_TEXT = "league names from GGG's API"
 _POE_NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
 
 _TYPES = {
-    "cur":"Currency",
-    "fra":"Fragment",
-    "oil":"Oil",
-    "inc":"Incubator",
-    "sca":"Scarab",
-    "fos":"Fossil",
-    "res":"Resonator",
-    "ess":"Essence",
-    "div":"DivinationCard",
-    "bea":"Beast"
+    "cur": "Currency",
+    "fra": "Fragment",
+    "oil": "Oil",
+    "inc": "Incubator",
+    "sca": "Scarab",
+    "fos": "Fossil",
+    "res": "Resonator",
+    "ess": "Essence",
+    "div": "DivinationCard",
+    "bea": "Beast",
+    "inv": "Invitation",
+    "via": "Vial",
+    "del": "DeliriumOrb"
 }
 
 _poe_ninja_cache = {}

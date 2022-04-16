@@ -1,7 +1,4 @@
 # To do:
-* Change mentions of "Section" to "Block".
-
-* Add econ rule condition on PFG that comments out broken blocks.
 * Add invitations, vials and delirium orbs to .econ handler.
 
 * Merge the append and import rules into a single rule.
@@ -10,6 +7,7 @@
 * investigate why standard hardcore is not supported on poe.ninja.
 
 # 1.1
+* `.econ` now comments out blocks if the poe.ninja query returns no `BaseType`s for those parameters.
 * Renamed sections to blocks as that's the GGG standard name.
 * Refactored and cleaned up the code significantly, so that future work is simpler
 * Implemented the import handlers

@@ -70,20 +70,20 @@ class Block:
                     if rule.line_number > self.line_number + i:
                         rule.line_number -= 1
 
-    def comment(self, pattern: str):
-        """Comments out every line with the specified pattern outside comments in them."""
+    def comment(self, pattern: str = None):
+        """Comments out every line with the specified pattern outside comments in them.
+        If no pattern is provided then every line in the block is commented out instead."""
         for i in range(len(self.lines)):
-            line = self.lines[i]
-            #remove the comment from the line
-            line = line.split(_COMMENT_START)[0]
-            if pattern in line:
+            line = self.lines[i].split(_COMMENT_START)[0]
+            if not pattern or pattern in line:
                 self.lines[i] = "#" + self.lines[i]
     
-    def uncomment(self, pattern: str):
-        """Removes the left-most # (hashtag) in every line that has the pattern inside a comment."""
+    def uncomment(self, pattern: str = None):
+        """Removes the left-most # (hashtag) in every line that has the pattern inside a comment.
+        If no pattern is provided then every line in the block is uncommented."""
         for i in range(len(self.lines)):
             split_line = self.lines[i].split(_COMMENT_START, 1)
-            if len(split_line) == 2 and pattern in split_line[1]:
+            if not pattern or (len(split_line) == 2 and pattern in split_line[1]):
                 self.lines[i] = split_line[0] + split_line[1]
 
     def swap(self, pattern: str, line: str):

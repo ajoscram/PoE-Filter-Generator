@@ -56,6 +56,8 @@ def handle(_, block: Block, options: list):
         base_types = _get_base_types(league, params["type"], params["lower"], params["upper"])
         base_types_string = _get_base_types_string(base_types)
         block.swap(_BASE_TYPE_IDENTIFIER, base_types_string)
+        if len(base_types) == 0:
+            block.comment()
     return [ block ]
 
 def _get_league(options: list[str]):

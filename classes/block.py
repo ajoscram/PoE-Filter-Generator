@@ -1,11 +1,4 @@
-from classes.generator_error import GeneratorError
-from .rule import Rule 
-
-_SHOW = "Show"
-_HIDE = "Hide"
-_COMMENT_START = '#'
-
-_MULTILINE_STRING_ERROR = "Multiline string"
+from .line import Line
 
 class Block:
     """A block is a collection of lines (strings) in a filter, which may include rules in them.
@@ -17,90 +10,59 @@ class Block:
 
     def __init__(self, line_number: int):
         self.line_number: int = line_number
-        self.lines: list[str] = []
-        self.rules: list[Rule] = []
+        self.lines: list[Line] = []
 
     @classmethod
-    def extract(cls, lines: list[str], line_count: int = 1):
-        "Returns all blocks in a from a list of text lines."
-        blocks: list[Block] = []
-        current = Block(line_count)
-        for line in lines:
-            #check if the line starts with show or hide, if so start a new block
-            line_stripped = line.lstrip()
-            if line_stripped.startswith(_SHOW) or line_stripped.startswith(_HIDE):
-                if not current.is_empty():
-                    blocks.append(current)
-                current = Block(line_count)
-            current.append(line.rstrip())
-            line_count +=1
-        #this is the last block in the file and is omitted in the loop
-        if not current.is_empty():
-            blocks.append(current)
+    def extract(cls, raw_lines: list[str], line_number: int = 1):
+        "Returns all blocks in a from a list of textual lines."
+        if len(raw_lines) == 0:
+            return []
+        
+        blocks: list[Block] = [ Block(line_number) ]
+        for raw_line in raw_lines:
+            line = Line(raw_line, line_number)
+            if line.is_block_starter():
+                blocks.append(Block(line_number))
+            blocks[-1].lines.append(line)
+            line_number +=1
+        
         return blocks
 
     def is_empty(self):
         """Returns true if the block has no lines. False if it has any."""
         return len(self.lines) == 0
 
-    def append(self, line: str):
-        """Appends the line at the end of the block. If any rules are present, they are extracted. Multiline strings are not allowed."""
+    def append(self, raw_line: str):
+        """Appends the line at the end of the block."""
         line_number = self.line_number + len(self.lines)
-        if '\n' in line:
-            raise GeneratorError(_MULTILINE_STRING_ERROR, line_number)
-        rules = Rule.extract(line_number, line)
-        self.rules.extend(rules)
+        line = Line(raw_line, line_number)
         self.lines.append(line)
 
     def remove(self, pattern: str):
-        """Removes all lines which include the specified pattern outside comments in them. If the line(s) included any rules, they are removed as well."""
-        #traverse the list of lines backwards because items could get deleted
+        """Removes all lines which include the specified pattern outside comments in them."""
         for i in range(len(self.lines)-1, 0, -1):
-            line = self.lines[i]
-            #remove the comment from the line
-            line = line.split(self.COMMENT_START)[0]
-            if pattern in line:
+            if self.lines[i].contains(pattern):
                 del self.lines[i]
-                #all rules associated with this line must be removed
-                for rule in reversed(self.rules):
-                    #all rules associated with this line must be removed
-                    if rule.line_number == self.line_number + i:
-                        self.rules.remove(rule)
-                    #all rules with a line number greater than the one removed must be updated
-                    if rule.line_number > self.line_number + i:
-                        rule.line_number -= 1
 
     def comment(self, pattern: str = None):
         """Comments out every line with the specified pattern outside comments in them.
         If no pattern is provided then every line in the block is commented out instead."""
-        for i in range(len(self.lines)):
-            line = self.lines[i].split(_COMMENT_START)[0]
-            if not pattern or pattern in line:
-                self.lines[i] = "#" + self.lines[i]
+        for line in self.lines:
+            if pattern == None or line.contains(pattern):
+                line.comment()
     
     def uncomment(self, pattern: str = None):
-        """Removes the left-most # (hashtag) in every line that has the pattern inside a comment.
+        """Uncomments every line that has the pattern inside a comment.
         If no pattern is provided then every line in the block is uncommented."""
-        for i in range(len(self.lines)):
-            split_line = self.lines[i].split(_COMMENT_START, 1)
-            if not pattern or (len(split_line) == 2 and pattern in split_line[1]):
-                self.lines[i] = split_line[0] + split_line[1]
+        for line in self.lines:
+            if pattern == None or line.contains_in_comment(pattern):
+                line.uncomment()
 
-    def swap(self, pattern: str, line: str):
-        """Swaps out every line with the specified pattern outside comments in them for the line provided. Multiline strings are not allowed."""
+    def swap(self, pattern: str, raw_line: str):
+        """Swaps out every line with the specified pattern outside comments in them for the raw_line provided."""
         for i in range(len(self.lines)):
-            #split the old line into actual line and comment
-            old_line = self.lines[i].split(_COMMENT_START, 1)
-            if pattern in old_line[0]:
-                #all rules associated with the old line must be removed
-                for rule in reversed(self.rules):
-                    if rule.line_number == self.line_number + i:
-                        self.rules.remove(rule)
-                #new rules associated with the new line must be added
-                rules = Rule.extract(self.line_number + i, line)
-                self.rules.extend(rules)
-                #finally the line is swapped
-                self.lines[i] = line
+            if self.lines[i].contains(pattern):
+                self.lines[i] = Line(raw_line, self.lines[i].number)
     
     def hide(self):
         """Attempts to completely hide a block by setting it to 'Hide' and
@@ -121,19 +83,13 @@ class Block:
 
     def get_rules(self, rule_name: str):
         """Gets all the rules in the block with name equals to rule_name."""
-        return [ rule for rule in self.rules if rule.name == rule_name ]
+        rules = []
+        for line in self.lines:
+            rules += line.get_rules(rule_name)
+        return rules
                     
     def __str__(self):
-        line_number = self.line_number
-        string = "Line Number: " + str(line_number) + '\n'
-        string += "Rules:\n"
-        if len(self.rules) == 0:
-            string += '\tNone\n'
-        else:
-            for rule in self.rules:
-                string += '\t' + str(rule) + '\n'
-        string += "Lines:"
+        string = f"[{self.line_number}] Block"
         for line in self.lines:
-            string += '\n[' + str(line_number) + '] ' + line
-            line_number += 1
+            string += f"\n{line}"
         return string

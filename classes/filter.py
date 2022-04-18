@@ -17,8 +17,8 @@ class Filter:
     def _get_blocks(self, filepath: str):
         try:
             with open(self.filepath, "r") as file:
-                lines = file.readlines()
-                return Block.extract(lines)
+                raw_lines = file.readlines()
+                return Block.extract(raw_lines)
         except FileNotFoundError:
             raise GeneratorError(_FILE_NOT_FOUND_ERROR, filepath=filepath)
         except PermissionError:
@@ -31,7 +31,7 @@ class Filter:
             with open(output_filepath, "w") as file:
                 for block in self.blocks:
                     for line in block.lines:
-                        file.write(line + '\n')
+                        file.write(f"{line.text}\n")
         except FileExistsError:
             raise GeneratorError(_FILE_EXISTS_ERROR, filepath=self.filepath)
         except PermissionError:
@@ -41,3 +41,9 @@ class Filter:
         directory = os.path.dirname(filepath)
         if directory != "":
             os.makedirs(directory, exist_ok=True)
+    
+    def __str__(self):
+        string = f"Filter @ {self.filepath}"
+        for block in self.blocks:
+            string += f"\n\n{block}"
+        return string

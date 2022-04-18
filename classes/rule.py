@@ -26,12 +26,12 @@ class Rule:
         self.description: str = description
     
     @classmethod
-    def extract(cls, line_number: int, line: str):
-        """Returns all rules in a line as a list of rules."""
+    def extract(cls, line_number: int, text: str):
+        """Returns all rules in a text as a list of rules."""
         rules = []
-        if _RULE_START in line:
-            line = line[line.index(_RULE_START) + len(_RULE_START):]
-            rule_strings = line.split(_RULE_SEPARATOR)
+        if _RULE_START in text:
+            text = text[text.index(_RULE_START) + len(_RULE_START):]
+            rule_strings = text.split(_RULE_SEPARATOR)
             for rule_string in rule_strings:
                 
                 fields = rule_string.split(maxsplit=1)
@@ -50,4 +50,4 @@ class Rule:
         return rules
 
     def __str__(self):
-        return f'[{self.line_number}] "{self.name}" -> "{self.description}"'
+        return f'[{self.line_number}] "{self.name}": "{self.description}"'

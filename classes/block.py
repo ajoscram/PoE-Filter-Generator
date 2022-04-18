@@ -1,4 +1,5 @@
-from .line import Line
+from classes.rule import Rule
+from classes.line import Line
 
 class Block:
     """A block is a collection of lines (strings) in a filter, which may include rules in them.
@@ -81,7 +82,7 @@ class Block:
         self.uncomment("MinimapIcon")
         self.uncomment("PlayEffect")
 
-    def get_rules(self, rule_name: str):
+    def get_rules(self, rule_name: str) -> list[Rule]:
         """Gets all the rules in the block with name equals to rule_name."""
         rules = []
         for line in self.lines:

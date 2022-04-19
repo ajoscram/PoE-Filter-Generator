@@ -22,7 +22,7 @@ class Block:
         blocks: list[Block] = [ Block(line_number) ]
         for raw_line in raw_lines:
             line = Line(raw_line, line_number)
-            if line.is_block_starter():
+            if line.is_block_starter() and not blocks[-1].is_empty():
                 blocks.append(Block(line_number))
             blocks[-1].lines.append(line)
             line_number +=1

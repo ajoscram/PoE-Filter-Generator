@@ -39,9 +39,13 @@ class Line:
             return False
         return pattern in split_text[1]
 
+    def is_empty(self):
+        """Returns whtether or not this line is comprised entirely of whitespace."""
+        return self.text.strip() == ""
+    
     def comment(self):
-        "Comments the line out by prepending a # to the line's text."
-        self.text += _COMMENT_START
+        """Comments the line out by prepending a # to the line's text."""
+        self.text = _COMMENT_START + self.text
     
     def uncomment(self):
         """Removes the left-most # (hashtag) of a line.
@@ -53,7 +57,7 @@ class Line:
     def get_rules(self, rule_name: str):
         """Gets every rule within the line with a name equal to rule_name."""
         return [ rule for rule in self.rules if rule.name == rule_name ]
-    
+
     def __str__(self):
         string = f'[{self.number}] "{self.text}"'
         for rule in self.rules:

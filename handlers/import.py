@@ -40,8 +40,7 @@ def handle(filter: Filter, block: Block, _):
     """Handles appends of lines to blocks. Options are ignored."""
     params = _get_initial_params(filter.filepath, block)
     lines = _get_lines_from_block(block, params, True)
-    raw_lines = [ line.text for line in lines ]
-    return Block.extract(raw_lines, block.line_number)
+    return _get_formatted_blocks(lines, block.line_number)
 
 def _get_initial_params(filepath: str, block: Block):
     name_rules = block.get_rules(_BLOCK_NAME)
@@ -51,6 +50,13 @@ def _get_initial_params(filepath: str, block: Block):
     else:
         return [ _Params(filepath) ]
 
+def _get_formatted_blocks(lines: list[Line], line_number: int):
+    raw_lines = [ line.text for line in lines if not line.is_empty() ]
+    blocks = Block.extract(raw_lines, line_number)
+    for block in blocks:
+        block.append("\n")
+    return blocks
+
 def _get_lines_from_filter(filter: Filter, params: list[_Params]) -> list[Line]:
     lines = []
     for block in filter.blocks:
@@ -58,31 +64,30 @@ def _get_lines_from_filter(filter: Filter, params: list[_Params]) -> list[Line]:
     return lines
 
 def _get_lines_from_block(block: Block, params: list[_Params], include_blockstarts: bool) -> list[Line]:
-    lines = [ ]
+    lines = []
     for line in block.lines:
         lines += _get_lines_from_line(line, params, include_blockstarts)
     return lines
 
 def _get_lines_from_line(line: Line, params: list[_Params], include_blockstarts: bool):
-    lines = [ line ] if not line.is_block_starter() or include_blockstarts else [ ]
+    lines = [ line ] if not line.is_block_starter() or include_blockstarts else []
     for rule in line.get_rules(_NAME):
         lines += _get_lines_from_rule(rule, params)
     return lines
 
 def _get_lines_from_rule(rule: Rule, params: list[_Params]):
     new_params = _parse_rule_params(rule, params)
-    params += [ new_params ]
 
     filter = _get_filter(new_params.filepath)
     if new_params.blockname == None:
-        return _get_lines_from_filter(filter, params)
+        return _get_lines_from_filter(filter, params + [ new_params ])
 
     block = _get_block(filter, new_params.blockname)
     if new_params.line_pattern == None:
-        return _get_lines_from_block(block, params, False)
+        return _get_lines_from_block(block, params + [ new_params ], False)
 
     line = _get_line(block, new_params.line_pattern, new_params.filepath)
-    return _get_lines_from_line(line, params, True)
+    return _get_lines_from_line(line, params + [ new_params ], True)
 
 def _parse_rule_params(rule: Rule, previous_params: list[_Params]):
     current_filepath = previous_params[-1].filepath
@@ -151,8 +156,8 @@ def _parse_rule_filepath(source_filepath: str, rule_filepath: str):
     rule_filepath = re.sub("\s*>\s*", "/", rule_filepath)
     rule_filepath = re.sub("\s*<\s*", "../", rule_filepath)
     rule_filepath = re.sub("([^\.])\.", "\\1/.", rule_filepath)
-
+    rule_filepath = re.sub("\.\.//\.\.", "../..", rule_filepath)
+    
     new_filepath = directory + rule_filepath + ".filter"
-    new_filepath = re.sub("/[^/]*/\.\.", "", new_filepath)
 
-    return new_filepath
+    return os.path.normpath(new_filepath)

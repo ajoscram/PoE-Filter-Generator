@@ -12,7 +12,7 @@ _BLOCK_NAME = "name"
 
 _INCORRECT_RULE_FORMAT_ERROR = "The import '{0}' is formatted incorrectly. Make sure your import rules look like this:\n\n\tfile > path > to > filter -> block_name (optional) -> line_pattern (optional)"
 _FILTER_DOES_NOT_EXIST_ERROR = "Could not resolve the import '{0}' to a filter file on your disk."
-_CIRCULAR_REFERENCE_ERROR = "The import '{0}' creates a circular reference loop."
+_CIRCULAR_REFERENCE_ERROR = "The import '{0}' creates a circular reference loop:\n{1}"
 _EMPTY_PARAMETER_ERROR = "The import '{0}' has no {1}. Make sure to provide one after the arrow."
 _BLOCK_NOT_FOUND_ERROR = "The block with name '{0}' was not found."
 _LINE_PATTERN_NOT_FOUND = "The line pattern '{0}' was not found in block '{1}'."
@@ -23,16 +23,19 @@ class _Params:
         self.blockname = blockname
         self.line_pattern = line_pattern
     
-    def cycle_with(self, other):
-        equivalent_filepaths = os.path.samefile(self.filepath, other.filepath)
-        equivalent_blocks = self._check_equal_or_none(self.blockname, other.blockname)
-        equivalent_line_patterns = self._check_equal_or_none(self.line_pattern, other.line_pattern)
-        return equivalent_filepaths and equivalent_blocks and equivalent_line_patterns
+    def __eq__(self, other: object):
+        if not isinstance(other, _Params):
+            return False
+        equivalent_filepath = os.path.samefile(self.filepath, other.filepath)
+        same_block = self.blockname == other.blockname
+        same_line_pattern = self.line_pattern == other.line_pattern
+        return equivalent_filepath and same_block and same_line_pattern
     
-    def _check_equal_or_none(self, first: str, second: str):
-        equal = first == second
-        either_none = first == None or second == None
-        return equal or either_none
+    def __str__(self):
+        string = self.filepath
+        string += " -> " + self.blockname if self.blockname != None else ""
+        string += " -> " + self.line_pattern if self.line_pattern != None else ""
+        return string
 
 _filter_cache: dict[str, Filter] = {}
 
@@ -113,8 +116,8 @@ def _parse_rule_params(rule: Rule, previous_params: list[_Params]):
         raise GeneratorError(error, rule.line_number, current_filepath)
 
     params = _Params(filepath, blockname, line_pattern)
-    if any(params.cycle_with(previous) for previous in previous_params):
-        error = _CIRCULAR_REFERENCE_ERROR.format(rule.description)
+    if any(params == previous for previous in previous_params):
+        error = _create_circular_reference_error(rule.description, previous_params, params)
         raise GeneratorError(error, rule.line_number, current_filepath)
 
     return params
@@ -153,11 +156,22 @@ def _parse_rule_filepath(source_filepath: str, rule_filepath: str):
     directory = os.path.dirname(source_filepath)
     directory = re.sub("([\w\.])$", "\\1/", directory)
 
-    rule_filepath = re.sub("\s*>\s*", "/", rule_filepath)
-    rule_filepath = re.sub("\s*<\s*", "../", rule_filepath)
-    rule_filepath = re.sub("([^\.])\.", "\\1/.", rule_filepath)
-    rule_filepath = re.sub("\.\.//\.\.", "../..", rule_filepath)
+    filepath = re.sub("\s*>\s*", "/", rule_filepath)
+    filepath = re.sub("\s*<\s*", "../", filepath)
+    filepath = re.sub("([^\.])\.", "\\1/.", filepath)
+    filepath = re.sub("\.\.//\.\.", "../..", filepath)
     
-    new_filepath = directory + rule_filepath + ".filter"
+    filepath = directory + filepath + ".filter"
+    filepath = os.path.normpath(filepath)
+    filepath = re.sub("\\\\", "/", filepath)
 
-    return os.path.normpath(new_filepath)
+    return filepath
+
+def _create_circular_reference_error(rule_description: str, previous_params: list[_Params], looped_params: _Params):
+    params_trace = ""
+    for params in previous_params:
+        params_trace += f"\n\t{params}"
+        if looped_params == params:
+            params_trace += " (LOOP STARTS HERE)"
+    params_trace += f"\n\t{looped_params} (LOOP REPEATS HERE)"
+    return _CIRCULAR_REFERENCE_ERROR.format(rule_description, params_trace)

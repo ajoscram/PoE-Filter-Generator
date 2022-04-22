@@ -1,5 +1,6 @@
 # To do
 * Investigate why standard hardcore is not supported on poe.ninja
+* Update the documentation on GitHub
 
 # 1.1
 * `.econ` now supports invitations, vials and delirium orbs

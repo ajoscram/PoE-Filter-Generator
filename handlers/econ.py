@@ -23,7 +23,7 @@ _HTTP_ERROR = _ERROR_MESSAGE_PREFIX + "You might want to report this error to @a
 _CONNECTION_ERROR = _ERROR_MESSAGE_PREFIX + "Please make sure you have an active internet connection."
 _RULE_PARAMETER_COUNT_ERROR = "The .econ rule expects 2 or 3 paramaters in its description, got {0}."
 _RULE_TYPE_ERROR = "The .econ rule expects a valid type, got '{0}'."
-_RULE_BOUNDS_ERROR = "The .econ rule expects a lower and upper bound as numbers, got '{0}' and '{1}' respectively."
+_RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 
 _LEAGUE_NAMES_ERROR_TEXT = "league names from GGG's API"
 _POE_NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
@@ -63,10 +63,36 @@ def handle(_, block: Block, options: list):
             block.comment()
     return [ block ]
 
+def _parse_rule_params(rule: Rule):
+    parts = rule.description.split()
+    if len(parts) < 2 or len(parts) > 3:
+        raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
+    
+    if parts[0] not in _TYPES:
+        raise GeneratorError(_RULE_TYPE_ERROR.format(parts[0]), rule.line_number)
+    type = _TYPES[parts[0]]
+
+    if not _is_float(parts[1]): 
+        raise GeneratorError(_RULE_BOUNDS_ERROR.format("lower", parts[1]), rule.line_number)
+    lower = float(parts[1])
+
+    if len(parts) == 3 and not _is_float(parts[2]): 
+        raise GeneratorError(_RULE_BOUNDS_ERROR.format("upper", parts[2]), rule.line_number)
+    upper = float(parts[2]) if len(parts) == 3 else None
+
+    return { "type": type, "lower": lower, "upper": upper }
+
+def _is_float(string: str):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
 def _get_league(options: list[str]):
     global _current_league
     try:
-        if not _current_league:
+        if _current_league != None:
             headers = {'User-Agent': _POE_FILTER_GENERATOR_USER_AGENT}
             response = requests.get(_LEAGUE_NAME_API_URL, headers=headers)
             response.raise_for_status()
@@ -83,35 +109,13 @@ def _get_league(options: list[str]):
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
         raise GeneratorError(_CONNECTION_ERROR.format(_LEAGUE_NAMES_ERROR_TEXT))
 
-def _parse_rule_params(rule: Rule):
-    parts = rule.description.split()
-    if len(parts) < 2 or len(parts) > 3:
-        raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
-    try:
-        if len(parts) == 2:
-            return {
-                "type": _TYPES[parts[0]],
-                "lower": float(parts[1]),
-                "upper": None
-            }
-        else:
-            return {
-                "type": _TYPES[parts[0]],
-                "lower": float(parts[1]),
-                "upper": float(parts[2])
-            }
-    except KeyError:
-        raise GeneratorError(_RULE_TYPE_ERROR.format(parts[0]), rule.line_number)
-    except ValueError:
-        raise GeneratorError(_RULE_BOUNDS_ERROR.format(parts[1], parts[2]), rule.line_number)
-
 def _get_base_types(league: str, type: str, lower: float, upper: float = None):
     poe_ninja_lines = _get_poe_ninja_lines(league, type)    
     base_types = []
     for line in poe_ninja_lines:
         name_lookup = "currencyTypeName" if "chaosEquivalent" in line else "name"
         value = line["chaosEquivalent"] if "chaosEquivalent" in line else line["chaosValue"]
-        if value >= lower and (not upper or value < upper):
+        if value >= lower and (upper == None or value < upper):
             base_types.append(line[name_lookup])
     return base_types
 

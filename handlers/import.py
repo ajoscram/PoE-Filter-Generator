@@ -158,8 +158,7 @@ def _parse_rule_filepath(source_filepath: str, rule_filepath: str):
 
     filepath = re.sub("\s*>\s*", "/", rule_filepath)
     filepath = re.sub("\s*<\s*", "../", filepath)
-    filepath = re.sub("([^\.])\.", "\\1/.", filepath)
-    filepath = re.sub("\.\.//\.\.", "../..", filepath)
+    filepath = re.sub("([^\.^/])\.", "\\1/.", filepath)
     
     filepath = directory + filepath + ".filter"
     filepath = os.path.normpath(filepath)

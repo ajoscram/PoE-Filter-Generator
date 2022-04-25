@@ -52,7 +52,7 @@ try:
     print(f"\nReading filter file from '{args.input_filepath}'...")
     filter = Filter(args.input_filepath)
 
-    print("Generating filter...")
+    print(f"Generating filter with .{' '.join([args.handler] + args.options)}...")
     generator = Generator()
     filter = generator.generate(filter, args.handler, args.options)
     

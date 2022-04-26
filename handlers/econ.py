@@ -10,7 +10,7 @@ _STANDARD_TAG = "std"
 _HARDCORE_TAG = "hc"
 _BASE_TYPE_IDENTIFIER = "BaseType"
 
-_POE_FILTER_GENERATOR_USER_AGENT = "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/"
+_FILTER_GENERATOR_USER_AGENT = "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/"
 _CURRENCY_API_URL = "https://poe.ninja/api/data/currencyoverview"
 _ITEM_API_URL = "https://poe.ninja/api/data/itemoverview"
 _LEAGUE_NAME_API_URL = "https://api.pathofexile.com/leagues?type=main&realm=pc"
@@ -26,7 +26,7 @@ _RULE_TYPE_ERROR = "The .econ rule expects a valid type, got '{0}'."
 _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 
 _LEAGUE_NAMES_ERROR_TEXT = "league names from GGG's API"
-_POE_NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
+_NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
 
 _TYPES = {
     "cur": "Currency",
@@ -44,8 +44,21 @@ _TYPES = {
     "del": "DeliriumOrb"
 }
 
-_poe_ninja_cache = {}
-_current_league = None
+class _Params:
+    def __init__(self, type: str, lower: float, upper: float = None):
+        self.type = type
+        self.lower = lower
+        self.upper = upper
+        self.ninja_url = self._get_ninja_url(type)
+    
+    def _get_ninja_url(self, type: str):
+        if type == _TYPES["cur"] or type == _TYPES["fra"]:
+            return _CURRENCY_API_URL
+        else:
+            return _ITEM_API_URL
+
+_ninja_cache = {}
+_league = None
 
 def handle(_, block: Block, options: list):
     """Handles creation of economy adjusted filters.
@@ -56,7 +69,7 @@ def handle(_, block: Block, options: list):
     for rule in block.get_rules(_NAME):
         params = _parse_rule_params(rule)
         league = _get_league(options)
-        base_types = _get_base_types(league, params["type"], params["lower"], params["upper"])
+        base_types = _get_base_types(league, params)
         base_types_string = _get_base_types_string(base_types)
         block.swap(_BASE_TYPE_IDENTIFIER, base_types_string)
         if len(base_types) == 0:
@@ -80,7 +93,7 @@ def _parse_rule_params(rule: Rule):
         raise GeneratorError(_RULE_BOUNDS_ERROR.format("upper", parts[2]), rule.line_number)
     upper = float(parts[2]) if len(parts) == 3 else None
 
-    return { "type": type, "lower": lower, "upper": upper }
+    return _Params(type, lower, upper)
 
 def _is_float(string: str):
     try:
@@ -90,49 +103,47 @@ def _is_float(string: str):
         return False
 
 def _get_league(options: list[str]):
-    global _current_league
+    global _league
     try:
-        if _current_league != None:
-            headers = {'User-Agent': _POE_FILTER_GENERATOR_USER_AGENT}
+        if _league == None:
+            headers = {'User-Agent': _FILTER_GENERATOR_USER_AGENT}
             response = requests.get(_LEAGUE_NAME_API_URL, headers=headers)
             response.raise_for_status()
             leagues = response.json()
             if _STANDARD_TAG in options:
-                _current_league = leagues[_LEAGUE_NAME_STANDARD_INDEX]["id"]
+                _league = leagues[_LEAGUE_NAME_STANDARD_INDEX]["id"]
             elif _HARDCORE_TAG in options:
-                _current_league = leagues[_LEAGUE_NAME_TEMP_HC_INDEX]["id"]
+                _league = leagues[_LEAGUE_NAME_TEMP_HC_INDEX]["id"]
             else:
-                _current_league = leagues[_LEAGUE_NAME_TEMP_INDEX]["id"]
-        return _current_league
+                _league = leagues[_LEAGUE_NAME_TEMP_INDEX]["id"]
+        return _league
     except HTTPError as error:
         raise GeneratorError(_HTTP_ERROR.format(_LEAGUE_NAMES_ERROR_TEXT, error))
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
         raise GeneratorError(_CONNECTION_ERROR.format(_LEAGUE_NAMES_ERROR_TEXT))
 
-def _get_base_types(league: str, type: str, lower: float, upper: float = None):
-    poe_ninja_lines = _get_poe_ninja_lines(league, type)    
+def _get_base_types(league: str, params: _Params):
+    lines = _get_ninja_lines(params.ninja_url, league, params.type)
     base_types = []
-    for line in poe_ninja_lines:
+    for line in lines:
         name_lookup = "currencyTypeName" if "chaosEquivalent" in line else "name"
         value = line["chaosEquivalent"] if "chaosEquivalent" in line else line["chaosValue"]
-        if value >= lower and (upper == None or value < upper):
+        if value >= params.lower and (params.upper == None or value < params.upper):
             base_types.append(line[name_lookup])
     return base_types
 
-def _get_poe_ninja_lines(league: str, type: str):
-    global _poe_ninja_cache
+def _get_ninja_lines(url: str, league: str, type: str):
+    global _ninja_cache
     try:
-        if type not in _poe_ninja_cache:
-            type_is_currency_or_frags = type == _TYPES["cur"] or type == _TYPES["fra"]
-            url = _CURRENCY_API_URL if type_is_currency_or_frags else _ITEM_API_URL
+        if type not in _ninja_cache:
             response = requests.get(url, params={"league": league, "type": type})
             response.raise_for_status()
-            _poe_ninja_cache[type] = response.json()["lines"]
-        return _poe_ninja_cache[type]
+            _ninja_cache[type] = response.json()["lines"]
+        return _ninja_cache[type]
     except HTTPError as error:
-        raise GeneratorError(_HTTP_ERROR.format(_POE_NINJA_DATA_ERROR_TEXT, error))
+        raise GeneratorError(_HTTP_ERROR.format(_NINJA_DATA_ERROR_TEXT, error))
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
-        raise GeneratorError(_CONNECTION_ERROR.format(_POE_NINJA_DATA_ERROR_TEXT))
+        raise GeneratorError(_CONNECTION_ERROR.format(_NINJA_DATA_ERROR_TEXT))
 
 def _get_base_types_string(base_types):
     base_types_string = f"\t{_BASE_TYPE_IDENTIFIER} =="

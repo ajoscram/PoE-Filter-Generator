@@ -33,8 +33,8 @@ class _Params:
     
     def __str__(self):
         string = self.filepath
-        string += " -> " + self.blockname if self.blockname != None else ""
-        string += " -> " + self.line_pattern if self.line_pattern != None else ""
+        string += f" {_SPLITTER} " + self.blockname if self.blockname != None else ""
+        string += f" {_SPLITTER} " + self.line_pattern if self.line_pattern != None else ""
         return string
 
 _filter_cache: dict[str, Filter] = {}

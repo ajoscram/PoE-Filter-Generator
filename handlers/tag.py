@@ -1,8 +1,10 @@
+from pickle import FALSE
 from classes.generator_error import GeneratorError
 from classes.block import Block
 
 _NAME = "tag"
 _EMPTY_TAG_ERROR = "You must provide at least a tag for the 'tag' {0}."
+_WILDCARD = "_"
 
 def handle(_, block: Block, options:list[str]):
     """Hides or shows blocks based on their tags.
@@ -21,15 +23,28 @@ def handle(_, block: Block, options:list[str]):
         if split_description == []:
             raise GeneratorError(_EMPTY_TAG_ERROR.format("rule"), rule.line_number)
 
-        if len(split_description) <= tag_index:
+        if len(split_description) < len(options):
             continue
 
         rule_category = split_description[:tag_index]
         rule_tag = split_description[tag_index]
 
-        if command_category == rule_category:
-            if command_tag == rule_tag:
+        if _are_categories_equivalent(command_category, rule_category):
+            if _is_text_equivalent(rule_tag, command_tag):
                 block.show()
             else:
                 block.hide()
     return [ block ]
+
+def _is_text_equivalent(first: str, second: str):
+    return first == second or first == _WILDCARD or second == _WILDCARD
+
+def _are_categories_equivalent(first: list[str], second: list[str]):
+    if len(first) != len(second):
+        return False
+
+    for i in range(len(first)):
+        if not _is_text_equivalent(first[i], second[i]):
+            return False
+    
+    return True

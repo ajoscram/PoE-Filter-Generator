@@ -1,7 +1,8 @@
 from classes.generator_error import GeneratorError
 
+_COMMENT_START = '#'
 _RULE_SEPARATOR = '.'
-_RULE_START = '#' + _RULE_SEPARATOR
+_RULE_START = _COMMENT_START + _RULE_SEPARATOR
 
 _EMPTY_NAME_ERROR = "Empty name (probably an extra '.')"
 _EMPTY_DESCRIPTION_ERROR = "Empty description (probably an extra ':' or forgot a description to a rule)"
@@ -29,7 +30,7 @@ class Rule:
     def extract(cls, line_number: int, text: str):
         """Returns all rules in a text as a list of rules."""
         rules = []
-        if _RULE_START in text:
+        if cls._should_extract(text):
             text = text[text.index(_RULE_START) + len(_RULE_START):]
             rule_strings = text.split(_RULE_SEPARATOR)
             for rule_string in rule_strings:
@@ -48,6 +49,11 @@ class Rule:
                 
                 rules.append(Rule(line_number, name, description))
         return rules
+
+    @classmethod
+    def _should_extract(cls, text: str):
+        split_text = text.split(_RULE_START)
+        return len(split_text) >= 2 and not _COMMENT_START in split_text[0]
 
     def __str__(self):
         return f'[{self.line_number}] "{self.name}": "{self.description}"'

@@ -69,7 +69,10 @@ class Block:
         """Attempts to completely hide a block by setting it to 'Hide' and
         commenting out the lines that show effects on the screen if they are present."""
         self.swap("Show", "Hide")
+        self.comment("PlayAlertSound")
         self.comment("PlayAlertSoundPositional")
+        self.comment("CustomAlertSound")
+        self.comment("CustomAlertSoundOptional")
         self.comment("MinimapIcon")
         self.comment("PlayEffect")
     
@@ -78,7 +81,10 @@ class Block:
         the lines that show effects on the screen if they are present.
         This is the reverse function to hide."""
         self.swap("Hide", "Show")
+        self.uncomment("PlayAlertSound")
         self.uncomment("PlayAlertSoundPositional")
+        self.uncomment("CustomAlertSound")
+        self.uncomment("CustomAlertSoundOptional")
         self.uncomment("MinimapIcon")
         self.uncomment("PlayEffect")
 

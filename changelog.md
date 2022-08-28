@@ -1,6 +1,7 @@
 # To do
 * Investigate why standard hardcore is not supported on poe.ninja
-* Add a mechanism to emit warnings and return no block on econ if base_types is empty
+* Add a mechanism to emit warnings and return no block on econ if base_types is empty.
+* Investigate what happens when two equivalent styles are added to the same block. This could be helpful in deciding how to hide and show sections
 
 # 1.1
 * Renamed sections to blocks as that's the GGG standard name
@@ -29,5 +30,5 @@ python generator.py "input.filter" "output.filter" .chaos
 * Added a chaos recipe handler (chaos.py)
 * Added an economy handler (econ.py)
 * Documented every module
-* Atomized write operations on the same filter file.
+* Atomized write operations on the same filter file
 * Added help on generate.py

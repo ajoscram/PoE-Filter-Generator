@@ -126,10 +126,11 @@ def _get_base_types(league: str, params: _Params):
     lines = _get_ninja_lines(params.ninja_url, league, params.type)
     base_types = []
     for line in lines:
-        name_lookup = "currencyTypeName" if "chaosEquivalent" in line else "name"
         value = line["chaosEquivalent"] if "chaosEquivalent" in line else line["chaosValue"]
-        if value >= params.lower and (params.upper == None or value < params.upper):
-            base_types.append(line[name_lookup])
+        name_lookup = "currencyTypeName" if "chaosEquivalent" in line else "name"
+        base_type = line[name_lookup]
+        if _is_base_type_valid(base_type) and _is_value_valid(value, params):
+            base_types.append(base_type)
     return base_types
 
 def _get_ninja_lines(url: str, league: str, type: str):
@@ -150,3 +151,13 @@ def _get_base_types_string(base_types):
     for base in base_types:
         base_types_string += f" \"{base}\""
     return base_types_string
+
+def _is_value_valid(value: float, params: _Params):
+    return value >= params.lower and (params.upper == None or value < params.upper)
+
+def _is_base_type_valid(base_type: str):
+    '''Removes poe.ninja entries which are not BaseTypes.'''
+    if base_type in ["Will of Chaos", "Ignominious Fate", "Victorious Fate", "Deadly End"]:
+        return False
+    else:
+        return True

@@ -40,7 +40,7 @@ class _Params:
 _filter_cache: dict[str, Filter] = {}
 
 def handle(filter: Filter, block: Block, _):
-    """Handles appends of lines to blocks. Options are ignored."""
+    """Handles text import from filter files. Options are ignored."""
     params = _get_initial_params(filter.filepath, block)
     lines = _get_lines_from_block(block, params, True)
     return _get_formatted_blocks(lines, block.line_number)

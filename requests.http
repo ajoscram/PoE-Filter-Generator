@@ -1,6 +1,6 @@
-@league = Archnemesis
+@league = Kalandra
 @item_type = DeliriumOrb
-@currency_type = Currency
+@currency_type = Fragment
 
 ### poe ninja currency or frags
 GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currency_type}}

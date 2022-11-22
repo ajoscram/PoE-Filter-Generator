@@ -4,7 +4,6 @@ from typing import Callable
 from classes.block import Block
 from classes.generator_error import GeneratorError
 from classes.line import Line
-from classes.rule import Rule
 
 _NAME = "combine"
 _COMBINE_END = "end"
@@ -15,7 +14,7 @@ _FIRST_COMBINE_ARG_ERROR = "The first combine rule expects a positive integer wh
 _LAST_COMBINE_ARG_ERROR = "The last combine rule expects the string literal 'end' to denote the end of the combine. You've provided '{0}'."
 
 def handle(_, block: Block, __):
-    """Creates new sections from combinable lines within a section. Options are ignored."""
+    """Creates new blocks from combinable lines within a block. Options are ignored."""
         
     if len(block.get_rules(_NAME)) == 0:
         return [ block ]

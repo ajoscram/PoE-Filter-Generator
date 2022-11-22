@@ -3,10 +3,10 @@ from classes.generator_error import GeneratorError
 from classes.block import Block
 
 _NAME = "tag"
-_EMPTY_TAG_ERROR = "You must provide at least a tag for the 'tag' {0}."
 _WILDCARD = "_"
+_EMPTY_TAG_ERROR = "You must provide at least a tag for the 'tag' {0}."
 
-def handle(_, block: Block, options:list[str]):
+def handle(_, block: Block, options: list[str]):
     """Hides or shows blocks based on their tags.
     Every option with the exception of the last is treated as a tag category.
     The last option is the tag inside that category."""

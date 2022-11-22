@@ -60,7 +60,7 @@ class _Params:
 _ninja_cache = {}
 _league = None
 
-def handle(_, block: Block, options: list):
+def handle(_, block: Block, options: list[str]):
     """Handles creation of economy adjusted filters.
     Hardcore standard is not supported because poe.ninja doesn't support it.
     Options: 

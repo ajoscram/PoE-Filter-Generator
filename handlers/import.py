@@ -147,7 +147,7 @@ def _get_line(block: Block, line_pattern: str, filepath: str):
 
 def _get_blockname(block: Block):
     name_rules = block.get_rules(_BLOCK_NAME)
-    return name_rules[-1].description.strip() if len(name_rules) > 0 else None
+    return name_rules[-1].description if len(name_rules) > 0 else None
 
 def _parse_rule_filepath(source_filepath: str, rule_filepath: str):
     if rule_filepath.strip() == "":

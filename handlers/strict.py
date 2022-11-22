@@ -18,7 +18,7 @@ def handle(_, block: Block, options:list[str]):
     command_strictness = int(options[0])
 
     for rule in block.get_rules(_NAME):
-        if not rule.description.strip().isdigit():
+        if not rule.description.isdigit():
             raise GeneratorError(_STRICTNESS_ARG_TYPE_ERROR.format("rule", rule.description), rule.line_number)
         
         rule_strictness = int(rule.description)

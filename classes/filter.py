@@ -12,7 +12,7 @@ class Filter:
 
     def __init__(self, filepath: str, blocks: list[Block] = None):
         self.filepath: str = filepath
-        self.blocks: list[Block] = blocks or self._get_blocks(filepath)
+        self.blocks: list[Block] = blocks if blocks != None else self._get_blocks(filepath)
 
     def _get_blocks(self, filepath: str):
         try:
@@ -28,10 +28,12 @@ class Filter:
         """Saves the filter to the indicated output filepath."""
         self._create_directory(output_filepath)
         try:
+            text = ""
+            for block in self.blocks:
+                text_to_merge = [ text ] if text != "" else []
+                text = "\n".join(text_to_merge + [ line.text for line in block.lines ])
             with open(output_filepath, "w") as file:
-                for block in self.blocks:
-                    for line in block.lines:
-                        file.write(f"{line.text}\n")
+                file.write(text)
         except FileExistsError:
             raise GeneratorError(_FILE_EXISTS_ERROR, filepath=self.filepath)
         except PermissionError:

@@ -3,6 +3,9 @@
 * Add a mechanism to emit warnings and return no block on econ if base_types is empty.
 * Investigate what happens when two equivalent styles are added to the same block. This could be helpful in deciding how to hide and show sections
 
+# 1.2
+* Added the new `.combine` handler, which allows the creation of multiple sections from a single one by creating combinations of lines within it.
+
 # 1.1
 * Renamed sections to blocks as that's the GGG standard name
 * Refactored and cleaned up the code significantly, so that future work is simpler

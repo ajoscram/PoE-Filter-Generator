@@ -43,7 +43,7 @@ def handle(filter: Filter, block: Block, _):
     """Handles text import from filter files. Options are ignored."""
     params = _get_initial_params(filter.filepath, block)
     lines = _get_lines_from_block(block, params, True)
-    return _get_formatted_blocks(lines, block.line_number)
+    return Block.extract(lines, block.line_number)
 
 def _get_initial_params(filepath: str, block: Block):
     name_rules = block.get_rules(_BLOCK_NAME)
@@ -53,20 +53,13 @@ def _get_initial_params(filepath: str, block: Block):
     else:
         return [ _Params(filepath) ]
 
-def _get_formatted_blocks(lines: list[Line], line_number: int):
-    raw_lines = [ line.text for line in lines if not line.is_empty() ]
-    blocks = Block.extract(raw_lines, line_number)
-    for block in blocks:
-        block.append("\n")
-    return blocks
-
-def _get_lines_from_filter(filter: Filter, params: list[_Params]) -> list[Line]:
+def _get_lines_from_filter(filter: Filter, params: list[_Params]):
     lines = []
     for block in filter.blocks:
         lines += _get_lines_from_block(block, params, True)
     return lines
 
-def _get_lines_from_block(block: Block, params: list[_Params], include_blockstarts: bool) -> list[Line]:
+def _get_lines_from_block(block: Block, params: list[_Params], include_blockstarts: bool):
     lines = []
     for line in block.lines:
         lines += _get_lines_from_line(line, params, include_blockstarts)

@@ -9,9 +9,10 @@ _NAME = "combine"
 _COMBINE_END = "end"
 
 _INCOMPLETE_COMBINE_ERROR = "Your combine is incomplete. Either you provided both rules on the same line, or you're missing the combine's start or end rule."
-_MULTIPLE_COMBINE_RULES_IN_SAME_LINE = "You may only provide a single combine rule per line. You've provided {0}."
+_MULTIPLE_COMBINE_RULES_IN_SAME_LINE = "You may only provide one combine rule per line. You've provided {0}."
 _FIRST_COMBINE_ARG_ERROR = "The first combine rule expects a positive integer which indicates the size of each combination. You've provided '{0}'."
 _LAST_COMBINE_ARG_ERROR = "The last combine rule expects the string literal 'end' to denote the end of the combine. You've provided '{0}'."
+_SIZE_IS_GREATER_THAN_LINE_COUNT = "The size of each combination provided must be smaller than the total number of lines to combine. You've provided a size of {0} but only have {1} line(s) within your combine."
 
 def handle(_, block: Block, __):
     """Creates new blocks from combinable lines within a block. Options are ignored."""
@@ -26,6 +27,8 @@ def handle(_, block: Block, __):
     start_index = first_line.number - block.line_number + 1
     end_index = last_line.number - block.line_number
     size = int(first_line.get_rules(_NAME)[0].description)
+    if size > end_index - start_index:
+        raise GeneratorError(_SIZE_IS_GREATER_THAN_LINE_COUNT.format(size, end_index - start_index), first_line.number)
 
     prefix_lines = block.lines[:start_index]
     combine_lines = block.lines[start_index:end_index]
@@ -56,7 +59,6 @@ def _validate_combine_lines(first_line: Line, last_line: Line):
     if last_rule_description != _COMBINE_END:
         raise GeneratorError(_LAST_COMBINE_ARG_ERROR.format(last_rule_description), last_line.number)
 
-    
 def _get_combined_blocks(prefix_lines: list[Line], combine_lines: list[Line], suffix_lines: list[Line], size: int, block_line_number: int):
     raw_lines = []
     for combination in [ list(combination) for combination in Combinations(combine_lines, size) ]:

@@ -3,12 +3,10 @@
 * Add a mechanism to emit warnings and return no block on econ if base_types is empty.
 * Investigate what happens when two equivalent styles are added to the same block. This could be helpful in deciding how to hide and show blocks
 
-* add a .clean handler, which removes all rules and empty lines from a file, and reformats the contents so that each block is contiguous and separated by a single line
-* remove formatting code from .import, since it belongs to .clean instead
-
 # 1.2
 * Added the new `.combine` handler, which allows the creation of multiple blocks from a single one by creating combinations of lines within it
 * Added the new `.format` handler, which removes rules, empty lines and trailing whitespace from the filter
+* Removed all formatting done on `.import`. `.format` can now be invoked after performing imports to clean up the filter output
 
 # 1.1
 * Renamed sections to blocks as that's the GGG standard name

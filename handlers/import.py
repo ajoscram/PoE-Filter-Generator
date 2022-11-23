@@ -42,7 +42,7 @@ _filter_cache: dict[str, Filter] = {}
 def handle(filter: Filter, block: Block, _):
     """Handles text import from filter files. Options are ignored."""
     params = _get_initial_params(filter.filepath, block)
-    lines = _get_lines_from_block(block, params, True)
+    lines = [ line.text for line in _get_lines_from_block(block, params, True)]
     return Block.extract(lines, block.line_number)
 
 def _get_initial_params(filepath: str, block: Block):
@@ -53,25 +53,25 @@ def _get_initial_params(filepath: str, block: Block):
     else:
         return [ _Params(filepath) ]
 
-def _get_lines_from_filter(filter: Filter, params: list[_Params]):
+def _get_lines_from_filter(filter: Filter, params: list[_Params]) -> list[Line]:
     lines = []
     for block in filter.blocks:
         lines += _get_lines_from_block(block, params, True)
     return lines
 
-def _get_lines_from_block(block: Block, params: list[_Params], include_blockstarts: bool):
+def _get_lines_from_block(block: Block, params: list[_Params], include_blockstarts: bool) -> list[Line]:
     lines = []
     for line in block.lines:
         lines += _get_lines_from_line(line, params, include_blockstarts)
     return lines
 
-def _get_lines_from_line(line: Line, params: list[_Params], include_blockstarts: bool):
+def _get_lines_from_line(line: Line, params: list[_Params], include_blockstarts: bool) -> list[Line]:
     lines = [ line ] if not line.is_block_starter() or include_blockstarts else []
     for rule in line.get_rules(_NAME):
         lines += _get_lines_from_rule(rule, params)
     return lines
 
-def _get_lines_from_rule(rule: Rule, params: list[_Params]):
+def _get_lines_from_rule(rule: Rule, params: list[_Params]) -> list[Line]:
     new_params = _parse_rule_params(rule, params)
 
     filter = _get_filter(new_params.filepath)

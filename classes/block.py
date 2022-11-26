@@ -88,12 +88,9 @@ class Block:
         self.uncomment("MinimapIcon")
         self.uncomment("PlayEffect")
 
-    def get_rules(self, rule_name: str) -> list[Rule]:
+    def get_rules(self, name_or_names: str | list[str]) -> list[Rule]:
         """Gets all the rules in the block with name equals to rule_name."""
-        rules = []
-        for line in self.lines:
-            rules += line.get_rules(rule_name)
-        return rules
+        return [ rule for line in self.lines for rule in line.get_rules(name_or_names) ]
                     
     def __str__(self):
         string = f"[{self.line_number}] Block"

@@ -54,9 +54,11 @@ class Line:
         if len(split_text) == 2:
             self.text = split_text[0] + split_text[1]
     
-    def get_rules(self, rule_name: str):
+    def get_rules(self, name_or_names: str | list[str]):
         """Gets every rule within the line with a name equal to rule_name."""
-        return [ rule for rule in self.rules if rule.name == rule_name ]
+        if isinstance(name_or_names, str):
+            name_or_names = [ name_or_names ]
+        return [ rule for rule in self.rules if rule.name in name_or_names ]
 
     def __str__(self):
         string = f'[{self.number}] "{self.text}"'

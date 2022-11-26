@@ -5,11 +5,11 @@ from classes.filter import Filter
 from classes.line import Line
 from classes.rule import Rule, COMMENT_START, RULE_START
 
-_NAME = "format"
-
-_INDEX_TAG = "index"
-_SECTION_TAG = "sec"
-_SUBSECTION_TAG = "subsec"
+_INDEX_RULE_NAME = "index"
+_SECTION_RULE_NAME = "section"
+_SUBSECTION_RULE_NAME = "subsection"
+_SECTION_RULE_NAMES = [ _SECTION_RULE_NAME, _SUBSECTION_RULE_NAME ]
+_RULE_NAMES = [ _INDEX_RULE_NAME ] + _SECTION_RULE_NAMES
 
 _NEWLINE = "\n"
 _LINE_PADDING = "-"
@@ -17,9 +17,10 @@ _MAX_LINE_LENGTH = 80 - len(COMMENT_START)
 _SECTION_SEPARATOR = COMMENT_START + _LINE_PADDING * _MAX_LINE_LENGTH
 
 class _Section:
-    def __init__(self, rule: Rule, section_id: int, subsection_id: int):
+    def __init__(self, rule: Rule, section_id: int, subsection_id: int):        
         self.rule = rule
-        self.name = rule.description.split()[1]
+        self.name = rule.description
+        
         self.id = f"[{section_id}_{subsection_id}]"
         self.is_subsection = subsection_id != 0
 
@@ -30,12 +31,10 @@ def handle(filter: Filter, block: Block, _):
     global _index
     _index = _create_index(filter) if _index == None else _index
     
-    raw_lines = [ raw_line for line in block.lines for raw_line in _get_raw_lines(line) ]
-
-    if block == filter.blocks[0] and raw_lines[0] == _NEWLINE:
+    raw_lines = [ raw_line for line in block.lines for raw_line in _get_raw_lines_from_line(line) ]
+    if block == filter.blocks[0] and len(raw_lines) > 0 and raw_lines[0] == _NEWLINE:
         raw_lines = raw_lines[1:]
-    
-    if block != filter.blocks[-1] and raw_lines[-1] != _NEWLINE:
+    if block != filter.blocks[-1] and len(raw_lines) > 0 and raw_lines[-1] != _NEWLINE:
         raw_lines += [ _NEWLINE ]
 
     return Block.extract(raw_lines, block.line_number)
@@ -44,32 +43,28 @@ def _create_index(filter: Filter):
     sections: list[_Section] = []
     section_id = 0
     subsection_id = 0
-    for rule in [ rule for block in filter.blocks for rule in block.get_rules(_NAME) ]:
-        _validate_format_rule(rule)
-        if not rule.description.startswith(_INDEX_TAG):
-            section_id += 1 if rule.description.startswith(_SECTION_TAG) else 0
-            subsection_id = subsection_id + 1 if rule.description.startswith(_SUBSECTION_TAG) else 0
-            sections += [ _Section(rule, section_id, subsection_id) ]
+    for rule in [ rule for block in filter.blocks for rule in block.get_rules(_SECTION_RULE_NAMES) ]:
+        section_id += 1 if rule.name  == _SECTION_RULE_NAME else 0
+        subsection_id = subsection_id + 1 if rule.name == _SUBSECTION_RULE_NAME else 0
+        sections += [ _Section(rule, section_id, subsection_id) ]
     return sections
 
-def _validate_format_rule(rule: Rule):
-    parts = rule.description.split()
-    pass
-
-def _get_raw_lines(line: Line):
+def _get_raw_lines_from_line(line: Line):
     raw_line = _format(line.text)
     raw_lines = [ raw_line ] if raw_line.strip() != "" else []
-    for rule in line.get_rules(_NAME):
+    for rule in line.get_rules(_RULE_NAMES):
         raw_lines += [ _NEWLINE ]
-        if rule.description.startswith(_INDEX_TAG):
-            raw_lines += _get_index_lines()
-        elif rule.description.startswith(_SECTION_TAG):
-            section = _find_section_in_index(rule)
-            raw_lines += _get_section_lines(section)
-        elif rule.description.startswith(_SUBSECTION_TAG):
-            section = _find_section_in_index(rule)
-            raw_lines += [ _get_subsection_line(section) ]
+        raw_lines += _get_raw_lines_from_rule(rule)
     return raw_lines
+
+def _get_raw_lines_from_rule(rule: Rule):
+    if rule.name  == _INDEX_RULE_NAME:
+        return _get_index_lines()
+    section = _find_section_in_index(rule)
+    if rule.name == _SECTION_RULE_NAME:
+        return _get_section_lines(section)
+    else:
+        return [ _get_subsection_line(section) ]
 
 def _format(raw_line: str):
     if not COMMENT_START in raw_line.split(RULE_START)[0]:
@@ -90,6 +85,15 @@ def _get_index_lines():
         lines += [ _render_line(f"{indent}{section.name} ", "", f" {section.id}", ".") ]
     return lines
 
+def _get_index_header_lines():
+    return [
+        _SECTION_SEPARATOR,
+        _render_line("", "INDEX", ""),
+        _SECTION_SEPARATOR,
+        COMMENT_START,
+        _render_line("", "CTRL+F the IDs to jump to any section in the document.", ""),
+    ]
+
 def _get_section_lines(section: _Section):
     return [
         _SECTION_SEPARATOR,
@@ -104,12 +108,3 @@ def _render_line(left_text: str, center_text: str, right_text: str, padding_toke
     padding = padding_token * (_MAX_LINE_LENGTH  - len(left_text) - len(center_text) - len(right_text))
     padding_split_index = (len(padding) - len(right_text) - len(left_text)) // 2
     return COMMENT_START + left_text + padding[padding_split_index:] + center_text + padding[:padding_split_index] + right_text
-
-def _get_index_header_lines():
-    return [
-        _SECTION_SEPARATOR,
-        _render_line("", "INDEX", ""),
-        _SECTION_SEPARATOR,
-        COMMENT_START,
-        _render_line("", "CTRL+F the IDs to jump to any section in the document.", ""),
-    ]

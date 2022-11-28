@@ -5,7 +5,8 @@
 
 # 1.2
 * Added the new `.combine` handler, which allows the creation of multiple blocks from a single one by creating combinations of lines within it
-* Added the new `.format` handler, which removes rules, empty lines and trailing whitespace from the filter
+* Added the new `.index` handler, which allows creation an index of sections and subsections to quickly move around the filter
+* Added the new `.format` handler, which removes rules, trailing whitespace and extraneous empty lines form the filter
 * Removed all formatting done on `.import`. `.format` can now be invoked after performing imports to clean up the filter output
 
 # 1.1

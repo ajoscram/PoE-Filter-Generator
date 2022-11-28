@@ -6,7 +6,7 @@ from classes.line import Line
 
 def handle(filter: Filter, block: Block, _):
     """Removes rules, trailing whitespace from lines and extraneous empty lines."""
-    raw_lines = [ _format(line) for line in block.lines ]
+    raw_lines = _get_formatted_raw_lines(block.lines)
     raw_lines = _remove_duplicate_empty_lines(raw_lines)
 
     if block == filter.blocks[0] and raw_lines[0] == "":
@@ -17,14 +17,15 @@ def handle(filter: Filter, block: Block, _):
 
     return Block.extract(raw_lines, block.line_number)
 
-def _format(line: Line):
-    text = line.text
-    if len(line.rules) > 0:
-        text = re.sub("#\..+", "", text)
-    return text.rstrip()
+def _get_formatted_raw_lines(lines: list[Line]):
+    raw_lines = []
+    for line in lines:
+        raw_line = re.sub("#\..+", "", line.text) if len(line.rules) > 0 else line.text.rstrip()
+        if len(line.rules) == 0 or raw_line.strip() != "":
+            raw_lines += [ raw_line ]
+    return raw_lines
 
 def _remove_duplicate_empty_lines(raw_lines: list[str]):
-    
     if len(raw_lines) < 2:
         return raw_lines
 

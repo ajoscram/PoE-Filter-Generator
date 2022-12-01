@@ -17,11 +17,11 @@ HELP_WARNING = f"Use {HELP_ARG} or {HELP_ARG_SHORT} for more information."
 HELP = """
 Usage:
 
-    python generate.py input.filter [output.filter] .handler [option1 option2 optionN]
+    python main.py input.filter [output.filter] .handler [option1 option2 optionN] [.handler2 .handlerN]
 
 If you're using the .exe distribution:
 
-    pfg input.filter [output.filter] .handler [option1 option2 optionN]
+    pfg input.filter [output.filter] .handler [option1 option2 optionN] [.handler2 .handlerN]
 
 Where:
     input.filter:
@@ -34,7 +34,8 @@ Where:
     .handler:
         The name of the handler used to modify the filter.
         For more information on handlers visit the project's wiki at https://github.com/ajoscram/PoE-Filter-Generator/wiki/Handlers.
-        Handlers may receive options, which can be provided after the handler's name."""
+        Handlers may receive options, which can be provided after the handler's name.
+        You may provide multiple handlers to perform in a single invocation of this program."""
 UNKNOWN_ERROR_WARNING = """If your're reading this then an unforseen error has ocurred. Notify me immediately so I can fix it!
 Please provide either the following text from the error or a screenshot via an issue on GitHub:
 
@@ -49,17 +50,18 @@ try:
         sys.exit()
     args = Arguments(raw_args)
 
-    print(f"\nReading filter file from '{args.input_filepath}'...")
+    print(f"\nReading filter file from '{args.input_filepath}'...\n")
     filter = Filter(args.input_filepath)
-
-    print(f"Generating filter with .{' '.join([args.handler] + args.options)}...")
-    generator = Generator()
-    filter = generator.generate(filter, args.handler, args.options)
     
-    print(f"Saving filter file to '{args.output_filepath}'...")
-    filter.save(args.output_filepath)
+    generator = Generator()
+    for invocation in args.invocations:
+        print(f"Applying .{' '.join([invocation.handler_name] + invocation.options)}...")
+        filter = generator.generate(filter, args.output_filepath, invocation.handler_name, invocation.options)
+    
+    print(f"\nSaving filter file to '{args.output_filepath}'...")
+    filter.save()
 
-    print("\nDone!")
+    print("Done!")
 
 except GeneratorError as error:
     print(f"\nERROR: {error}\n\n{HELP_WARNING}")

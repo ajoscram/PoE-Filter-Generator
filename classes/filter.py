@@ -24,23 +24,23 @@ class Filter:
         except PermissionError:
             raise GeneratorError(_PERMISSION_ERROR, filepath=filepath)
 
-    def save(self, output_filepath: str):
-        """Saves the filter to the indicated output filepath."""
-        self._create_directory(output_filepath)
+    def save(self):
+        """Saves the filter to its filepath."""
+        self._create_directory()
         try:
             text = ""
             for block in self.blocks:
                 text_to_merge = [ text ] if text != "" else []
                 text = "\n".join(text_to_merge + [ line.text for line in block.lines ])
-            with open(output_filepath, "w") as file:
+            with open(self.filepath, "w") as file:
                 file.write(text)
         except FileExistsError:
             raise GeneratorError(_FILE_EXISTS_ERROR, filepath=self.filepath)
         except PermissionError:
             raise GeneratorError(_PERMISSION_ERROR, filepath=self.filepath)
     
-    def _create_directory(self, filepath: str):
-        directory = os.path.dirname(filepath)
+    def _create_directory(self):
+        directory = os.path.dirname(self.filepath)
         if directory != "":
             os.makedirs(directory, exist_ok=True)
     

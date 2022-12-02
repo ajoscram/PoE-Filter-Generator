@@ -51,7 +51,7 @@ try:
     args = Arguments(raw_args)
 
     print(f"\nReading filter file from '{args.input_filepath}'...\n")
-    filter = Filter(args.input_filepath)
+    filter = Filter.load(args.input_filepath)
     
     generator = Generator()
     for invocation in args.invocations:

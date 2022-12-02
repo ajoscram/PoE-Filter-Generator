@@ -15,7 +15,7 @@ def handle(filter: Filter, block: Block, _):
     if block == filter.blocks[-1] and raw_lines[-1] == "":
         raw_lines = raw_lines[:-1]
 
-    return Block.extract(raw_lines, block.line_number)
+    return raw_lines
 
 def _get_formatted_raw_lines(lines: list[Line]):
     raw_lines = []

@@ -29,8 +29,7 @@ def handle(filter: Filter, block: Block, _):
     """Adds indices and addressable sections."""
     global _index
     _index = _create_index(filter) if _index == None else _index
-    raw_lines = [ raw_line for line in block.lines for raw_line in _get_raw_lines_from_line(line) ]
-    return Block.extract(raw_lines, block.line_number)
+    return [ raw_line for line in block.lines for raw_line in _get_raw_lines_from_line(line) ]
 
 def _create_index(filter: Filter):
     sections: list[_Section] = []

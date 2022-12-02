@@ -1,5 +1,4 @@
 from itertools import combinations as Combinations
-from typing import Callable
 
 from classes.block import Block
 from classes.generator_error import GeneratorError
@@ -18,7 +17,7 @@ def handle(_, block: Block, __):
     """Creates new blocks from combinable lines within a block. Options are ignored."""
         
     if len(block.get_rules(_NAME)) == 0:
-        return [ block ]
+        return block.get_raw_lines()
 
     first_line = _get_combine_line(block.lines)
     last_line = _get_combine_line(reversed(block.lines))
@@ -34,7 +33,7 @@ def handle(_, block: Block, __):
     combine_lines = block.lines[start_index:end_index]
     suffix_lines = block.lines[end_index:]
 
-    return _get_combined_blocks(prefix_lines, combine_lines, suffix_lines, size, block.line_number)
+    return _get_combined_raw_lines(prefix_lines, combine_lines, suffix_lines, size)
 
 def _get_combine_line(lines: list[Line]):
     return next(line for line in lines if len(line.get_rules(_NAME)) > 0)
@@ -59,8 +58,8 @@ def _validate_combine_lines(first_line: Line, last_line: Line):
     if last_rule_description != _COMBINE_END:
         raise GeneratorError(_LAST_COMBINE_ARG_ERROR.format(last_rule_description), last_line.number)
 
-def _get_combined_blocks(prefix_lines: list[Line], combine_lines: list[Line], suffix_lines: list[Line], size: int, block_line_number: int):
-    raw_lines = []
+def _get_combined_raw_lines(prefix_lines: list[Line], combine_lines: list[Line], suffix_lines: list[Line], size: int):
+    raw_lines: list[str] = []
     for combination in [ list(combination) for combination in Combinations(combine_lines, size) ]:
         raw_lines += [ line.text for line in prefix_lines + combination + suffix_lines ]
-    return Block.extract(raw_lines, block_line_number)
+    return raw_lines

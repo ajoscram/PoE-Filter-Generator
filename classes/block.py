@@ -91,6 +91,9 @@ class Block:
     def get_rules(self, name_or_names: str | list[str]) -> list[Rule]:
         """Gets all the rules in the block with name equals to rule_name."""
         return [ rule for line in self.lines for rule in line.get_rules(name_or_names) ]
+    
+    def get_raw_lines(self):
+        return [ line.text for line in self.lines ]
                     
     def __str__(self):
         string = f"[{self.line_number}] Block"

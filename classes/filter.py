@@ -10,13 +10,19 @@ _PERMISSION_ERROR = "You don't have permission to read or write on this director
 class Filter:
     """The filter class is a representation of a .filter file."""
 
-    def __init__(self, filepath: str, blocks: list[Block] = None):
+    def __init__(self, filepath: str, blocks: list[Block]):
         self.filepath: str = filepath
-        self.blocks: list[Block] = blocks if blocks != None else self._get_blocks(filepath)
+        self.blocks: list[Block] = blocks
 
-    def _get_blocks(self, filepath: str):
+    @classmethod
+    def load(cls, filepath: str):
+        blocks = cls._get_blocks(filepath)
+        return Filter(filepath, blocks)
+
+    @classmethod
+    def _get_blocks(cls, filepath: str):
         try:
-            with open(self.filepath, "r") as file:
+            with open(filepath, "r") as file:
                 raw_lines = file.readlines()
                 return Block.extract(raw_lines)
         except FileNotFoundError:
@@ -28,10 +34,8 @@ class Filter:
         """Saves the filter to its filepath."""
         self._create_directory()
         try:
-            text = ""
-            for block in self.blocks:
-                text_to_merge = [ text ] if text != "" else []
-                text = "\n".join(text_to_merge + [ line.text for line in block.lines ])
+            block_texts = [ "\n".join(block.get_raw_lines()) for block in self.blocks ]
+            text = "\n".join(block_texts)
             with open(self.filepath, "w") as file:
                 file.write(text)
         except FileExistsError:

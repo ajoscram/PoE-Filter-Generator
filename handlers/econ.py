@@ -74,7 +74,7 @@ def handle(_, block: Block, options: list[str]):
         block.swap(_BASE_TYPE_IDENTIFIER, base_types_string)
         if len(base_types) == 0:
             block.comment()
-    return [ block ]
+    return block.get_raw_lines()
 
 def _parse_rule_params(rule: Rule):
     parts = rule.description.split()

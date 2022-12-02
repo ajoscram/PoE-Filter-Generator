@@ -3,13 +3,19 @@
 * Add a mechanism to emit warnings and return no block on econ if base_types is empty.
 * Investigate what happens when two equivalent styles are added to the same block. This could be helpful in deciding how to hide and show blocks
 
-# 1.2
+# ADD DOCUMENTATION FOR 1.2.0 !!!
+
+* combine, import, index, format are chill
+* econ, strict and tag are ugly
+
+# 1.2.0
+* Added handler chaining, which allows application of multiple handlers in a row without having to invoke PFG multiple times
 * Added the new `.combine` handler, which allows the creation of multiple blocks from a single one by creating combinations of lines within it
 * Added the new `.index` handler, which allows creation an index of sections and subsections to quickly move around the filter
 * Added the new `.format` handler, which removes rules, trailing whitespace and extraneous empty lines form the filter
 * Removed all formatting done on `.import`. `.format` can now be invoked after performing imports to clean up the filter output
 
-# 1.1
+# 1.1.0
 * Renamed sections to blocks as that's the GGG standard name
 * Refactored and cleaned up the code significantly, so that future work is simpler
 * Added `Filter` and `Line` as new abstractions to provide more flexibility and code reuse to handlers
@@ -22,7 +28,7 @@
 * Added a way to comment out rules so the generator ignores them
 * Updated the documentation on GitHub with the new stuff
 
-# 1.0
+# 1.0.0
 * Included the requests library
 * Added the Section class
 * Added the Rule class

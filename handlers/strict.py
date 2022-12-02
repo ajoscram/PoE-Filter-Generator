@@ -28,4 +28,4 @@ def handle(_, block: Block, options:list[str]):
         else:
             block.hide()
 
-    return [ block ]
+    return block.get_raw_lines()

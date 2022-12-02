@@ -34,7 +34,7 @@ def handle(_, block: Block, options: list[str]):
                 block.show()
             else:
                 block.hide()
-    return [ block ]
+    return block.get_raw_lines()
 
 def _is_text_equivalent(first: str, second: str):
     return first == second or first == _WILDCARD or second == _WILDCARD

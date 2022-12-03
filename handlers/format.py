@@ -9,10 +9,10 @@ def handle(filter: Filter, block: Block, _):
     raw_lines = _get_formatted_raw_lines(block.lines)
     raw_lines = _remove_duplicate_empty_lines(raw_lines)
 
-    if block == filter.blocks[0] and raw_lines[0] == "":
+    if block == filter.blocks[0] and len(raw_lines) > 0 and raw_lines[0] == "":
         raw_lines = raw_lines[1:]
 
-    if block == filter.blocks[-1] and raw_lines[-1] == "":
+    if block == filter.blocks[-1] and len(raw_lines) > 0 and raw_lines[-1] == "":
         raw_lines = raw_lines[:-1]
 
     return raw_lines

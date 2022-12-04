@@ -2,6 +2,10 @@
 * Investigate why standard hardcore is not supported on poe.ninja
 * Add a mechanism to emit warnings and return no block on econ if base_types is empty.
 * Investigate what happens when two equivalent styles are added to the same block. This could be helpful in deciding how to hide and show blocks
+* Create unit tests for the entire codebase 
+
+# 1.2.1
+* Fixed a `.import` bug which prevented the loading of filter files when importing
 
 # 1.2.0
 * Added handler chaining, which allows application of multiple handlers in a row without having to invoke PFG multiple times

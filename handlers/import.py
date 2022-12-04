@@ -118,7 +118,7 @@ def _get_filter(filepath: str):
     absolute_filepath = os.path.abspath(filepath)
 
     if absolute_filepath not in _filter_cache:
-        _filter_cache[absolute_filepath] = Filter(filepath)
+        _filter_cache[absolute_filepath] = Filter.load(filepath)
 
     return _filter_cache[absolute_filepath]
 

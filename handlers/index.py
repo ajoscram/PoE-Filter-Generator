@@ -1,5 +1,3 @@
-import re
-
 from classes.block import Block
 from classes.filter import Filter
 from classes.line import Line

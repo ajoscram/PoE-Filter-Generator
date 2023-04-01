@@ -1,5 +1,5 @@
-from classes.generator_error import GeneratorError
-from classes.block import Block
+from src.core.generator_error import GeneratorError
+from src.core.block import Block
 
 _NAME = "strict"
 _STRICTNESS_ERROR_PREFIX = "You must provide only 1 integer value for the strictness {0}."

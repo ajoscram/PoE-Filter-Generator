@@ -1,5 +1,5 @@
-@league = Kalandra
-@item_type = DeliriumOrb
+@league = Sanctum
+@item_type = UniqueArmour
 @currency_type = Fragment
 
 ### poe ninja currency or frags
@@ -7,3 +7,6 @@ GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currenc
 
 ### poe ninja items
 GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
+
+### PoE Wiki Experiments
+GET https://www.poewiki.net/w/api.php?action=cargoquery&format=json&tables=items&fields=name,%20class&where=rarity=%22Normal%22%20AND%20class=%22Dagger%22&limit=500&order_by=drop_level

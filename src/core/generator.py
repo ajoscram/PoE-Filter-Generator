@@ -4,7 +4,7 @@ from .generator_error import GeneratorError
 from .block import Block
 from .filter import Filter
 
-_HANDLERS_PATH = "handlers."
+_HANDLERS_PATH = "src.handlers."
 _HANDLER_NOT_FOUND_ERROR = "Handler '{0}' was not found."
 
 class Generator:

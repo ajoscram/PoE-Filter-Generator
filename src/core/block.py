@@ -1,5 +1,5 @@
-from classes.rule import Rule
-from classes.line import Line
+from src.core.rule import Rule
+from src.core.line import Line
 
 class Block:
     """A block is a collection of lines (strings) in a filter, which may include rules in them.

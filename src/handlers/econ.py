@@ -1,9 +1,9 @@
 import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout
-from classes.generator_error import GeneratorError
 
-from classes.block import Block
-from classes.rule import Rule
+from src.core.generator_error import GeneratorError
+from src.core.block import Block
+from src.core.rule import Rule
 
 _NAME = "econ"
 _STANDARD_TAG = "std"
@@ -28,7 +28,7 @@ _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 _LEAGUE_NAMES_ERROR_TEXT = "league names from GGG's API"
 _NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
 
-_TYPES = {
+_MISC_TYPES = {
     "cur": "Currency",
     "fra": "Fragment",
     "oil": "Oil",
@@ -41,7 +41,16 @@ _TYPES = {
     "bea": "Beast",
     "inv": "Invitation",
     "via": "Vial",
-    "del": "DeliriumOrb"
+    "del": "DeliriumOrb",
+}
+
+_UNIQUE_TYPES = {
+    "UniqueWeapon": [ "One Hand Axes", "Claws", "Thrusting One Hand Swords", "Staves", "", "", "", "", "", "", ],
+    "UniqueArmour": [ "Gloves", "Body Armours", "", "", "", "", "", "", "", "", ],
+    "UniqueAccessory": [ "Rings", "", "", ],
+    "UniqueFlask": [ "Mana Flasks", "", "", "", "", ],
+    "UniqueJewel": [ "", "", ],
+    "UniqueMap": [ "Maps", ],
 }
 
 class _Params:
@@ -52,23 +61,26 @@ class _Params:
         self.ninja_url = self._get_ninja_url(type)
     
     def _get_ninja_url(self, type: str):
-        if type == _TYPES["cur"] or type == _TYPES["fra"]:
+        if type == _MISC_TYPES["cur"] or type == _MISC_TYPES["fra"]:
             return _CURRENCY_API_URL
         else:
             return _ITEM_API_URL
 
 _ninja_cache = {}
-_league = None
 
 def handle(_, block: Block, options: list[str]):
     """Handles creation of economy adjusted filters.
     Hardcore standard is not supported because poe.ninja doesn't support it.
     Options: 
-        - if 'hc' is passed then the hardcore temp league is queried, if not softcore
-        - if 'std' is passed then standard is queried, if not temp league"""
+        - if `hc` is passed then the hardcore temp league is queried, if not softcore
+        - if `std` is passed then standard is queried, if not temp league"""
+
+    league = _get_league(options)
+    params = [ _parse_rule_params(rule) for rule in block.get_rules(_NAME) ]
+
+
     for rule in block.get_rules(_NAME):
         params = _parse_rule_params(rule)
-        league = _get_league(options)
         base_types = _get_base_types(league, params)
         base_types_string = _get_base_types_string(base_types)
         block.swap(_BASE_TYPE_IDENTIFIER, base_types_string)
@@ -81,9 +93,9 @@ def _parse_rule_params(rule: Rule):
     if len(parts) < 2 or len(parts) > 3:
         raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
     
-    if parts[0] not in _TYPES:
+    if parts[0] not in _MISC_TYPES:
         raise GeneratorError(_RULE_TYPE_ERROR.format(parts[0]), rule.line_number)
-    type = _TYPES[parts[0]]
+    type = _MISC_TYPES[parts[0]]
 
     if not _is_float(parts[1]): 
         raise GeneratorError(_RULE_BOUNDS_ERROR.format("lower", parts[1]), rule.line_number)
@@ -103,20 +115,16 @@ def _is_float(string: str):
         return False
 
 def _get_league(options: list[str]):
-    global _league
     try:
-        if _league == None:
-            headers = {'User-Agent': _FILTER_GENERATOR_USER_AGENT}
-            response = requests.get(_LEAGUE_NAME_API_URL, headers=headers)
-            response.raise_for_status()
-            leagues = response.json()
-            if _STANDARD_TAG in options:
-                _league = leagues[_LEAGUE_NAME_STANDARD_INDEX]["id"]
-            elif _HARDCORE_TAG in options:
-                _league = leagues[_LEAGUE_NAME_TEMP_HC_INDEX]["id"]
-            else:
-                _league = leagues[_LEAGUE_NAME_TEMP_INDEX]["id"]
-        return _league
+        headers = {'User-Agent': _FILTER_GENERATOR_USER_AGENT}
+        response = requests.get(_LEAGUE_NAME_API_URL, headers=headers)
+        response.raise_for_status()
+        leagues = response.json()
+        if _STANDARD_TAG in options:
+            return leagues[_LEAGUE_NAME_STANDARD_INDEX]["id"]
+        if _HARDCORE_TAG in options:
+            return leagues[_LEAGUE_NAME_TEMP_HC_INDEX]["id"]
+        return leagues[_LEAGUE_NAME_TEMP_INDEX]["id"]
     except HTTPError as error:
         raise GeneratorError(_HTTP_ERROR.format(_LEAGUE_NAMES_ERROR_TEXT, error))
     except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):

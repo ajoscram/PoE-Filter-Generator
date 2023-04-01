@@ -1,7 +1,7 @@
-from classes.block import Block
-from classes.filter import Filter
-from classes.line import Line
-from classes.rule import Rule, COMMENT_START
+from src.core.block import Block
+from src.core.filter import Filter
+from src.core.line import Line
+from src.core.rule import Rule, COMMENT_START
 
 _INDEX_RULE_NAME = "index"
 _SECTION_RULE_NAME = "section"
@@ -24,7 +24,7 @@ class _Section:
 _index: list[_Section] = None
 
 def handle(filter: Filter, block: Block, _):
-    """Adds indices and addressable sections."""
+    """Adds indices and addressable sections. Options are ignored."""
     global _index
     _index = _create_index(filter) if _index == None else _index
     return [ raw_line for line in block.lines for raw_line in _get_raw_lines_from_line(line) ]

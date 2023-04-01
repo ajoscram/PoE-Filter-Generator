@@ -1,6 +1,6 @@
 from pickle import FALSE
-from classes.generator_error import GeneratorError
-from classes.block import Block
+from src.core.generator_error import GeneratorError
+from src.core.block import Block
 
 _NAME = "tag"
 _WILDCARD = "_"

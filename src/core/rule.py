@@ -1,4 +1,4 @@
-from classes.generator_error import GeneratorError
+from src.core.generator_error import GeneratorError
 
 _RULE_SEPARATOR = '.'
 COMMENT_START = '#'

@@ -1,5 +1,5 @@
-from classes.generator_error import GeneratorError
-from classes.rule import Rule
+from src.core.generator_error import GeneratorError
+from src.core.rule import Rule
 
 _SHOW = "Show"
 _HIDE = "Hide"

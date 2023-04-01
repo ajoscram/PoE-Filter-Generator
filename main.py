@@ -6,10 +6,10 @@ For more information run "python generate.py -h".
 
 import sys, traceback
 
-from classes.arguments import Arguments
-from classes.generator import Generator
-from classes.filter import Filter
-from classes.generator_error import GeneratorError
+from src.core.arguments import Arguments
+from src.core.generator import Generator
+from src.core.filter import Filter
+from src.core.generator_error import GeneratorError
 
 HELP_ARG = "-help"
 HELP_ARG_SHORT = "-h"

@@ -1,7 +1,7 @@
 """PoE Filter Generator Main Script
 
 This script is the one called to run the program.
-For more information run "python generate.py -h".
+For more information run "python main.py -h".
 """
 
 import sys, traceback

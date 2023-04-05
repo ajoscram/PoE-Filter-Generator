@@ -1,12 +1,26 @@
+### PoE Ninja queries
 @league = Sanctum
 @item_type = UniqueArmour
 @currency_type = Fragment
 
-### poe ninja currency or frags
+### Currency or Frags
 GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currency_type}}
 
-### poe ninja items
+### Items
 GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
 
-### PoE Wiki Experiments
-GET https://www.poewiki.net/w/api.php?action=cargoquery&format=json&tables=items&fields=name,%20class&where=rarity=%22Normal%22%20AND%20class=%22Dagger%22&limit=500&order_by=drop_level
+### Wiki Cargo Queries
+### Docs: https://www.poewiki.net/wiki/Special:CargoQuery
+@tables = flasks
+@fields = _pageName, charges_max_range_average
+@where = 
+@group_by = 
+@order_by = charges_max+DESC
+@join_on = 
+@limit = 50
+
+### Direct API Queries
+GET https://www.poewiki.net/w/api.php?action=cargoquery&format=json&tables={{tables}}&fields={{fields}}&where={{where}}&group_by={{group_by}}&order_by={{order_by}}&join_on={{join_on}}&limit={{limit}}
+
+### PHP Queries
+GET https://www.poewiki.net/index.php?title=Special:CargoExport&format=json&tables={{tables}}&fields={{fields}}&where={{where}}&order+by={{order_by}}&join+on={{join_on}}&limit={{limit}}

@@ -5,11 +5,7 @@ For more information run "python main.py -h".
 """
 
 import sys, traceback
-
-from src.core.arguments import Arguments
-from src.core.generator import Generator
-from src.core.filter import Filter
-from src.core.generator_error import GeneratorError
+from src.core import Generator, GeneratorError, Arguments, Filter
 
 HELP_ARG = "-help"
 HELP_ARG_SHORT = "-h"

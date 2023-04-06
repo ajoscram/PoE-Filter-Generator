@@ -1,6 +1,6 @@
 import os
 
-from src.core.generator_error import GeneratorError
+from .generator_error import GeneratorError
 from .block import Block
 
 _FILE_EXISTS_ERROR = "The file path corresponds to an already existing file"

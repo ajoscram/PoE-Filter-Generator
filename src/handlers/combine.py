@@ -1,8 +1,5 @@
 from itertools import combinations as Combinations
-
-from src.core.block import Block
-from src.core.generator_error import GeneratorError
-from src.core.line import Line
+from src.core import Block, Line, GeneratorError
 
 _NAME = "combine"
 _COMBINE_END = "end"

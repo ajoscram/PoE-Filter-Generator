@@ -1,5 +1,3 @@
-* Check if new API is needed to get the values off a line / block, add if so
-
 # To do
 * Write the base_type query (look up which filter lines can affect this query)
 * suppport uniques in .econ, keeping in mind: 6-link uniques, replicas, item level

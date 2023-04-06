@@ -50,7 +50,7 @@ class Block:
         If no pattern is provided then every line in the block is commented out instead."""
         for line in self.lines:
             if pattern == None or line.contains(pattern):
-                line.comment()
+                line.comment_out()
     
     def uncomment(self, pattern: str = None):
         """Uncomments every line that has the pattern inside a comment.
@@ -93,7 +93,7 @@ class Block:
         return [ rule for line in self.lines for rule in line.get_rules(name_or_names) ]
     
     def get_raw_lines(self):
-        return [ line.text for line in self.lines ]
+        return [ str(line) for line in self.lines ]
                     
     def __str__(self):
         string = f"[{self.line_number}] Block"

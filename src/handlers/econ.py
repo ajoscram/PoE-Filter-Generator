@@ -1,9 +1,6 @@
 import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout
-
-from src.core.generator_error import GeneratorError
-from src.core.block import Block
-from src.core.rule import Rule
+from src.core import GeneratorError, Block, Rule
 
 _NAME = "econ"
 _STANDARD_TAG = "std"
@@ -45,12 +42,12 @@ _MISC_TYPES = {
 }
 
 _UNIQUE_TYPES = {
-    "UniqueWeapon": [ "One Hand Axes", "Claws", "Thrusting One Hand Swords", "Staves", "", "", "", "", "", "", ],
-    "UniqueArmour": [ "Gloves", "Body Armours", "", "", "", "", "", "", "", "", ],
-    "UniqueAccessory": [ "Rings", "", "", ],
-    "UniqueFlask": [ "Mana Flasks", "", "", "", "", ],
-    "UniqueJewel": [ "", "", ],
-    "UniqueMap": [ "Maps", ],
+    [ "One Hand Axes", "Claws", "Thrusting One Hand Swords", "Staves", "", "", "", "", "", "", ]: "UniqueWeapon",
+    [ "Gloves", "Body Armours", "", "", "", "", "", "", "", "", ]: "UniqueArmour",
+    [ "Rings", "", "", ]: "UniqueAccessory",
+    [ "Mana Flasks", "", "", "", "", ]: "UniqueFlask",
+    [ "", "", ]: "UniqueJewel",
+    [ "Maps", ]: "UniqueMap",
 }
 
 class _Params:
@@ -155,7 +152,7 @@ def _get_ninja_lines(url: str, league: str, type: str):
         raise GeneratorError(_CONNECTION_ERROR.format(_NINJA_DATA_ERROR_TEXT))
 
 def _get_base_types_string(base_types):
-    base_types_string = f"\t{_BASE_TYPE_IDENTIFIER} =="
+    base_types_string = f"    {_BASE_TYPE_IDENTIFIER} =="
     for base in base_types:
         base_types_string += f" \"{base}\""
     return base_types_string

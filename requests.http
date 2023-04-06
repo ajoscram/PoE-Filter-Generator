@@ -11,7 +11,7 @@ GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
 
 ### Wiki Cargo Queries
 ### Docs: https://www.poewiki.net/wiki/Special:CargoQuery
-@tables = flasks
+@tables = items
 @fields = _pageName, charges_max_range_average
 @where = 
 @group_by = 

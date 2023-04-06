@@ -1,5 +1,5 @@
-from src.core.generator_error import GeneratorError
-from src.core.invocation import Invocation
+from .generator_error import GeneratorError
+from .invocation import Invocation
 
 _HANDLER_TAG = "."
 _TOO_LITTLE_ARGUMENTS_ERROR = "Too little arguments were provided"

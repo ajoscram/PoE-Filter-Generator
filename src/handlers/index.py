@@ -1,7 +1,4 @@
-from src.core.block import Block
-from src.core.filter import Filter
-from src.core.line import Line
-from src.core.rule import Rule, COMMENT_START
+from src.core import Rule, Line, Block, Filter, COMMENT_START
 
 _INDEX_RULE_NAME = "index"
 _SECTION_RULE_NAME = "section"

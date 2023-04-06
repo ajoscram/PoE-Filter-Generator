@@ -1,8 +1,5 @@
 import re
-
-from src.core.block import Block
-from src.core.filter import Filter
-from src.core.line import Line
+from src.core import Line, Block, Filter
 
 def handle(filter: Filter, block: Block, _):
     """Removes rules, trailing whitespace from lines and extraneous empty lines."""

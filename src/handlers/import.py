@@ -1,10 +1,5 @@
 import os.path, re
-
-from src.core.generator_error import GeneratorError
-from src.core.filter import Filter
-from src.core.block import Block
-from src.core.line import Line
-from src.core.rule import Rule
+from src.core import Rule, Line, Block, Filter, GeneratorError
 
 _NAME = "import"
 _SPLITTER = "->"

@@ -1,7 +1,11 @@
-### PoE Ninja queries
+### - PoE Leagues
+GET https://api.pathofexile.com/leagues?type=main&realm=pc
+User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/
+
+### - PoE Ninja queries
 @league = Sanctum
-@item_type = UniqueArmour
-@currency_type = Fragment
+@item_type = UniqueFlask
+@currency_type = Currency
 
 ### Currency or Frags
 GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currency_type}}
@@ -9,15 +13,15 @@ GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currenc
 ### Items
 GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
 
-### Wiki Cargo Queries
+### - Wiki Cargo Queries
 ### Docs: https://www.poewiki.net/wiki/Special:CargoQuery
 @tables = items
-@fields = _pageName, charges_max_range_average
-@where = 
+@fields = class_id, base_item
+@where = base_item='Amethyst Flask'
 @group_by = 
-@order_by = charges_max+DESC
+@order_by =
 @join_on = 
-@limit = 50
+@limit = 1
 
 ### Direct API Queries
 GET https://www.poewiki.net/w/api.php?action=cargoquery&format=json&tables={{tables}}&fields={{fields}}&where={{where}}&group_by={{group_by}}&order_by={{order_by}}&join_on={{join_on}}&limit={{limit}}

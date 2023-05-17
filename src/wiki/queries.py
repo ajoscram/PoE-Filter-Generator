@@ -1,16 +1,13 @@
-from .constants import FILTER_TO_INTERNAL_CLASSES, Field, Operator, Table
+from .wiki_error import WikiError
+from .constants import Field, Operator, Table
 from .query import Query
 from .where import Where
 
-def get_uniques(filter_classes: list[str]):
-    class_where = _get_class_where(filter_classes)
-    where = Where(Field.RARITY, Operator.EQUALS, "Unique").And(class_where)
-    return Query(Table.ITEMS, [ Field.NAME, Field.CLASS, Field.BASE_ITEM ]).where(where).run()
+_CLASS_FOR_BASE_TYPE_NOT_FOUND_ERROR = "A suitable class for base type '{0}' could not be found on the Wiki."
 
-def _get_class_where(classes: list[str]):
-    classes = [ FILTER_TO_INTERNAL_CLASSES[class_] for class_ in classes if class_ in FILTER_TO_INTERNAL_CLASSES ]
-    wheres = [ Where(Field.CLASS, Operator.EQUALS, class_) for class_ in classes ]
-    class_where = wheres[0]
-    for where in wheres[1:]:
-        class_where.Or(where)
-    return class_where
+def get_class_for_base_type(base_type: str):
+    where = Where(Field.BASE_ITEM, Operator.EQUALS, base_type)
+    results = Query(Table.ITEMS, [ Field.CLASS_ID ]).where(where).limit(1).run()
+    if len(results) == 0:
+        raise WikiError(_CLASS_FOR_BASE_TYPE_NOT_FOUND_ERROR.format(base_type))
+    return results[0][Field.CLASS_ID.value]

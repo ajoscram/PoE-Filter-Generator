@@ -1,1 +1,1 @@
-from .queries import get_uniques
+from .queries import get_class_for_base_type

@@ -1,168 +1,147 @@
-import requests
-from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout
-from src.core import GeneratorError, Block, Rule
+import ggg, ninja, utils
+from core import GeneratorError, Block, Rule
 
 _NAME = "econ"
-_STANDARD_TAG = "std"
-_HARDCORE_TAG = "hc"
-_BASE_TYPE_IDENTIFIER = "BaseType"
 
-_FILTER_GENERATOR_USER_AGENT = "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/"
-_CURRENCY_API_URL = "https://poe.ninja/api/data/currencyoverview"
-_ITEM_API_URL = "https://poe.ninja/api/data/itemoverview"
-_LEAGUE_NAME_API_URL = "https://api.pathofexile.com/leagues?type=main&realm=pc"
-_LEAGUE_NAME_STANDARD_INDEX = 0
-_LEAGUE_NAME_TEMP_INDEX = 4
-_LEAGUE_NAME_TEMP_HC_INDEX = 5
+_STANDARD_OPTION = "std"
+_HARDCORE_OPTION = "hc"
+_RUTHLESS_OPTION = "rth"
 
-_ERROR_MESSAGE_PREFIX = "Error while getting the {0}.\n"
-_HTTP_ERROR = _ERROR_MESSAGE_PREFIX + "You might want to report this error to @ajoscram on Github with this text:\n\n{1}"
-_CONNECTION_ERROR = _ERROR_MESSAGE_PREFIX + "Please make sure you have an active internet connection."
+_UNIQUE_MNEMONIC = "uni"
+_CURRENCY_MNEMONICS = {
+    "cur": ninja.CurrencyType.BASIC,
+    "fra": ninja.CurrencyType.FRAGMENT,
+}
+_MISC_MNEMONICS = {
+    "oil": ninja.MiscItemType.OIL,
+    "inc": ninja.MiscItemType.INCUBATOR,
+    "sca": ninja.MiscItemType.SCARAB,
+    "fos": ninja.MiscItemType.FOSSIL,
+    "res": ninja.MiscItemType.RESONATOR,
+    "ess": ninja.MiscItemType.ESSENCE,
+    "div": ninja.MiscItemType.DIVINATION_CARD,
+    "bea": ninja.MiscItemType.BEAST,
+    "inv": ninja.MiscItemType.INVITATION,
+    "via": ninja.MiscItemType.VIAL,
+    "del": ninja.MiscItemType.DELIRIUM_ORB,
+}
+
 _RULE_PARAMETER_COUNT_ERROR = "The .econ rule expects 2 or 3 paramaters in its description, got {0}."
-_RULE_TYPE_ERROR = "The .econ rule expects a valid type, got '{0}'."
+_RULE_MNEMONIC_ERROR = "The .econ rule expects a valid type mnemonic, got '{0}'."
 _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 
-_LEAGUE_NAMES_ERROR_TEXT = "league names from GGG's API"
-_NINJA_DATA_ERROR_TEXT = "data from poe.ninja"
-
-_MISC_TYPES = {
-    "cur": "Currency",
-    "fra": "Fragment",
-    "oil": "Oil",
-    "inc": "Incubator",
-    "sca": "Scarab",
-    "fos": "Fossil",
-    "res": "Resonator",
-    "ess": "Essence",
-    "div": "DivinationCard",
-    "bea": "Beast",
-    "inv": "Invitation",
-    "via": "Vial",
-    "del": "DeliriumOrb",
-}
-
-_UNIQUE_TYPES = {
-    [ "One Hand Axes", "Claws", "Thrusting One Hand Swords", "Staves", "", "", "", "", "", "", ]: "UniqueWeapon",
-    [ "Gloves", "Body Armours", "", "", "", "", "", "", "", "", ]: "UniqueArmour",
-    [ "Rings", "", "", ]: "UniqueAccessory",
-    [ "Mana Flasks", "", "", "", "", ]: "UniqueFlask",
-    [ "", "", ]: "UniqueJewel",
-    [ "Maps", ]: "UniqueMap",
-}
+_BASE_TYPE_OPERAND = "BaseType"
+_LINKED_SOCKETS_OPERAND = "LinkedSockets"
 
 class _Params:
-    def __init__(self, type: str, lower: float, upper: float = None):
-        self.type = type
+    def __init__(self, mnemonic: str, league_name: str, line_number: int, lower: float, upper: float = None):
+        self.mnemonic = mnemonic
+        self.league_name = league_name
+        self.line_number = line_number
         self.lower = lower
         self.upper = upper
-        self.ninja_url = self._get_ninja_url(type)
-    
-    def _get_ninja_url(self, type: str):
-        if type == _MISC_TYPES["cur"] or type == _MISC_TYPES["fra"]:
-            return _CURRENCY_API_URL
-        else:
-            return _ITEM_API_URL
-
-_ninja_cache = {}
 
 def handle(_, block: Block, options: list[str]):
     """Handles creation of economy adjusted filters.
     Hardcore standard is not supported because poe.ninja doesn't support it.
-    Options: 
-        - if `hc` is passed then the hardcore temp league is queried, if not softcore
-        - if `std` is passed then standard is queried, if not temp league"""
+    Options:
+        - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead
+        - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead
+        - if `rth` is passed then ruthless leagues will be queried"""
 
-    league = _get_league(options)
-    params = [ _parse_rule_params(rule) for rule in block.get_rules(_NAME) ]
-
-
+    league_name = _get_league_name(options)
+    base_types = []
     for rule in block.get_rules(_NAME):
-        params = _parse_rule_params(rule)
-        base_types = _get_base_types(league, params)
-        base_types_string = _get_base_types_string(base_types)
-        block.swap(_BASE_TYPE_IDENTIFIER, base_types_string)
-        if len(base_types) == 0:
-            block.comment()
+        params = _get_params(rule, league_name)
+        base_types += _get_base_types(params, block)
+
+    for line in block.find(operand=_BASE_TYPE_OPERAND):
+        line.operator = "=="
+        line.values = [ f'"{base_type}"' for base_type in set(base_types) ]
+    
+    if len(base_types) == 0:
+        block.comment()
+
     return block.get_raw_lines()
 
-def _parse_rule_params(rule: Rule):
+def _get_league_name(options: list[str]):
+    standard = _STANDARD_OPTION in options
+    hardcore = _HARDCORE_OPTION in options
+    ruthless = _RUTHLESS_OPTION in options
+    return ggg.get_league_name(standard, hardcore, ruthless)
+
+def _get_params(rule: Rule, league_name: str):
     parts = rule.description.split()
-    if len(parts) < 2 or len(parts) > 3:
+    if len(parts) not in [2, 3]:
         raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
     
-    if parts[0] not in _MISC_TYPES:
-        raise GeneratorError(_RULE_TYPE_ERROR.format(parts[0]), rule.line_number)
-    type = _MISC_TYPES[parts[0]]
-
-    if not _is_float(parts[1]): 
+    if not utils.is_float(parts[1]):
         raise GeneratorError(_RULE_BOUNDS_ERROR.format("lower", parts[1]), rule.line_number)
     lower = float(parts[1])
 
-    if len(parts) == 3 and not _is_float(parts[2]): 
+    if len(parts) == 3 and not utils.is_float(parts[2]): 
         raise GeneratorError(_RULE_BOUNDS_ERROR.format("upper", parts[2]), rule.line_number)
     upper = float(parts[2]) if len(parts) == 3 else None
+ 
+    return _Params(parts[0], league_name, rule.line_number, lower, upper)
 
-    return _Params(type, lower, upper)
+def _get_base_types(params: _Params, block: Block):
+    if params.mnemonic in _CURRENCY_MNEMONICS:
+        currency_type = _CURRENCY_MNEMONICS[params.mnemonic]
+        return ninja.get_currency_base_types(params.league_name, currency_type, params.lower, params.upper)
+    
+    if params.mnemonic in _MISC_MNEMONICS:
+        misc_type = _MISC_MNEMONICS[params.mnemonic]
+        return ninja.get_misc_base_types(params.league_name, misc_type, params.lower, params.upper)
+    
+    if params.mnemonic == _UNIQUE_MNEMONIC:
+        unique_filter = _get_unique_filter(block)
+        return ninja.get_unique_base_types(params.league_name, unique_filter, params.lower, params.upper)
 
-def _is_float(string: str):
-    try:
-        float(string)
-        return True
-    except ValueError:
-        return False
+    raise GeneratorError(_RULE_MNEMONIC_ERROR.format(params.mnemonic), params.line_number)
 
-def _get_league(options: list[str]):
-    try:
-        headers = {'User-Agent': _FILTER_GENERATOR_USER_AGENT}
-        response = requests.get(_LEAGUE_NAME_API_URL, headers=headers)
-        response.raise_for_status()
-        leagues = response.json()
-        if _STANDARD_TAG in options:
-            return leagues[_LEAGUE_NAME_STANDARD_INDEX]["id"]
-        if _HARDCORE_TAG in options:
-            return leagues[_LEAGUE_NAME_TEMP_HC_INDEX]["id"]
-        return leagues[_LEAGUE_NAME_TEMP_INDEX]["id"]
-    except HTTPError as error:
-        raise GeneratorError(_HTTP_ERROR.format(_LEAGUE_NAMES_ERROR_TEXT, error))
-    except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
-        raise GeneratorError(_CONNECTION_ERROR.format(_LEAGUE_NAMES_ERROR_TEXT))
+def _get_unique_filter(block: Block):
+    unique_filter = ninja.UniqueFilter()
 
-def _get_base_types(league: str, params: _Params):
-    lines = _get_ninja_lines(params.ninja_url, league, params.type)
-    base_types = []
-    for line in lines:
-        value = line["chaosEquivalent"] if "chaosEquivalent" in line else line["chaosValue"]
-        name_lookup = "currencyTypeName" if "chaosEquivalent" in line else "name"
-        base_type = line[name_lookup]
-        if _is_base_type_valid(base_type) and _is_value_valid(value, params):
-            base_types.append(base_type)
-    return base_types
+    classes = block.get_classes()
+    if len(classes) > 0:
+        classes = [ utils.try_translate_class(class_) for class_ in classes ]
+        unique_filter.classes = classes
+    
+    replica_lines = block.find(operand="Replica")
+    if len(replica_lines) > 0:
+        unique_filter.is_replica = replica_lines[-1].get_value_as_boolean()
 
-def _get_ninja_lines(url: str, league: str, type: str):
-    global _ninja_cache
-    try:
-        if type not in _ninja_cache:
-            response = requests.get(url, params={"league": league, "type": type})
-            response.raise_for_status()
-            _ninja_cache[type] = response.json()["lines"]
-        return _ninja_cache[type]
-    except HTTPError as error:
-        raise GeneratorError(_HTTP_ERROR.format(_NINJA_DATA_ERROR_TEXT, error))
-    except (ConnectTimeout, ReadTimeout, Timeout, requests.ConnectionError):
-        raise GeneratorError(_CONNECTION_ERROR.format(_NINJA_DATA_ERROR_TEXT))
+    equals_links = _get_equals_link_values(block)
+    unique_filter.min_links = equals_links if equals_links != None else _get_min_links(block)
+    unique_filter.max_links = equals_links if equals_links != None else _get_max_links(block)
 
-def _get_base_types_string(base_types):
-    base_types_string = f"    {_BASE_TYPE_IDENTIFIER} =="
-    for base in base_types:
-        base_types_string += f" \"{base}\""
-    return base_types_string
+    return unique_filter
 
-def _is_value_valid(value: float, params: _Params):
-    return value >= params.lower and (params.upper == None or value < params.upper)
+def _get_min_links(block: Block):
+    greater_than_or_equal_lines = block.find(operand=_LINKED_SOCKETS_OPERAND, operator=">=")
+    values = [ line.get_value_as_int() for line in greater_than_or_equal_lines ]
+    
+    greater_than_lines = block.find(operand=_LINKED_SOCKETS_OPERAND, operator=">")
+    values += [ line.get_value_as_int() + 1 for line in greater_than_lines ]
 
-def _is_base_type_valid(base_type: str):
-    '''Removes poe.ninja entries which are not BaseTypes.'''
-    if base_type in ["Will of Chaos", "Ignominious Fate", "Victorious Fate", "Deadly End"]:
-        return False
-    else:
-        return True
+    return min(values) if len(values) > 0 else None
+
+def _get_max_links(block: Block):
+    less_than_or_equal_lines = block.find(operand=_LINKED_SOCKETS_OPERAND, operator="<=")
+    values = [ line.get_value_as_int() for line in less_than_or_equal_lines ]
+    
+    less_than_lines = block.find(operand=_LINKED_SOCKETS_OPERAND, operator="<")
+    values += [ line.get_value_as_int() - 1 for line in less_than_lines ]
+
+    return max(values) if len(values) > 0 else None
+
+def _get_equals_link_values(block: Block):
+    empty_equals_lines = block.find(operand=_LINKED_SOCKETS_OPERAND, operator="")
+    equals_lines = block.find(operand=_LINKED_SOCKETS_OPERAND, operator="=")
+    strict_equals_lines = block.find(operand=_LINKED_SOCKETS_OPERAND, operator="==")
+    values = [
+        line.get_value_as_int()
+        for line in empty_equals_lines + equals_lines + strict_equals_lines
+    ]
+    return max(values) if len(values) > 0 else None

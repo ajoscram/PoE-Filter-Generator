@@ -88,15 +88,29 @@ class Block:
         self.uncomment("MinimapIcon")
         self.uncomment("PlayEffect")
 
+    def find(self, operand: str = None, operator: str = None) -> list[Line]:
+        """Finds all the lines that contain the queried criteria."""
+        lines = self.lines
+        
+        if operand != None:
+            lines = [ line for line in lines if line.operand == operand ]
+        
+        if operator != None:
+            lines = [ line for line in lines if line.operator == operator ]
+
+        return lines
+
     def get_rules(self, name_or_names: str | list[str]) -> list[Rule]:
         """Gets all the rules in the block with name equals to rule_name."""
         return [ rule for line in self.lines for rule in line.get_rules(name_or_names) ]
+    
+    def get_classes(self):
+        """Returns all values included in lines which have the `Class` operand."""
+        lines = self.find(operand="Class")
+        return [ value.replace('"', "") for line in lines for value in line.values ]
     
     def get_raw_lines(self):
         return [ str(line) for line in self.lines ]
                     
     def __str__(self):
-        string = f"[{self.line_number}] Block"
-        for line in self.lines:
-            string += f"\n{line}"
-        return string
+        return '\n'.join(self.get_raw_lines())

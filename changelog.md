@@ -1,11 +1,5 @@
-# To do
-* Write the base_type query (look up which filter lines can affect this query)
-* suppport uniques in .econ, keeping in mind: 6-link uniques, replicas, item level
-* Create unit tests for the entire codebase
-* Document the Wiki classes
-* Investigate why standard hardcore is not supported on poe.ninja
-* Add a mechanism to emit warnings and return no block on econ if base_types is empty.
-* Investigate what happens when two equivalent styles are added to the same block. This could be helpful in deciding how to hide and show blocks
+# 1.2.2
+* Uniques are now supported in `.econ`. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
 
 # 1.2.1
 * Fixed a `.import` bug which prevented the loading of filter files when importing

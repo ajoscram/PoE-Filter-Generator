@@ -5,7 +5,7 @@ For more information run "python main.py -h".
 """
 
 import sys, traceback
-from src.core import Generator, GeneratorError, Arguments, Filter
+from core import generator, GeneratorError, Arguments, Filter
 
 HELP_ARG = "-help"
 HELP_ARG_SHORT = "-h"
@@ -32,7 +32,8 @@ Where:
         For more information on handlers visit the project's wiki at https://github.com/ajoscram/PoE-Filter-Generator/wiki/Handlers.
         Handlers may receive options, which can be provided after the handler's name.
         You may provide multiple handlers to perform in a single invocation of this program."""
-UNKNOWN_ERROR_WARNING = """If your're reading this then an unforseen error has ocurred. Notify me immediately so I can fix it!
+UNKNOWN_ERROR_WARNING = """
+If your're reading this then an unforseen error has ocurred. Notify me immediately so I can fix it!
 Please provide either the following text from the error or a screenshot via an issue on GitHub:
 
 https://github.com/ajoscram/PoE-Filter-Generator/issues/new
@@ -48,8 +49,7 @@ try:
 
     print(f"\nReading filter file from '{args.input_filepath}'...\n")
     filter = Filter.load(args.input_filepath)
-    
-    generator = Generator()
+
     for invocation in args.invocations:
         print(f"Applying .{' '.join([invocation.handler_name] + invocation.options)}...")
         filter = generator.generate(filter, args.output_filepath, invocation.handler_name, invocation.options)

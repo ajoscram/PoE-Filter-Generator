@@ -1,5 +1,4 @@
-import requests
-
+import utils
 from .wiki_error import WikiError
 from .constants import COMMA, Field, Table
 from .order_by import OrderBy
@@ -13,6 +12,8 @@ _NO_FIELDS_ERROR = "No fields were provided to query the wiki with."
 _NO_JOIN_FOR_MULTITABLE_ERROR = "No join_on parameter provided for a query involving these tables: {0}."
 _JOIN_FOR_ONE_TABLE_ERROR = "Provided a join_on parameter '{0}' to query a single table '{1}'."
 _OUT_OF_RANGE_LIMIT_ERROR = "Provided an out-of-range 'limit' parameter: '{0}'. The value must be between 1 and 500."
+
+_WIKI_DATA_DESCRIPTOR = "data from poewiki.net"
 
 class Query:
     def __init__(self, tables: Table | list[Table], fields: Field | list[Field], join_on: Field = Field.NONE):
@@ -55,12 +56,17 @@ class Query:
         return self
 
     def run(self):
-        response = requests.get(self._get_query_string())
-        response.raise_for_status()
-        return response.json()
+        records = utils.http_get(self._get_query_string(), _WIKI_DATA_DESCRIPTOR)
+        return [ _get_record_without_whitespace_in_keys(record) for record in records ]
     
     def _get_query_string(self):
         tables = COMMA.join([ table.value for table in self._tables ])
         fields = COMMA.join([ field.value for field in self._fields ])
         where = str(self._where) if self._where != None else ""
         return _PHP_URL.format(tables, fields, where, self._group_by.value, str(self._order_by), self._join_on.value, str(self._limit))
+    
+def _get_record_without_whitespace_in_keys(record: dict[str]):
+    new_record = {}
+    for key in record:
+        new_record[key.replace(" ", "_")] = record[key]
+    return new_record

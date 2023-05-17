@@ -1,4 +1,4 @@
-from .generator import Generator
+from . import generator
 from .generator_error import GeneratorError
 from .arguments import Arguments
 from .filter import Filter

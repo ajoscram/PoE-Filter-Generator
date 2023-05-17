@@ -1,4 +1,4 @@
-from src.core import Block, GeneratorError
+from core import Block, GeneratorError
 
 _NAME = "tag"
 _WILDCARD = "_"

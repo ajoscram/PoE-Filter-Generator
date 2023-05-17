@@ -1,4 +1,4 @@
-from src.core import Block, GeneratorError
+from core import Block, GeneratorError
 
 _NAME = "strict"
 _STRICTNESS_ERROR_PREFIX = "You must provide only 1 integer value for the strictness {0}."

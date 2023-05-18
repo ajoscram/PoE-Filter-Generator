@@ -12,7 +12,7 @@ class Arguments:
             raise GeneratorError(_TOO_LITTLE_ARGUMENTS_ERROR)
         
         self.input_filepath: str = args[0]
-        self.output_filepath: str = args[1] if not args[1].startswith(_HANDLER_TAG) else self.input_filepath
+        self.output_filepath: str = args[1] if not args[1].startswith(_HANDLER_TAG) else args[0]
 
         invocations_start_index = 1 if args[1].startswith(_HANDLER_TAG) else 2
         if invocations_start_index == 2 and len(args) < 3:

@@ -60,7 +60,7 @@ def handle(_, block: Block, options: list[str]):
         line.values = [ f'"{base_type}"' for base_type in set(base_types) ]
     
     if len(base_types) == 0:
-        block.comment()
+        block.comment_out()
 
     return block.get_raw_lines()
 

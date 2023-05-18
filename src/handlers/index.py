@@ -14,7 +14,6 @@ class _Section:
     def __init__(self, rule: Rule, section_id: int, subsection_id: int):        
         self.rule = rule
         self.name = rule.description
-        
         self.id = f"[{section_id}_{subsection_id}]"
         self.is_subsection = subsection_id != 0
 
@@ -37,7 +36,7 @@ def _create_index(filter: Filter):
     return sections
 
 def _get_raw_lines_from_line(line: Line):
-    raw_lines = [ line.text ]
+    raw_lines = [ str(line) ]
     for rule in line.get_rules(_RULE_NAMES):
         raw_lines += [ "\n" ] +  _get_raw_lines_from_rule(rule) + [ "\n" ]
     return raw_lines

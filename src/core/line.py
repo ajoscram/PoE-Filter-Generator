@@ -5,7 +5,7 @@ from .rule import Rule, COMMENT_START
 
 _MULTILINE_STRING_ERROR = "Multiline string"
 _BOOL_VALUE_ERROR = "Could not translate the value(s) in the line to either 'True' or 'False'. Make sure to provide exactly one of either those values."
-_INT_VALUE_ERROR = "Could not translate the value(s) in the line to an integer. Make sure to provide exactly one numeric value."
+_INT_VALUE_ERROR = "Could not translate the value(s) in the line to a digit. Make sure to provide exactly one numeric value."
 
 _BLOCK_STARTERS = [ "Show", "Hide", "Minimal" ]
 _INDENTATION_REGEX = "\s*"
@@ -22,7 +22,6 @@ class Line:
     Rules are extracted upon creation.
     Multiline strings are not allowed as text.
     """
-    
     def __init__(self, text: str, number: int):
         text = text.rstrip()
         if '\n' in text:
@@ -50,43 +49,29 @@ class Line:
         An error is returned if the line contains more than one value or the value cannot be parsed to a integer."""
         if len(self.values) == 1 and self.values[0].isdigit():
             return int(self.values[0])
-        raise GeneratorError(_INT_VALUE_ERROR, self.number)    
+        raise GeneratorError(_INT_VALUE_ERROR, self.number)
     
-    def contains(self, pattern: str):
+    def contains(self, pattern: str, exclude_comments: bool = False):
         """Returns whether or not this line contains the pattern.
-        Comments are excluded from this check."""
-        return pattern in str(self).split(COMMENT_START, 1)[0]
-
-    def contains_in_comment(self, pattern: str):
-        """Returns whether or not this line contains the pattern within comments."""
-        return pattern in self.comment
-
-    def is_empty(self):
-        """Returns whtether or not this line is comprised entirely of whitespace."""
-        return str(self).strip() == ""
+        Comments are optionally excluded form this check with `exclude_comments`."""
+        text = str(self).split(COMMENT_START, 1)[0] if exclude_comments else str(self)
+        return pattern in text
+    
+    def get_rules(self, name_or_names: str | list[str]):
+        """Gets every rule within the line with a name equal to or included in `name_or_names`."""
+        if type(name_or_names) == str:
+            name_or_names = [ name_or_names ]
+        return [ rule for rule in self.rules if rule.name in name_or_names ]
     
     def comment_out(self):
         """Comments the line out by prepending a # to the line's text."""
         self._set_parts(COMMENT_START + str(self))
-    
-    def uncomment(self):
-        """Removes the left-most # (hashtag) of a line.
-        If the line has no comments then this does nothing."""
-        split_text = str(self).split(COMMENT_START, 1)
-        if len(split_text) == 2:
-            self._set_parts(split_text[0] + split_text[1])
-    
-    def get_rules(self, name_or_names: str | list[str]):
-        """Gets every rule within the line with a name equal to rule_name."""
-        if type(name_or_names) == str:
-            name_or_names = [ name_or_names ]
-        return [ rule for rule in self.rules if rule.name in name_or_names ]
 
     def __str__(self):
         values = " ".join(self.values)
-        parts = [ self.indentation + self.operand, self.operator, values, self.comment ]
+        parts = [ self.operand, self.operator, values, self.comment ]
         parts = [ part for part in parts if part != "" ]
-        return " ".join(parts)
+        return self.indentation + " ".join(parts)
     
     def _set_parts(self, text: str):
         parts = re.search(_LINE_REGEX, text.rstrip()).groups()

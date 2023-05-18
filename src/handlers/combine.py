@@ -58,5 +58,5 @@ def _validate_combine_lines(first_line: Line, last_line: Line):
 def _get_combined_raw_lines(prefix_lines: list[Line], combine_lines: list[Line], suffix_lines: list[Line], size: int):
     raw_lines: list[str] = []
     for combination in [ list(combination) for combination in Combinations(combine_lines, size) ]:
-        raw_lines += [ line.text for line in prefix_lines + combination + suffix_lines ]
+        raw_lines += [ str(line) for line in prefix_lines + combination + suffix_lines ]
     return raw_lines

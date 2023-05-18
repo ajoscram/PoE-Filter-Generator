@@ -8,7 +8,7 @@ def handle(filter: Filter, block: Block, _):
 
     if block == filter.blocks[0] and len(raw_lines) > 0 and raw_lines[0] == "":
         raw_lines = raw_lines[1:]
-
+    
     if block == filter.blocks[-1] and len(raw_lines) > 0 and raw_lines[-1] == "":
         raw_lines = raw_lines[:-1]
 
@@ -17,7 +17,7 @@ def handle(filter: Filter, block: Block, _):
 def _get_formatted_raw_lines(lines: list[Line]):
     raw_lines = []
     for line in lines:
-        raw_line = re.sub("#\..+", "", line.text) if len(line.rules) > 0 else line.text.rstrip()
+        raw_line = re.sub("#\..+", "", str(line)) if len(line.rules) > 0 else str(line).rstrip()
         if len(line.rules) == 0 or raw_line.strip() != "":
             raw_lines += [ raw_line ]
     return raw_lines

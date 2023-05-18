@@ -1,8 +1,9 @@
 # 1.2.2
-* Uniques are now supported in `.econ`. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
+* `.econ` now supports uniques. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
+* `.econ` now supports any combination of Ruthless, Standard and Hardcore league flags. Keep in mind that less popular leagues might not have enough data. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
 
 # 1.2.1
-* Fixed a `.import` bug which prevented the loading of filter files when importing
+* Fixed a `.import` bug which prevented the loading of filter files when importing.
 
 # 1.2.0
 * Added handler chaining, which allows application of multiple handlers in a row without having to invoke PFG multiple times

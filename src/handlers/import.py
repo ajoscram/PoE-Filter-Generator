@@ -37,7 +37,7 @@ _filter_cache: dict[str, Filter] = {}
 def handle(filter: Filter, block: Block, _):
     """Handles text import from filter files. Options are ignored."""
     params = _get_initial_params(filter.filepath, block)
-    return [ line.text for line in _get_lines_from_block(block, params, True)]
+    return [ str(line) for line in _get_lines_from_block(block, params, True)]
 
 def _get_initial_params(filepath: str, block: Block):
     name_rules = block.get_rules(_BLOCK_NAME)
@@ -126,7 +126,7 @@ def _get_block(filter: Filter, blockname: str):
 
 def _get_line(block: Block, line_pattern: str, filepath: str):
     for line in block.lines:
-        if line.contains(line_pattern) or line.contains_in_comment(line_pattern):
+        if line.contains(line_pattern):
             return line
     blockname = _get_blockname(block)
     error = _LINE_PATTERN_NOT_FOUND.format(line_pattern, blockname)

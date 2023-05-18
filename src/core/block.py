@@ -1,6 +1,10 @@
 from .rule import Rule
 from .line import Line
 
+_HIDE = "Hide"
+_SHOW = "Show"
+_CLASS = "Class"
+
 class Block:
     """A block is a collection of lines (strings) in a filter, which may include rules in them.
     
@@ -15,89 +19,43 @@ class Block:
 
     @classmethod
     def extract(cls, raw_lines: list[str], line_number: int = 1):
-        "Returns all blocks in a from a list of textual lines."
+        """Returns all blocks in a from a list of textual lines."""
         if len(raw_lines) == 0:
             return []
         
         blocks: list[Block] = [ Block(line_number) ]
         for raw_line in raw_lines:
             line = Line(raw_line, line_number)
-            if line.is_block_starter() and not blocks[-1].is_empty():
+            if line.is_block_starter() and not len(blocks[-1].lines) == 0:
                 blocks.append(Block(line_number))
             blocks[-1].lines.append(line)
             line_number +=1
         
         return blocks
 
-    def is_empty(self):
-        """Returns true if the block has no lines. False if it has any."""
-        return len(self.lines) == 0
-
-    def append(self, raw_line: str):
-        """Appends the line at the end of the block."""
-        line_number = self.line_number + len(self.lines)
-        line = Line(raw_line, line_number)
-        self.lines.append(line)
-
-    def remove(self, pattern: str):
-        """Removes all lines which include the specified pattern outside comments in them."""
-        for i in range(len(self.lines)-1, 0, -1):
-            if self.lines[i].contains(pattern):
-                del self.lines[i]
-
-    def comment(self, pattern: str = None):
-        """Comments out every line with the specified pattern outside comments in them.
-        If no pattern is provided then every line in the block is commented out instead."""
+    def comment_out(self):
+        """Comments out every line in the block."""
         for line in self.lines:
-            if pattern == None or line.contains(pattern):
-                line.comment_out()
-    
-    def uncomment(self, pattern: str = None):
-        """Uncomments every line that has the pattern inside a comment.
-        If no pattern is provided then every line in the block is uncommented."""
-        for line in self.lines:
-            if pattern == None or line.contains_in_comment(pattern):
-                line.uncomment()
-
-    def swap(self, pattern: str, raw_line: str):
-        """Swaps out every line with the specified pattern outside comments in them for the raw_line provided."""
-        for i in range(len(self.lines)):
-            if self.lines[i].contains(pattern):
-                self.lines[i] = Line(raw_line, self.lines[i].number)
+            line.comment_out()
     
     def hide(self):
-        """Attempts to completely hide a block by setting it to 'Hide' and
-        commenting out the lines that show effects on the screen if they are present."""
-        self.swap("Show", "Hide")
-        self.comment("PlayAlertSound")
-        self.comment("PlayAlertSoundPositional")
-        self.comment("CustomAlertSound")
-        self.comment("CustomAlertSoundOptional")
-        self.comment("MinimapIcon")
-        self.comment("PlayEffect")
-    
+        """Attempts to hide a block by setting every 'Show' operand in it to 'Hide'."""
+        for line in self.find(operand=_SHOW):
+            line.operand = _HIDE
+
     def show(self):
-        """Attempts to show a block fully, by setting it to 'Show' and un-commenting out
-        the lines that show effects on the screen if they are present.
+        """Attempts to hide a block by setting every 'Hide' operand in it to 'Show'.
         This is the reverse function to hide."""
-        self.swap("Hide", "Show")
-        self.uncomment("PlayAlertSound")
-        self.uncomment("PlayAlertSoundPositional")
-        self.uncomment("CustomAlertSound")
-        self.uncomment("CustomAlertSoundOptional")
-        self.uncomment("MinimapIcon")
-        self.uncomment("PlayEffect")
+        for line in self.find(operand=_HIDE):
+            line.operand = _SHOW
 
     def find(self, operand: str = None, operator: str = None) -> list[Line]:
         """Finds all the lines that contain the queried criteria."""
         lines = self.lines
-        
         if operand != None:
             lines = [ line for line in lines if line.operand == operand ]
-        
         if operator != None:
             lines = [ line for line in lines if line.operator == operator ]
-
         return lines
 
     def get_rules(self, name_or_names: str | list[str]) -> list[Rule]:
@@ -106,7 +64,7 @@ class Block:
     
     def get_classes(self):
         """Returns all values included in lines which have the `Class` operand."""
-        lines = self.find(operand="Class")
+        lines = self.find(operand=_CLASS)
         return [ value.replace('"', "") for line in lines for value in line.values ]
     
     def get_raw_lines(self):

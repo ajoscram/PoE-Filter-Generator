@@ -14,6 +14,7 @@ _LINKS_FIELD = "links"
 _REPLICA_UNIQUE_PREFIX = "Replica "
 
 class MiscItemType(Enum):
+    """Represents the miscellaneous item types that can be obtained via an `itemoverview` link."""
     OIL = "Oil"
     INCUBATOR = "Incubator"
     SCARAB = "Scarab"
@@ -33,6 +34,7 @@ class UniqueFilter:
     max_links: int = None
 
 def get_misc_base_types(league_name: str, type: MiscItemType, lower: float, upper: float = None):
+    """Returns all base type names given a miscellaneous `type` for the `league` specified."""
     url = _URL.format(league_name, type.value)
     return [
         record[_NAME_FIELD]
@@ -41,6 +43,7 @@ def get_misc_base_types(league_name: str, type: MiscItemType, lower: float, uppe
     ]
 
 def get_unique_base_types(league_name: str, unique_filter: UniqueFilter, lower: float, upper: float = None):
+    """Returns all base type names for uniques filtered by a `unique_filter` for the `league` specified."""
     urls = [ _URL.format(league_name, item_type) for item_type in _UNIQUE_ITEM_TYPES ]
     return list(set(
         record[_BASE_TYPE_FIELD]
@@ -60,7 +63,7 @@ def _is_class_valid(record, expected_classes: list[str] = None):
         return True
     
     if _CLASS_FIELD not in record:
-        record[_CLASS_FIELD] = wiki.get_class_for_base_type(record[_BASE_TYPE_FIELD])
+        record[_CLASS_FIELD] = wiki.get_class_id_for_base_type(record[_BASE_TYPE_FIELD])
     
     if record[_CLASS_FIELD] not in expected_classes:
         return False

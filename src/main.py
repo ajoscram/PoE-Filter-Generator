@@ -1,6 +1,6 @@
-"""PoE Filter Generator Main Script
+"""
+PoE Filter Generator Main Script
 
-This script is the one called to run the program.
 For more information run "python main.py -h".
 """
 

@@ -5,7 +5,9 @@ from .where import Where
 
 _CLASS_FOR_BASE_TYPE_NOT_FOUND_ERROR = "A suitable class for base type '{0}' could not be found on the Wiki."
 
-def get_class_for_base_type(base_type: str):
+def get_class_id_for_base_type(base_type: str):
+    """Returns the class associated to the `base_type` received.
+    NOTE: This returns an internal class_id, NOT a regular filter class."""
     where = Where(Field.BASE_ITEM, Operator.EQUALS, base_type)
     results = Query(Table.ITEMS, [ Field.CLASS_ID ]).where(where).limit(1).run()
     if len(results) == 0:

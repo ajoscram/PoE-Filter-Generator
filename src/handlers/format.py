@@ -1,8 +1,10 @@
 import re
-from core import Line, Block, Filter
+from core import Line, Block, Filter, COMMENT_START, RULE_SEPARATOR
+
+_RULE_PATTERN = F"{COMMENT_START}\{RULE_SEPARATOR}.+"
 
 def handle(filter: Filter, block: Block, _):
-    """Removes rules, trailing whitespace from lines and extraneous empty lines."""
+    """Removes rules, trailing whitespace from lines and extraneous empty lines. Options are ignored."""
     raw_lines = _get_formatted_raw_lines(block.lines)
     raw_lines = _remove_duplicate_empty_lines(raw_lines)
 
@@ -17,7 +19,7 @@ def handle(filter: Filter, block: Block, _):
 def _get_formatted_raw_lines(lines: list[Line]):
     raw_lines = []
     for line in lines:
-        raw_line = re.sub("#\..+", "", str(line)) if len(line.rules) > 0 else str(line).rstrip()
+        raw_line = re.sub(_RULE_PATTERN, "", str(line)) if len(line.rules) > 0 else str(line).rstrip()
         if len(line.rules) == 0 or raw_line.strip() != "":
             raw_lines += [ raw_line ]
     return raw_lines

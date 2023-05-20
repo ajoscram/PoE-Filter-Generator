@@ -6,7 +6,7 @@ _TOO_LITTLE_ARGUMENTS_ERROR = "Too little arguments were provided"
 _HANDLER_NOT_FOUND_ERROR = "A filter handler was not provided"
 
 class Arguments:
-    """The arguments class includes all the information passed in through the command line when the generation starts."""
+    """Reporesents the arguments passed in through the command line when the generation starts."""
     def __init__(self, args: list[str]):
         if len(args) < 2:
             raise GeneratorError(_TOO_LITTLE_ARGUMENTS_ERROR)

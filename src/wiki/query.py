@@ -16,7 +16,14 @@ _OUT_OF_RANGE_LIMIT_ERROR = "Provided an out-of-range 'limit' parameter: '{0}'. 
 _WIKI_DATA_DESCRIPTOR = "data from poewiki.net"
 
 class Query:
+    """Represents a Wiki database query."""
     def __init__(self, tables: Table | list[Table], fields: Field | list[Field], join_on: Field = Field.NONE):
+        """
+        * `tables`: the table or tables to query.
+        * `fields`: the field or fields to obtain from the tables queried.
+        * `join_on`: the table fields to join on in case of multiple tables being queried.
+        Mandatory for multi-table queries. 
+        """
         tables = [ tables ] if type(tables) == Table else tables
         if len(tables) == 0:
             raise WikiError(_NO_TABLES_ERROR)
@@ -38,26 +45,33 @@ class Query:
         self._limit = 500
 
     def where(self, where: Where):
+        """Sets the `where` clause to use during querying."""
         self._where = where
         return self
     
     def group_by(self, group_by: Field):
+        """Sets the `group_by` field to use during querying."""
         self._group_by = group_by
         return self
     
     def order_by(self, order_by: OrderBy):
+        """Sets the `order_by` clause to use during querying."""
         self._order_by = order_by
         return self
     
     def limit(self, limit: int):
+        """Sets the limit of results to obtain from querying.
+        An error raised if the value is less than 1 or more than 500.
+        Default is 500."""
         if limit > 500 or limit < 1:
             raise WikiError(_OUT_OF_RANGE_LIMIT_ERROR.format(str(limit)))
         self._limit = limit
         return self
 
     def run(self):
+        """Executes the query and returns a list with the results."""
         records = utils.http_get(self._get_query_string(), _WIKI_DATA_DESCRIPTOR)
-        return [ _get_record_without_whitespace_in_keys(record) for record in records ]
+        return [ _remove_whitespace_in_keys(record) for record in records ]
     
     def _get_query_string(self):
         tables = COMMA.join([ table.value for table in self._tables ])
@@ -65,8 +79,8 @@ class Query:
         where = str(self._where) if self._where != None else ""
         return _PHP_URL.format(tables, fields, where, self._group_by.value, str(self._order_by), self._join_on.value, str(self._limit))
     
-def _get_record_without_whitespace_in_keys(record: dict[str]):
-    new_record = {}
-    for key in record:
-        new_record[key.replace(" ", "_")] = record[key]
-    return new_record
+def _remove_whitespace_in_keys(dictionary: dict[str]):
+    new_dictionary = {}
+    for key in dictionary:
+        new_dictionary[key.replace(" ", "_")] = dictionary[key]
+    return new_dictionary

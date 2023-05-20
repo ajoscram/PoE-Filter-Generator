@@ -48,19 +48,20 @@ def handle(_, block: Block, options: list[str]):
         - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead
         - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead
         - if `rth` is passed then ruthless leagues will be queried"""
+    rules = block.get_rules(_NAME)
+    if len(rules) > 0:
+        league_name = _get_league_name(options)
+        base_types = []
+        for rule in rules:
+            params = _get_params(rule, league_name)
+            base_types += _get_base_types(params, block)
 
-    league_name = _get_league_name(options)
-    base_types = []
-    for rule in block.get_rules(_NAME):
-        params = _get_params(rule, league_name)
-        base_types += _get_base_types(params, block)
-
-    for line in block.find(operand=_BASE_TYPE_OPERAND):
-        line.operator = "=="
-        line.values = [ f'"{base_type}"' for base_type in set(base_types) ]
-    
-    if len(base_types) == 0:
-        block.comment_out()
+        for line in block.find(operand=_BASE_TYPE_OPERAND):
+            line.operator = "=="
+            line.values = [ f'"{base_type}"' for base_type in set(base_types) ]
+        
+        if len(base_types) == 0:
+            block.comment_out()
 
     return block.get_raw_lines()
 

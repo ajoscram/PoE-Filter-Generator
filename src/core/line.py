@@ -23,6 +23,10 @@ class Line:
     Multiline strings are not allowed as text.
     """
     def __init__(self, text: str, number: int):
+        """
+        * `text`: the text in the line. Passing in a string with a new-line character raisesan error.
+        * `number`: The line's number in the file.
+        """
         text = text.rstrip()
         if '\n' in text:
             raise GeneratorError(_MULTILINE_STRING_ERROR, number)
@@ -64,7 +68,7 @@ class Line:
         return [ rule for rule in self.rules if rule.name in name_or_names ]
     
     def comment_out(self):
-        """Comments the line out by prepending a # to the line's text."""
+        """Comments the line out by prepending a `#` to the line's text."""
         self._set_parts(COMMENT_START + str(self))
 
     def __str__(self):

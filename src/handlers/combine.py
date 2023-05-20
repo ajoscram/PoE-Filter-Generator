@@ -12,7 +12,6 @@ _SIZE_IS_GREATER_THAN_LINE_COUNT = "The size of each combination provided must b
 
 def handle(_, block: Block, __):
     """Creates new blocks from combinable lines within a block. Options are ignored."""
-        
     if len(block.get_rules(_NAME)) == 0:
         return block.get_raw_lines()
 

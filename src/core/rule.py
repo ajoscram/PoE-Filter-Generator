@@ -1,8 +1,8 @@
 from .generator_error import GeneratorError
 
-_RULE_SEPARATOR = '.'
+RULE_SEPARATOR = '.'
 COMMENT_START = '#'
-RULE_START = COMMENT_START + _RULE_SEPARATOR
+RULE_START = COMMENT_START + RULE_SEPARATOR
 
 _EMPTY_NAME_ERROR = "Empty name (probably an extra '.')"
 _EMPTY_DESCRIPTION_ERROR = "Empty description (probably an extra ':' or forgot a description to a rule)"
@@ -10,16 +10,14 @@ _TOO_MANY_FIELDS_ERROR = "Too many fields (probably an extra ':')"
 
 class Rule:
     """A rule is a bit of data that can be parsed by generators.
-    
-    Rules have these fields:
-        line_number: the file line number where the rule is found.
-        name: the name which identifies the rule.
-        description: any extra data needed for the rule. Can be omitted.
-    Rules are included in comments inside lines and start with #. (hashtag and a dot).
+    They are included in comments inside lines and start with #. (hashtag and a dot).
     Multiple rules can be declared in the same line, separated by . (dot).
     Names and descriptions in a rule are separated by : (colon), like name:description.
+    Rules have these fields:
+        * line_number: the file line number where the rule is found.
+        * name: the name which identifies the rule.
+        * description: any extra data needed for the rule. Can be omitted.
     """
-
     def __init__(self, line_number: int, name: str, description: str):
         """Rule constructor which receives the line_number where the rule is found, the name which identifies the rule and its description optionally for any additional data."""
         self.line_number: int = line_number
@@ -32,7 +30,7 @@ class Rule:
         rules = []
         if cls._should_extract(text):
             text = text[text.index(RULE_START) + len(RULE_START):]
-            rule_strings = text.split(_RULE_SEPARATOR)
+            rule_strings = text.split(RULE_SEPARATOR)
             for rule_string in rule_strings:
                 
                 fields = rule_string.split(maxsplit=1)

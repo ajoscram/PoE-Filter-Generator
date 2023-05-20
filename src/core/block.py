@@ -6,12 +6,7 @@ _SHOW = "Show"
 _CLASS = "Class"
 
 class Block:
-    """A block is a collection of lines (strings) in a filter, which may include rules in them.
-    
-    Lines in a block may be appended, removed, commeted out or swapped for other lines.
-    Blocks may have rules which can be obtained from this class.
-    Rules are automatically extracted from lines when new lines are added.
-    """
+    """A block is a collection of lines (strings) in a filter, which may include rules in them."""
 
     def __init__(self, line_number: int):
         self.line_number: int = line_number

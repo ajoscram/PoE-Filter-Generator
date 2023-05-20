@@ -9,7 +9,6 @@ _PERMISSION_ERROR = "You don't have permission to read or write on this director
 
 class Filter:
     """The filter class is a representation of a .filter file."""
-
     def __init__(self, filepath: str, blocks: list[Block]):
         self.filepath: str = filepath
         self.blocks: list[Block] = blocks

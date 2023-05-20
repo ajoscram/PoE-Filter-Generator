@@ -5,6 +5,10 @@ _LEAGUES_ERROR_DESCRIPTOR = "leagues from GGG's API"
 _LEAGUE_ID_FIELD = "id"
 
 def get_league_name(standard: bool = False, hardcore: bool = False, ruthless: bool = False):
+    """Gets a league's name from GGG's API depending on the variables passed in:
+    * `standard`: `True` for standard, `False` for the current temp league.
+    * `hardcore`: `True` for hardcore, `False` for softcore.
+    * `ruthless`: `True` for ruthless, `False` for non-ruthless."""
     index = _get_league_index(standard, hardcore, ruthless)
     leagues = utils.http_get(_LEAGUES_URL, _LEAGUES_ERROR_DESCRIPTOR)
     return leagues[index][_LEAGUE_ID_FIELD]

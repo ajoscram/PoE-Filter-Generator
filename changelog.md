@@ -1,6 +1,7 @@
 # 1.2.2
 * `.econ` now supports uniques. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
 * `.econ` now supports any combination of Ruthless, Standard and Hardcore league flags. Keep in mind that less popular leagues might not have enough data. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
+* The `combine` handler was renamed to `choose`, because "combine" is too many letters and too confusing of a name. It was also changed to receive two integer values: one with the number of lines to combine and the size of each combination instead of setting an end tag.
 
 # 1.2.1
 * Fixed a `.import` bug which prevented the loading of filter files when importing.

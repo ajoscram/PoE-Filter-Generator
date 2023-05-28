@@ -1,20 +1,20 @@
 import re
 
 from .generator_error import GeneratorError
-from .rule import Rule, COMMENT_START
+from .rule import Rule
+from .constants import BLOCK_STARTERS, COMMENT_START
 
 _MULTILINE_STRING_ERROR = "Multiline string"
 _BOOL_VALUE_ERROR = "Could not translate the value(s) in the line to either 'True' or 'False'. Make sure to provide exactly one of either those values."
 _INT_VALUE_ERROR = "Could not translate the value(s) in the line to a digit. Make sure to provide exactly one numeric value."
 
-_BLOCK_STARTERS = [ "Show", "Hide", "Minimal" ]
-_INDENTATION_REGEX = "\s*"
+_INDENTATION_REGEX = "\\s*"
 _OPERAND_REGEX = "[A-Za-z]*"
 _VALUES_REGEX = f"[^{COMMENT_START}]+"
 _COMMENT_REGEX = f"{COMMENT_START}.*"
-_OPERATOR_REGEX = "[<|>|=|!|<|>]=?\d*"
-_LINE_REGEX = f"^({_INDENTATION_REGEX})({_OPERAND_REGEX})\s*({_OPERATOR_REGEX})?\s*({_VALUES_REGEX})?({_COMMENT_REGEX})?$"
-_SINGLE_VALUE_REGEX = '"[^"]+"|\w+'
+_OPERATOR_REGEX = "[<|>|=|!|<|>]=?\\d*"
+_LINE_REGEX = f"^({_INDENTATION_REGEX})({_OPERAND_REGEX})\\s*({_OPERATOR_REGEX})?\\s*({_VALUES_REGEX})?({_COMMENT_REGEX})?$"
+_SINGLE_VALUE_REGEX = '"[^"]+"|\\w+'
 
 class Line:
     """
@@ -35,9 +35,9 @@ class Line:
 
     def is_block_starter(self):
         """Returns whether or not this line should start a new Block."""
-        return self.operand in _BLOCK_STARTERS
+        return self.operand in BLOCK_STARTERS
     
-    def get_value_as_boolean(self):
+    def get_value_as_bool(self):
         """Returns the line's value as a boolean.
         An error is returned if the line contains more than one value or the value cannot be parsed to a boolean."""
         if len(self.values) == 1:
@@ -57,7 +57,7 @@ class Line:
     
     def contains(self, pattern: str, exclude_comments: bool = False):
         """Returns whether or not this line contains the pattern.
-        Comments are optionally excluded form this check with `exclude_comments`."""
+        Comments are optionally excluded with `exclude_comments`."""
         text = str(self).split(COMMENT_START, 1)[0] if exclude_comments else str(self)
         return pattern in text
     
@@ -78,7 +78,7 @@ class Line:
         return self.indentation + " ".join(parts)
     
     def _set_parts(self, text: str):
-        parts = re.search(_LINE_REGEX, text.rstrip()).groups()
+        parts = re.search(_LINE_REGEX, text).groups()
         self.indentation:str = parts[0] or ""
         self.operand: str = parts[1] or ""
         self.operator: str = parts[2] or ""

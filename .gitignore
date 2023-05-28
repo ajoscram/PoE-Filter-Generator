@@ -1,5 +1,5 @@
 .vscode/
-*.filter
-__pycache__/
 build/
-test/
+__pycache__/
+.pytest_cache/
+.coverage

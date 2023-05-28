@@ -12,14 +12,11 @@ def generate(filter: Filter, output_filepath: str, handler_name: str, options: l
     The handler must be a python file under the directory "handlers", and the '.py' extension must be omitted.
     The handler must include the function `handle(filter: Filter, block: Block, options: list[str])`."""
     handler = _get_handler(handler_name)
-    generated_raw_lines = []
-    for block in filter.blocks:
-        generated_raw_lines += handler.handle(filter, block, options)
+    generated_raw_lines = [ line for block in filter.blocks for line in handler.handle(filter, block, options) ]
     return Filter(output_filepath, Block.extract(generated_raw_lines))
 
 def _get_handler(handler_name: str):
     try:
         return importlib.import_module(_HANDLERS_PATH + handler_name)
-    except ModuleNotFoundError as e:
-        print(e)
+    except ModuleNotFoundError:
         raise GeneratorError(_HANDLER_NOT_FOUND_ERROR.format(handler_name))

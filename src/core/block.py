@@ -1,9 +1,6 @@
 from .rule import Rule
 from .line import Line
-
-_HIDE = "Hide"
-_SHOW = "Show"
-_CLASS = "Class"
+from .constants import SHOW, HIDE, CLASS
 
 class Block:
     """A block is a collection of lines (strings) in a filter, which may include rules in them."""
@@ -35,14 +32,14 @@ class Block:
     
     def hide(self):
         """Attempts to hide a block by setting every 'Show' operand in it to 'Hide'."""
-        for line in self.find(operand=_SHOW):
-            line.operand = _HIDE
+        for line in self.find(operand=SHOW):
+            line.operand = HIDE
 
     def show(self):
         """Attempts to hide a block by setting every 'Hide' operand in it to 'Show'.
         This is the reverse function to hide."""
-        for line in self.find(operand=_HIDE):
-            line.operand = _SHOW
+        for line in self.find(operand=HIDE):
+            line.operand = SHOW
 
     def find(self, operand: str = None, operator: str = None) -> list[Line]:
         """Finds all the lines that contain the queried criteria."""
@@ -59,7 +56,7 @@ class Block:
     
     def get_classes(self):
         """Returns all values included in lines which have the `Class` operand."""
-        lines = self.find(operand=_CLASS)
+        lines = self.find(operand=CLASS)
         return [ value.replace('"', "") for line in lines for value in line.values ]
     
     def get_raw_lines(self):

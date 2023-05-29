@@ -1,6 +1,6 @@
 import pytest
-from src.core import Arguments, GeneratorError
-from src.core.arguments import _HANDLER_NOT_FOUND_ERROR, _HANDLER_TAG, _TOO_LITTLE_ARGUMENTS_ERROR
+from core import Arguments, GeneratorError
+from core.arguments import _HANDLER_NOT_FOUND_ERROR, _HANDLER_TAG, _TOO_LITTLE_ARGUMENTS_ERROR
 
 def test_constructor_should_raise_if_less_than_2_arguments():
     ARGS = [ ]

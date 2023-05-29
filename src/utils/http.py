@@ -2,7 +2,7 @@ import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout
 from core import GeneratorError
 
-_FILTER_GENERATOR_USER_AGENT = "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/"
+_HEADERS = { 'User-Agent': "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/" }
 
 _ERROR_MESSAGE_PREFIX = "Error while getting {0}.\n"
 _HTTP_ERROR = _ERROR_MESSAGE_PREFIX + "You might want to report this error to @ajoscram on Github with this text:\n\n{1}"
@@ -15,9 +15,8 @@ def http_get(url: str, resource_description_for_error: str):
     If it fails, the `resource_description_for_error` is used to personalize the `GeneratorError` message raised."""
     global _get_cache
     try:
-        if url not in _get_cache:    
-            headers = { 'User-Agent': _FILTER_GENERATOR_USER_AGENT }
-            response = requests.get(url, headers=headers)
+        if url not in _get_cache:
+            response = requests.get(url, headers=_HEADERS)
             response.raise_for_status()
             _get_cache[url] = response.json()
         return _get_cache[url]

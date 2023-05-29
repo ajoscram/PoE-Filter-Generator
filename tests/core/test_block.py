@@ -1,6 +1,5 @@
-from src.core.constants import SHOW, HIDE, CLASS, RULE_START, RULE_SEPARATOR
-from src.core import constants
-from src.core import Block
+from core.constants import SHOW, HIDE, CLASS, RULE_START, RULE_SEPARATOR
+from core import Block
 
 LINE_NUMBER = 1
 DEFAULT_BLOCK_LINES = [ SHOW, f"Class == \"Currency\"", "BaseType == \"Jeweller's Orb\"" ]

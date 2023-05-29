@@ -23,15 +23,15 @@ def test_generate_given_a_handler_is_found_should_generate_a_new_correct_filter(
     OUTPUT_FILEPATH = "output"
     OPTIONS = [ "option1", "option2" ]
     LINES = [ "line 1", "line 2", "line 3" ]
-    mockHandler = _patch_module_and_get_mock_handler(monkeypatch, LINES)
+    mock_handler = _patch_module_and_get_mock_handler(monkeypatch, LINES)
 
     output_filter = generator.generate(FILTER, OUTPUT_FILEPATH, HANDLER_NAME, OPTIONS)
 
     assert [ str(line) for line in output_filter.blocks[0].lines ] == LINES
-    assert mockHandler.handler_path == generator._HANDLERS_PATH + HANDLER_NAME
-    assert mockHandler.filter_handled == FILTER
-    assert mockHandler.block_handled == BLOCK
-    assert mockHandler.options_handled == OPTIONS
+    assert mock_handler.handler_path == generator._HANDLERS_PATH + HANDLER_NAME
+    assert mock_handler.filter_handled == FILTER
+    assert mock_handler.block_handled == BLOCK
+    assert mock_handler.options_handled == OPTIONS
     assert output_filter.filepath == OUTPUT_FILEPATH
 
 def test_generate_given_a_handler_could_not_be_found_should_raise(monkeypatch: MonkeyPatch):

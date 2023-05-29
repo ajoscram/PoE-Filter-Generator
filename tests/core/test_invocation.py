@@ -1,4 +1,4 @@
-from src.core.invocation import Invocation
+from core.invocation import Invocation
 
 def test_constructor_given_a_handler_name_should_instantiate_correctly():
     HANDLER_NAME = "handler"

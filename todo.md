@@ -1,8 +1,8 @@
 # Backlog
-* Create unit tests for the entire codebase.
-    Create unit tests for handlers
-    Create unit tests for ggg, ninja
-    Create unit tests for wiki
+* Create tests for the entire codebase:
+    wiki
+    ninja
+    handlers
 
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create
@@ -20,6 +20,7 @@
     #.if Hide Continue
 
 * Find a way in the wiki to change the _FILTER_TO_ID_CLASSES_DICT dictionary values from translate.py into a Wiki API call.
+    The `translate.py` file in `utils` was left untested because it could be removed if this works.
 * Add a mechanism to emit warnings and return no block on econ if base_types is empty OR add the `.block` rule to split the commented out block from the previous block.
 * Sometimes just having numbers thrown around can be a little messy (strictness for instance). Perhaps it's a good idea to add some sort of ".var" rule handler.
 * Add async or multithreaded http fetching for multiple URLs. This should significantly speed up unique searches.

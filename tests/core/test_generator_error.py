@@ -1,4 +1,4 @@
-from src.core import GeneratorError
+from core import GeneratorError
 
 MESSAGE = "message"
 LINE_NUMBER = 1

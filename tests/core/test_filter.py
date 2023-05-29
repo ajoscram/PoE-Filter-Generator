@@ -1,7 +1,7 @@
 import builtins, pytest, os
 from pytest import MonkeyPatch
-from src.core.filter import _FILE_EXISTS_ERROR, _FILE_NOT_FOUND_ERROR, _PERMISSION_ERROR
-from src.core import Filter, GeneratorError, Block
+from core.filter import _FILE_EXISTS_ERROR, _FILE_NOT_FOUND_ERROR, _PERMISSION_ERROR
+from core import Filter, GeneratorError, Block
 
 FILEPATH = "filepath"
 LINES: list[str] = [ "line 1", "line 2" ]

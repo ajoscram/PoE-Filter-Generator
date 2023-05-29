@@ -1,7 +1,7 @@
 import pytest
-from src.core.constants import COMMENT_START, RULE_SEPARATOR, RULE_START
-from src.core.rule import _EMPTY_RULE_ERROR
-from src.core import Rule, GeneratorError
+from core.constants import COMMENT_START, RULE_SEPARATOR, RULE_START
+from core.rule import _EMPTY_RULE_ERROR
+from core import Rule, GeneratorError
 
 LINE_NUMBER = 1
 

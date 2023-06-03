@@ -1,7 +1,7 @@
 import os.path, re
 from core import Rule, Line, Block, Filter, GeneratorError
 
-_NAME = "import"
+NAME = "import"
 _SPLITTER = "->"
 _BLOCK_NAME = "name"
 
@@ -61,7 +61,7 @@ def _get_lines_from_block(block: Block, params: list[_Params], include_blockstar
 
 def _get_lines_from_line(line: Line, params: list[_Params], include_blockstarts: bool) -> list[Line]:
     lines = [ line ] if not line.is_block_starter() or include_blockstarts else []
-    for rule in line.get_rules(_NAME):
+    for rule in line.get_rules(NAME):
         lines += _get_lines_from_rule(rule, params)
     return lines
 

@@ -1,5 +1,6 @@
 """"Contains all core functionality shared by every handler."""
-from . import generator, constants
+from . import constants
+from .generator import Generator
 from .generator_error import GeneratorError
 from .arguments import Arguments
 from .filter import Filter

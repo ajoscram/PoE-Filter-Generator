@@ -5,7 +5,8 @@ For more information run "python main.py -h".
 """
 
 import sys, traceback
-from core import generator, GeneratorError, Arguments, Filter
+from core import GeneratorError, Arguments, Filter, Generator
+from handlers import HANDLERS
 
 HELP_ARG = "-help"
 HELP_ARG_SHORT = "-h"
@@ -50,6 +51,7 @@ try:
     print(f"\nReading filter file from '{args.input_filepath}'...\n")
     filter = Filter.load(args.input_filepath)
 
+    generator = Generator(HANDLERS)
     for invocation in args.invocations:
         print(f"Applying .{' '.join([invocation.handler_name] + invocation.options)}...")
         filter = generator.generate(filter, args.output_filepath, invocation.handler_name, invocation.options)

@@ -1,5 +1,8 @@
 import re
-from core import Line, Block, Filter, COMMENT_START, RULE_SEPARATOR
+from core import Line, Block, Filter
+from core.constants import COMMENT_START, RULE_SEPARATOR
+
+NAME = "format"
 
 _RULE_PATTERN = F"{COMMENT_START}\{RULE_SEPARATOR}.+"
 

@@ -1,6 +1,6 @@
 from core import Block, GeneratorError
 
-_NAME = "tag"
+NAME = "tag"
 _WILDCARD = "_"
 _EMPTY_TAG_ERROR = "You must provide at least a tag for the 'tag' {0}."
 
@@ -15,7 +15,7 @@ def handle(_, block: Block, options: list[str]):
     command_tag = options[-1]
     tag_index = len(options) - 1
 
-    for rule in block.get_rules(_NAME):
+    for rule in block.get_rules(NAME):
         split_description = rule.description.split()
         
         if split_description == []:

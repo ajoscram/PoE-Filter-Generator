@@ -2,7 +2,7 @@ import ggg, ninja, utils
 from core import GeneratorError, Block, Rule
 from core.constants import BASE_TYPE, LINKED_SOCKETS
 
-_NAME = "econ"
+NAME = "econ"
 
 _STANDARD_OPTION = "std"
 _HARDCORE_OPTION = "hc"
@@ -46,7 +46,7 @@ def handle(_, block: Block, options: list[str]):
         - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead
         - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead
         - if `rth` is passed then ruthless leagues will be queried"""
-    rules = block.get_rules(_NAME)
+    rules = block.get_rules(NAME)
     if len(rules) > 0:
         league_name = _get_league_name(options)
         base_types = []

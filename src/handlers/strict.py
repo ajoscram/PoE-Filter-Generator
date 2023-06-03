@@ -1,6 +1,6 @@
 from core import Block, GeneratorError
 
-_NAME = "strict"
+NAME = "strict"
 _STRICTNESS_ERROR_PREFIX = "You must provide only 1 integer value for the strictness {0}."
 _STRICTNESS_ARG_COUNT_ERROR = _STRICTNESS_ERROR_PREFIX + " You've provided {1} arguments."
 _STRICTNESS_ARG_TYPE_ERROR =  _STRICTNESS_ERROR_PREFIX + " You've provided '{1}'."
@@ -16,7 +16,7 @@ def handle(_, block: Block, options:list[str]):
 
     command_strictness = int(options[0])
 
-    for rule in block.get_rules(_NAME):
+    for rule in block.get_rules(NAME):
         if not rule.description.isdigit():
             raise GeneratorError(_STRICTNESS_ARG_TYPE_ERROR.format("rule", rule.description), rule.line_number)
         

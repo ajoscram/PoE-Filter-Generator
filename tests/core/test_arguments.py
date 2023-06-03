@@ -1,6 +1,6 @@
 import pytest
 from core import Arguments, GeneratorError
-from core.arguments import _HANDLER_NOT_FOUND_ERROR, _HANDLER_TAG, _TOO_LITTLE_ARGUMENTS_ERROR
+from core.arguments import _HANDLER_NOT_PROVIDED_ERROR, _HANDLER_TAG, _TOO_LITTLE_ARGUMENTS_ERROR
 
 def test_constructor_should_raise_if_less_than_2_arguments():
     ARGS = [ ]
@@ -16,7 +16,7 @@ def test_constructor_should_raise_if_no_handler_is_passed():
     with pytest.raises(GeneratorError) as error:
         _ = Arguments(ARGS)
     
-    assert error.value.message == _HANDLER_NOT_FOUND_ERROR
+    assert error.value.message == _HANDLER_NOT_PROVIDED_ERROR
 
 def test_constructor_given_a_filter_filepath_handler_name_and_options_should_instatiate_correctly():
     HANDLER_NAME = "handler"

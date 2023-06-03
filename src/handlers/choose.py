@@ -1,7 +1,7 @@
 from itertools import combinations as Combinations
 from core import Block, Line, GeneratorError, Rule
 
-_NAME = "choose"
+NAME = "choose"
 
 _MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR = "Only 1 .choose rule is allowed per block, got {0}."
 _RULE_PARAMETER_COUNT_ERROR = "The .choose rule expects exactly 2 parameters in its description, got {0}."
@@ -18,7 +18,7 @@ class _Params:
 
 def handle(_, block: Block, __):
     """Creates new blocks from combinations of lines within a block. Options are ignored."""
-    rules = block.get_rules(_NAME)
+    rules = block.get_rules(NAME)
     if len(rules) == 0:
         return block.get_raw_lines()
     if len(rules) > 1:

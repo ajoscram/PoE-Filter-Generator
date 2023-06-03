@@ -29,7 +29,7 @@ def test_http_get_given_a_url_should_get_the_json(monkeypatch: MonkeyPatch, url:
         MOCK_RESPONSE.json_response["url"] = url
         MOCK_RESPONSE.json_response["headers"] = headers
         return MOCK_RESPONSE
-    monkeypatch.setattr(requests, 'get', mock_get)
+    monkeypatch.setattr(requests, requests.get.__name__, mock_get)
 
     response = utils.http_get(url, None)
 
@@ -43,7 +43,7 @@ def test_http_get_given_two_requests_on_the_same_url_should_return_the_cached_va
     def mock_get(url, headers):
         MOCK_RESPONSE.json_response["counter"] += 1
         return MOCK_RESPONSE
-    monkeypatch.setattr(requests, 'get', mock_get)
+    monkeypatch.setattr(requests, requests.get.__name__, mock_get)
     
     _ = utils.http_get(url, None)
     response = utils.http_get(url, None)
@@ -55,7 +55,7 @@ def test_http_get_given_an_http_error_should_raise(monkeypatch: MonkeyPatch, url
     EXPECTED_ERROR = _HTTP_ERROR.format(HTTP_RESOURCE_DESCRIPTION, HTTP_ERROR)
     def mock_get(url, headers):
         raise HTTP_ERROR
-    monkeypatch.setattr(requests, 'get', mock_get)
+    monkeypatch.setattr(requests, requests.get.__name__, mock_get)
     
     with pytest.raises(GeneratorError) as error:
         _ = utils.http_get(url, HTTP_RESOURCE_DESCRIPTION)
@@ -68,7 +68,7 @@ def test_http_get_given_a_connection_error_should_raise(
     EXPECTED_ERROR = _CONNECTION_ERROR.format(HTTP_RESOURCE_DESCRIPTION)
     def mock_get(url, headers):
         raise error_to_raise
-    monkeypatch.setattr(requests, 'get', mock_get)
+    monkeypatch.setattr(requests, requests.get.__name__, mock_get)
     
     with pytest.raises(GeneratorError) as error:
         _ = utils.http_get(url, HTTP_RESOURCE_DESCRIPTION)

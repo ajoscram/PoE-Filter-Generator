@@ -1,8 +1,11 @@
 # Backlog
 * Create tests for the entire codebase:
-    wiki
     ninja
+    wiki
     handlers
+
+* Turn handlers into a proper package, and expose them in a list on __init__.py
+    remove hidden imports
 
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create

@@ -38,7 +38,7 @@ def test_generate_given_a_handler_could_not_be_found_should_raise(monkeypatch: M
     HANDLER_NAME = "handler"
     ERROR_MESSAGE = generator._HANDLER_NOT_FOUND_ERROR.format(HANDLER_NAME)
     def import_module_raise(_): raise ModuleNotFoundError
-    monkeypatch.setattr(importlib, "import_module", import_module_raise)
+    monkeypatch.setattr(importlib, importlib.import_module.__name__, import_module_raise)
 
     with pytest.raises(GeneratorError) as error:
         generator.generate(None, None, HANDLER_NAME, None)
@@ -51,5 +51,5 @@ def _patch_module_and_get_mock_handler(monkeypatch: MonkeyPatch, expected_lines:
     def import_module(handler_path: str):
         mockHandler.handler_path = handler_path
         return mockHandler
-    monkeypatch.setattr(importlib, "import_module", import_module)
+    monkeypatch.setattr(importlib, importlib.import_module.__name__, import_module)
     return mockHandler

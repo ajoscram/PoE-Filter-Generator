@@ -34,7 +34,7 @@ def test_load_given_a_valid_filepath_should_return_a_filter(monkeypatch: MonkeyP
         mock_file.filepath = filepath
         mock_file.open_mode = open_mode
         return mock_file
-    monkeypatch.setattr(builtins, "open", mock_open)
+    monkeypatch.setattr(builtins, builtins.open.__name__, mock_open)
 
     filter = Filter.load(FILEPATH)
 
@@ -48,7 +48,7 @@ OPEN_FILE_EXCEPTIONS = [ (FileNotFoundError, _FILE_NOT_FOUND_ERROR), (Permission
 def test_load_given_file_is_not_found_should_raise(
     monkeypatch: MonkeyPatch, exception_to_raise: Exception, error_message: str):
     def mock_open(_, __): raise exception_to_raise
-    monkeypatch.setattr(builtins, "open", mock_open)
+    monkeypatch.setattr(builtins, builtins.open.__name__, mock_open)
 
     with pytest.raises(GeneratorError) as error:
         _ = Filter.load(FILEPATH)
@@ -63,19 +63,19 @@ def test_save_should_save_the_lines_in_the_filter(monkeypatch: MonkeyPatch):
     def dirname(filepath: str):
         directory_info.filepath = filepath
         return DIRECTORY
-    monkeypatch.setattr(os.path, "dirname", dirname)
+    monkeypatch.setattr(os.path, os.path.dirname.__name__, dirname)
     
     def makedirs(directory: str, exist_ok: bool):
         directory_info.directory = directory
         directory_info.exist_ok = exist_ok
-    monkeypatch.setattr(os, "makedirs", makedirs)
+    monkeypatch.setattr(os, os.makedirs.__name__, makedirs)
     
     mock_file = MockFile()
     def mock_open(filepath: str, open_mode: str):
         mock_file.filepath = filepath
         mock_file.open_mode = open_mode
         return mock_file
-    monkeypatch.setattr(builtins, "open", mock_open)
+    monkeypatch.setattr(builtins, builtins.open.__name__, mock_open)
     
     filter = Filter(FILEPATH, Block.extract(LINES, 1))
 
@@ -93,8 +93,8 @@ WRITE_FILE_EXCEPTIONS = [ (FileExistsError, _FILE_EXISTS_ERROR), (PermissionErro
 def test_save_given_the_file_exists_and_cannot_be_overwritten_should_raise(
     monkeypatch: MonkeyPatch, exception_to_raise: Exception, error_message: str):
     def mock_open(_, __): raise exception_to_raise
-    monkeypatch.setattr(builtins, "open", mock_open)
-    monkeypatch.setattr(os.path, "dirname", lambda _: "")
+    monkeypatch.setattr(builtins, builtins.open.__name__, mock_open)
+    monkeypatch.setattr(os.path, os.path.dirname.__name__, lambda _: "")
     filter = Filter(FILEPATH, Block.extract(LINES, 1))
 
     with pytest.raises(GeneratorError) as error:

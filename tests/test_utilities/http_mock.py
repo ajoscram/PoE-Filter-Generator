@@ -3,7 +3,7 @@ from pytest import MonkeyPatch
 
 class HttpMock:
     """Class which monkey patches the `utils` HTTP method functions."""
-    def __init__(self, monkeypatch: MonkeyPatch, get_return_value: dict):
+    def __init__(self, monkeypatch: MonkeyPatch, get_return_value: dict | list):
         self.urls_queried = []
         self.resource_descriptions = []
         self.get_return_value = get_return_value

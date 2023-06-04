@@ -1,11 +1,12 @@
 from core import Rule, Line, Block, Filter
 from core.constants import COMMENT_START
 
-NAME = "index"
+_INDEX_RULE_NAME = "index"
 _SECTION_RULE_NAME = "section"
 _SUBSECTION_RULE_NAME = "subsection"
 _SECTION_RULE_NAMES = [ _SECTION_RULE_NAME, _SUBSECTION_RULE_NAME ]
-_RULE_NAMES = [ NAME ] + _SECTION_RULE_NAMES
+_RULE_NAMES = [ _INDEX_RULE_NAME ] + _SECTION_RULE_NAMES
+NAME = _INDEX_RULE_NAME
 
 _LINE_PADDING = "-"
 _MAX_LINE_LENGTH = 80 - len(COMMENT_START)
@@ -43,7 +44,7 @@ def _get_raw_lines_from_line(line: Line):
     return raw_lines
 
 def _get_raw_lines_from_rule(rule: Rule):
-    if rule.name  == NAME:
+    if rule.name  == _INDEX_RULE_NAME:
         return _get_index_lines()
     
     section = _find_section_in_index(rule)

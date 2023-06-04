@@ -1,19 +1,18 @@
 # Backlog
-* Create tests for the entire codebase:
-    ninja
-    wiki
-    handlers
-
-* Turn handlers into a proper package, and expose them in a list on __init__.py
-    remove hidden imports
+* Test handlers:
+    choose
+    econ
+    format
+    import_
+    index
+    tag
 
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create
     Run the tests. If the tests fail then abort the deployment.
     Create build artifacts via a python script under build/release
-    
-* Document the Wiki classes.
 * Create an Updater that downloads the most recent release from GitHub.
+* Update the GitHub wiki documentation.
 
 # Ideas
 * Add a way to perform custom hide / show blocks.

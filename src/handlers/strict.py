@@ -10,13 +10,7 @@ _STRICTNESS_ARG_TYPE_ERROR =  _STRICTNESS_ERROR_PREFIX + " You've provided '{1}'
 def handle(_, block: Block, options:list[str]):
     """Handles creation of strictness subfilters.
     Only one option is accepted and it should include the strictness value to use."""
-    if len(options) != 1:
-        raise GeneratorError(_STRICTNESS_ARG_COUNT_ERROR.format(_HANDLER, len(options)))
-
-    if not options[0].strip().isdigit():
-        raise GeneratorError(_STRICTNESS_ARG_TYPE_ERROR.format(_HANDLER, options[0]))
-
-    handler_strictness = int(options[0])
+    handler_strictness = _get_handler_strictness(options)
 
     for rule in block.get_rules(NAME):
         if not rule.description.isdigit():
@@ -30,3 +24,12 @@ def handle(_, block: Block, options:list[str]):
             block.hide()
 
     return block.get_raw_lines()
+
+def _get_handler_strictness(options: list[str]):
+    if len(options) != 1:
+        raise GeneratorError(_STRICTNESS_ARG_COUNT_ERROR.format(_HANDLER, len(options)))
+
+    if not options[0].strip().isdigit():
+        raise GeneratorError(_STRICTNESS_ARG_TYPE_ERROR.format(_HANDLER, options[0]))
+
+    return int(options[0])

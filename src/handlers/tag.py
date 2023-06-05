@@ -2,47 +2,42 @@ from core import Block, GeneratorError
 
 NAME = "tag"
 _WILDCARD = "_"
+_HANDLER = "handler"
+_RULE = "rule"
+
 _EMPTY_TAG_ERROR = "You must provide at least a tag for the 'tag' {0}."
 
 def handle(_, block: Block, options: list[str]):
     """Hides or shows blocks based on their tags.
     Every option with the exception of the last is treated as a tag category.
     The last option is the tag inside that category."""
-    if options == []:
-        raise GeneratorError(_EMPTY_TAG_ERROR.format("handler"))
-
-    command_category = options[:-1]
-    command_tag = options[-1]
-    tag_index = len(options) - 1
+    handler_category, handler_tag = _get_category_and_tag(options, _HANDLER)
 
     for rule in block.get_rules(NAME):
-        split_description = rule.description.split()
-        
-        if split_description == []:
-            raise GeneratorError(_EMPTY_TAG_ERROR.format("rule"), rule.line_number)
 
-        if len(split_description) < len(options):
+        split_description = rule.description.split()
+        rule_category, rule_tag = _get_category_and_tag(split_description, _RULE, rule.line_number)
+
+        if not _are_categories_equivalent(rule_category, handler_category):
             continue
 
-        rule_category = split_description[:tag_index]
-        rule_tag = split_description[tag_index]
-
-        if _are_categories_equivalent(command_category, rule_category):
-            if _is_text_equivalent(rule_tag, command_tag):
-                block.show()
-            else:
-                block.hide()
+        if _is_text_equivalent(rule_tag, handler_tag):
+            block.show()
+        else:
+            block.hide()
+    
     return block.get_raw_lines()
 
 def _is_text_equivalent(first: str, second: str):
-    return first == second or first == _WILDCARD or second == _WILDCARD
+    return first == second or _WILDCARD in [ first, second ]
 
-def _are_categories_equivalent(first: list[str], second: list[str]):
-    if len(first) != len(second):
-        return False
+def _are_categories_equivalent(rule_category: list[str], handler_category: list[str]):
+    return len(rule_category) == len(handler_category) and \
+        all(_is_text_equivalent(x, y) for x, y in zip(rule_category, handler_category))
 
-    for i in range(len(first)):
-        if not _is_text_equivalent(first[i], second[i]):
-            return False
-    
-    return True
+def _get_category_and_tag(tag_path: list[str], error_descriptor: str, line_number: int = None):
+    if len(tag_path) == 0:
+        raise GeneratorError(_EMPTY_TAG_ERROR.format(error_descriptor), line_number)
+    category = tag_path[:-1]
+    tag = tag_path[-1]
+    return (category, tag)

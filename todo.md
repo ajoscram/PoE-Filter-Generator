@@ -2,10 +2,8 @@
 * Test handlers:
     choose
     econ
-    format
     import_
     index
-    tag
 
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create

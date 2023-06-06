@@ -31,8 +31,8 @@ def test_comment_out_should_comment_out_lines_in_the_block():
 
     block.comment_out()
 
-    for i in range(len(DEFAULT_BLOCK_LINES)):
-        assert DEFAULT_BLOCK_LINES[i] in block.lines[i].comment
+    for uncommented_text_line, commented_out_line in zip(DEFAULT_BLOCK_LINES, block.lines):
+        assert uncommented_text_line in commented_out_line.comment
 
 def test_hide_should_set_show_to_hide():
     block = _create_block([ SHOW ])

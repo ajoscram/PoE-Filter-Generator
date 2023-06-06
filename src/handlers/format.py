@@ -4,7 +4,7 @@ from core.constants import COMMENT_START, RULE_SEPARATOR
 
 NAME = "format"
 
-_RULE_PATTERN = F"{COMMENT_START}\{RULE_SEPARATOR}.+"
+_RULE_PATTERN = F"{COMMENT_START}\\{RULE_SEPARATOR}.+"
 
 def handle(filter: Filter, block: Block, _):
     """Removes rules, trailing whitespace from lines and extraneous empty lines. Options are ignored."""

@@ -38,7 +38,7 @@ def _get_params(rule: Rule, block: Block):
     if not parts[0].isdigit():
         raise GeneratorError(_SET_SIZE_TYPE_ERROR.format(parts[0]), rule.line_number)
     if not parts[1].isdigit():
-        raise GeneratorError(_SUBSET_SIZE_TYPE_ERROR.format(parts[1], rule.line_number))
+        raise GeneratorError(_SUBSET_SIZE_TYPE_ERROR.format(parts[1]), rule.line_number)
     
     set_size = int(parts[0])
     subset_size = int(parts[1])

@@ -1,6 +1,6 @@
 import ggg, ninja, utils
 from core import GeneratorError, Block, Rule
-from core.constants import BASE_TYPE, LINKED_SOCKETS
+from core.constants import BASE_TYPE, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA
 
 NAME = "econ"
 
@@ -30,6 +30,8 @@ _MISC_MNEMONICS = {
 _RULE_PARAMETER_COUNT_ERROR = "The .econ rule expects 2 or 3 paramaters in its description, got {0}."
 _RULE_MNEMONIC_ERROR = "The .econ rule expects a valid type mnemonic, got '{0}'."
 _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
+_LOWER_BOUND_NAME = "lower"
+_UPPER_BOUND_NAME = "upper"
 
 class _Params:
     def __init__(self, mnemonic: str, league_name: str, line_number: int, lower: float, upper: float = None):
@@ -74,12 +76,12 @@ def _get_params(rule: Rule, league_name: str):
     if len(parts) not in [2, 3]:
         raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
     
-    if not utils.is_float(parts[1]):
-        raise GeneratorError(_RULE_BOUNDS_ERROR.format("lower", parts[1]), rule.line_number)
+    if not parts[1].isdigit():
+        raise GeneratorError(_RULE_BOUNDS_ERROR.format(_LOWER_BOUND_NAME, parts[1]), rule.line_number)
     lower = float(parts[1])
 
-    if len(parts) == 3 and not utils.is_float(parts[2]): 
-        raise GeneratorError(_RULE_BOUNDS_ERROR.format("upper", parts[2]), rule.line_number)
+    if len(parts) == 3 and not parts[2].isdigit(): 
+        raise GeneratorError(_RULE_BOUNDS_ERROR.format(_UPPER_BOUND_NAME, parts[2]), rule.line_number)
     upper = float(parts[2]) if len(parts) == 3 else None
  
     return _Params(parts[0], league_name, rule.line_number, lower, upper)
@@ -107,7 +109,7 @@ def _get_unique_filter(block: Block):
         classes = [ utils.try_translate_class(class_) for class_ in classes ]
         unique_filter.classes = classes
     
-    replica_lines = block.find(operand="Replica")
+    replica_lines = block.find(operand=REPLICA)
     if len(replica_lines) > 0:
         unique_filter.is_replica = replica_lines[-1].get_value_as_bool()
 
@@ -118,27 +120,27 @@ def _get_unique_filter(block: Block):
     return unique_filter
 
 def _get_min_links(block: Block):
-    greater_than_or_equal_lines = block.find(operand=LINKED_SOCKETS, operator=">=")
+    greater_than_or_equal_lines = block.find(operand=LINKED_SOCKETS, operator=GREATER_EQUALS)
     values = [ line.get_value_as_int() for line in greater_than_or_equal_lines ]
     
-    greater_than_lines = block.find(operand=LINKED_SOCKETS, operator=">")
+    greater_than_lines = block.find(operand=LINKED_SOCKETS, operator=GREATER)
     values += [ line.get_value_as_int() + 1 for line in greater_than_lines ]
 
     return min(values) if len(values) > 0 else None
 
 def _get_max_links(block: Block):
-    less_than_or_equal_lines = block.find(operand=LINKED_SOCKETS, operator="<=")
+    less_than_or_equal_lines = block.find(operand=LINKED_SOCKETS, operator=LESS_EQUALS)
     values = [ line.get_value_as_int() for line in less_than_or_equal_lines ]
     
-    less_than_lines = block.find(operand=LINKED_SOCKETS, operator="<")
+    less_than_lines = block.find(operand=LINKED_SOCKETS, operator=LESS)
     values += [ line.get_value_as_int() - 1 for line in less_than_lines ]
 
     return max(values) if len(values) > 0 else None
 
 def _get_equals_link_values(block: Block):
     empty_equals_lines = block.find(operand=LINKED_SOCKETS, operator="")
-    equals_lines = block.find(operand=LINKED_SOCKETS, operator="=")
-    strict_equals_lines = block.find(operand=LINKED_SOCKETS, operator="==")
+    equals_lines = block.find(operand=LINKED_SOCKETS, operator=CONTAINS)
+    strict_equals_lines = block.find(operand=LINKED_SOCKETS, operator=EQUALS)
     values = [
         line.get_value_as_int()
         for line in empty_equals_lines + equals_lines + strict_equals_lines

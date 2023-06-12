@@ -1,3 +1,3 @@
 from .http_mock import HttpMock
-from .ref import Ref
-from .functions import create_filter
+from .function_mock import FunctionMock
+from .miscellaneous import create_filter

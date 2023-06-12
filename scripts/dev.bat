@@ -1,7 +1,7 @@
 @echo off
 :: --cov-fail-under=95 <- remember to add this once coverage is high
 set command=pytest --cov=src --no-cov-on-fail
-if "%1"=="cov" (
+if "%1"=="rep" (
     set command=%command% --cov-report=html
     if not exist ".\htmlcov" (
         mkdir ".\htmlcov"

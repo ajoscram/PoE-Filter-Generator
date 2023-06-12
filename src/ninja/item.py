@@ -2,6 +2,7 @@ import wiki
 
 from enum import Enum
 from . import common
+from core.constants import REPLICA
 
 _URL = "https://poe.ninja/api/data/itemoverview?league={0}&type={1}"
 _UNIQUE_ITEM_TYPES = [ "UniqueWeapon", "UniqueArmour", "UniqueAccessory", "UniqueFlask", "UniqueJewel", "UniqueMap" ]
@@ -11,7 +12,7 @@ _BASE_TYPE_FIELD = "baseType"
 _VALUE_FIELD = "chaosValue"
 _CLASS_FIELD = "itemType"
 _LINKS_FIELD = "links"
-_REPLICA_UNIQUE_PREFIX = "Replica "
+_REPLICA_UNIQUE_PREFIX = f"{REPLICA} "
 
 class MiscItemType(Enum):
     """Represents the miscellaneous item types that can be obtained via an `itemoverview` link."""

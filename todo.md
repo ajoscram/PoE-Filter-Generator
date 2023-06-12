@@ -1,7 +1,5 @@
 # Backlog
 * Test handlers:
-    choose
-    econ
     import_
     index
 

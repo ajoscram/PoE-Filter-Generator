@@ -3,7 +3,7 @@ from core import GeneratorError, Block
 from core.constants import COMMENT_START, RULE_SEPARATOR, RULE_START, SHOW
 from handlers.choose import _MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR,_RULE_PARAMETER_COUNT_ERROR, _SET_SIZE_TOO_LARGE_ERROR, _SET_SIZE_TYPE_ERROR, _SUBSET_SIZE_TOO_LARGE_ERROR, _SUBSET_SIZE_TYPE_ERROR, NAME as CHOOSE
 from handlers import choose
-from tests.test_utilities.functions import create_filter
+from tests.test_utilities import create_filter
 
 def test_handle_given_no_choose_rules_should_return_the_lines_as_is():
     FILTER = create_filter(SHOW)

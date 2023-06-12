@@ -17,12 +17,6 @@ def url():
 
 HTTP_RESOURCE_DESCRIPTION = "http resource description"
 
-@pytest.mark.parametrize("value, expected", [ ("not a float", False), ("3.21", True) ])
-def test_is_float_given_a_string_should_return_as_expected(value: str, expected: bool):
-    result = utils.is_float(value)
-
-    assert result == expected
-
 def test_http_get_given_a_url_should_get_the_json(monkeypatch: MonkeyPatch, url: str):
     MOCK_RESPONSE = MockHttpResponse()
     def mock_get(url: str, headers: dict):

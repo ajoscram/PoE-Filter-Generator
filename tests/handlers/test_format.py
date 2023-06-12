@@ -1,7 +1,6 @@
-import pytest
 from handlers import format
 from core.constants import HIDE, RULE_START, SHOW
-from tests.test_utilities.functions import create_filter
+from tests.test_utilities import create_filter
 
 def test_handle_given_lines_with_rules_should_remove_them():
     RULE_TEXT = f"{RULE_START}rule .other_rule"

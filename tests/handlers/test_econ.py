@@ -15,7 +15,7 @@ SOCKET_LINKS = 4
 BASE_TYPES = [ "base_type_1", "base_type_2" ]
 
 @pytest.fixture(autouse=True)
-def setup_league_name(monkeypatch: MonkeyPatch):
+def setup(monkeypatch: MonkeyPatch):
     _ = FunctionMock(monkeypatch, ggg.get_league_name, LEAGUE_NAME)
     _ = FunctionMock(monkeypatch, utils.try_translate_class, lambda x: x)
 
@@ -108,7 +108,7 @@ def test_given_a_unique_rule_with_classes_should_filter_for_classes(monkeypatch:
     assert unique_filter.classes == CLASSES
     
 @pytest.mark.parametrize("replica", [True, False])
-def test_given_a_unique_rule_with_replica_should_filter_for_classes(monkeypatch: MonkeyPatch, replica: bool):
+def test_given_a_unique_rule_with_replica_should_filter_for_replicas(monkeypatch: MonkeyPatch, replica: bool):
     FILTER = create_filter(
     f"""{BASE_TYPES_OPERAND} {RULE_START}{ECON} {_UNIQUE_MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}
         {REPLICA} == {replica}""")
@@ -128,7 +128,7 @@ def test_given_a_unique_rule_with_replica_should_filter_for_classes(monkeypatch:
     (CONTAINS, SOCKET_LINKS, SOCKET_LINKS),
     (EQUALS, SOCKET_LINKS, SOCKET_LINKS),
 ])
-def test_given_a_unique_rule_with_min_links_should_filter_for_min_links(
+def test_given_a_unique_rule_with_links_should_filter_for_links(
     monkeypatch: MonkeyPatch, operator: str, expected_min_links: int, expected_max_links: int):
     FILTER = create_filter(
     f"""{BASE_TYPES_OPERAND} {RULE_START}{ECON} {_UNIQUE_MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}

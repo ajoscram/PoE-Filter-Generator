@@ -5,7 +5,7 @@ from .rule import Rule
 from .constants import BLOCK_STARTERS, COMMENT_START
 
 _MULTILINE_STRING_ERROR = "Multiline string"
-_BOOL_VALUE_ERROR = "Could not translate the value(s) in the line to either 'True' or 'False'. Make sure to provide exactly one of either those values."
+_BOOL_VALUE_ERROR = "Could not translate the value(s) in the line to either 'True' or 'False'. Make sure to provide exactly one of those values."
 _INT_VALUE_ERROR = "Could not translate the value(s) in the line to a digit. Make sure to provide exactly one numeric value."
 
 _INDENTATION_REGEX = "\\s*"

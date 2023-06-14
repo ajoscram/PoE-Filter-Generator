@@ -15,7 +15,7 @@ class Filter:
 
     @classmethod
     def load(cls, filepath: str):
-        blocks = cls._get_blocks(filepath)
+        blocks = _get_blocks(filepath)
         return Filter(filepath, blocks)
 
     def save(self):
@@ -23,17 +23,6 @@ class Filter:
         self._create_directory()
         block_texts = [ str(block) for block in self.blocks ]
         self._write_filter("\n".join(block_texts))
-    
-    @classmethod
-    def _get_blocks(cls, filepath: str):
-        try:
-            with open(filepath, "r") as file:
-                raw_lines = file.readlines()
-                return Block.extract(raw_lines)
-        except FileNotFoundError:
-            raise GeneratorError(_FILE_NOT_FOUND_ERROR, filepath=filepath)
-        except PermissionError:
-            raise GeneratorError(_PERMISSION_ERROR, filepath=filepath)
 
     def _create_directory(self):
         directory = os.path.dirname(self.filepath)
@@ -48,3 +37,13 @@ class Filter:
             raise GeneratorError(_FILE_EXISTS_ERROR, filepath=self.filepath)
         except PermissionError:
             raise GeneratorError(_PERMISSION_ERROR, filepath=self.filepath)
+
+def _get_blocks(filepath: str):
+    try:
+        with open(filepath, "r") as file:
+            raw_lines = file.readlines()
+            return Block.extract(raw_lines)
+    except FileNotFoundError:
+        raise GeneratorError(_FILE_NOT_FOUND_ERROR, filepath=filepath)
+    except PermissionError:
+        raise GeneratorError(_PERMISSION_ERROR, filepath=filepath)

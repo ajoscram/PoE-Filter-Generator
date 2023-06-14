@@ -1,7 +1,8 @@
 # Backlog
-* Test handlers:
+* Test:
     import_
     index
+    main.py
 
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create

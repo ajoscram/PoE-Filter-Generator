@@ -1,6 +1,6 @@
-import pytest, ggg
+import pytest, ggg, utils
 from pytest import MonkeyPatch
-from test_utilities import HttpMock
+from test_utilities import FunctionMock
 from ggg.league import _LEAGUES_URL, _LEAGUES_ERROR_DESCRIPTOR, _LEAGUE_ID_FIELD, _LeagueIndex
 
 LEAGUES = [
@@ -18,10 +18,9 @@ def test_get_league_name_given_league_flags_should_return_the_correct_league(
     monkeypatch: MonkeyPatch, standard: bool, hardcore: bool, ruthless: bool, league_index: _LeagueIndex):
     LEAGUE_NAME = "league name"
     QUERY_RESULT = { league_index.value : { _LEAGUE_ID_FIELD : LEAGUE_NAME } }
-    http_mock = HttpMock(monkeypatch, QUERY_RESULT)
+    http_get_mock = FunctionMock(monkeypatch, utils.http_get, QUERY_RESULT)
 
     league_name = ggg.get_league_name(standard, hardcore, ruthless)
 
-    assert _LEAGUES_URL in http_mock.urls_queried
-    assert _LEAGUES_ERROR_DESCRIPTOR in http_mock.resource_descriptions
+    assert http_get_mock.received(_LEAGUES_URL, _LEAGUES_ERROR_DESCRIPTOR)
     assert league_name == LEAGUE_NAME

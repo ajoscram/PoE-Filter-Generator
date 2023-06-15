@@ -47,14 +47,12 @@ class FunctionMock:
     def _get_args_received(self):
         return [ arg
             for invocation in self._invocations
-            for arg in invocation.args_received
-        ]
+            for arg in invocation.args_received ]
     
     def _get_kwargs_received(self):
-        return [ (key, value)
+        return [ key_value_pair
             for invocation in self._invocations
-            for key, value in invocation.kwargs_received.items()
-        ]
+            for key_value_pair in invocation.kwargs_received.items() ]
 
     def _check_args_were_received(self, *args_to_check):
         args_received = self._get_args_received()

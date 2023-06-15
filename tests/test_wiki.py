@@ -3,7 +3,7 @@ from pytest import MonkeyPatch
 from wiki.queries import _CLASS_FOR_BASE_TYPE_NOT_FOUND_ERROR
 from wiki.constants import Field
 from wiki.wiki_error import WikiError
-from tests.test_utilities import FunctionMock
+from test_utilities import FunctionMock
 
 BASE_TYPE = "base type"
 

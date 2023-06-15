@@ -1,5 +1,5 @@
 import pytest, utils, requests
-from tests.test_utilities import FunctionMock
+from test_utilities import FunctionMock
 from pytest import MonkeyPatch
 from requests import ConnectTimeout, HTTPError, ReadTimeout, Timeout
 from utils.http import _HEADERS, _HTTP_ERROR, _CONNECTION_ERROR

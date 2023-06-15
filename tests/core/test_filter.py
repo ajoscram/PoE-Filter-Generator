@@ -2,7 +2,7 @@ import builtins, pytest, os
 from pytest import MonkeyPatch
 from core.filter import _FILE_EXISTS_ERROR, _FILE_NOT_FOUND_ERROR, _PERMISSION_ERROR
 from core import Filter, GeneratorError, Block
-from tests.test_utilities import FunctionMock
+from test_utilities import FunctionMock
 
 _FILEPATH = "filepath"
 _LINES: list[str] = [ "line 1", "line 2" ]

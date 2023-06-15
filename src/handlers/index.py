@@ -12,6 +12,9 @@ _LINE_PADDING = "-"
 _MAX_LINE_LENGTH = 80 - len(COMMENT_START)
 _SECTION_SEPARATOR = COMMENT_START + _LINE_PADDING * _MAX_LINE_LENGTH
 
+_INDEX_HEADER = "INDEX"
+_INDEX_HINT = "CTRL+F the IDs to jump to any section in the document."
+
 class _Section:
     def __init__(self, rule: Rule, section_id: int, subsection_id: int):        
         self.rule = rule
@@ -25,7 +28,9 @@ def handle(filter: Filter, block: Block, _):
     """Adds indices and addressable sections. Options are ignored."""
     global _index
     _index = _create_index(filter) if _index == None else _index
-    return [ raw_line for line in block.lines for raw_line in _get_raw_lines_from_line(line) ]
+    return [ raw_line
+        for line in block.lines
+        for raw_line in _get_raw_lines_from_line(line) ]
 
 def _create_index(filter: Filter):
     sections: list[_Section] = []
@@ -70,10 +75,10 @@ def _get_index_lines():
 def _get_index_header_lines():
     return [
         _SECTION_SEPARATOR,
-        _render_line("", "INDEX", ""),
+        _render_line("", _INDEX_HEADER, ""),
         _SECTION_SEPARATOR,
         COMMENT_START,
-        _render_line("", "CTRL+F the IDs to jump to any section in the document.", ""),
+        _render_line("", _INDEX_HINT, ""),
     ]
 
 def _get_section_lines(section: _Section):

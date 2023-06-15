@@ -4,7 +4,7 @@ from core import GeneratorError
 from core.constants import HIDE, RULE_START, SHOW
 from handlers import tag
 from handlers.tag import _HANDLER, _RULE, _EMPTY_TAG_ERROR, _WILDCARD, NAME as TAG
-from tests.test_utilities import create_filter
+from test_utilities import create_filter
 
 def test_handle_given_no_options_were_provided_should_raise():
     OPTIONS = []

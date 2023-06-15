@@ -3,7 +3,7 @@ from pytest import MonkeyPatch
 from ninja import common, CurrencyType, MiscItemType, UniqueFilter
 from ninja.currency import _BASE_TYPE_FIELD as _CURRENCY_BASE_TYPE_FIELD, _VALUE_FIELD as _CURRENCY_VALUE_FIELD, _INVALID_FRAGMENT_BASE_TYPES, _URL as CURRENCY_URL
 from ninja.item import _LINKS_FIELD, _NAME_FIELD as _ITEM_NAME_FIELD, _BASE_TYPE_FIELD as _ITEM_BASE_TYPE_FIELD, _REPLICA_UNIQUE_PREFIX, _UNIQUE_ITEM_TYPES, _VALUE_FIELD as _ITEM_VALUE_FIELD, _URL as _ITEM_URL
-from tests.test_utilities import FunctionMock
+from test_utilities import FunctionMock
 
 LEAGUE_NAME = "league_name"
 LOWER_BOUND = 0

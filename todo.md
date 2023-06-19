@@ -1,8 +1,6 @@
 # Backlog
-* Test:
-    import_
-    index
-    main.py
+* Test main.py
+* Go through the tests and refactor stuff thats weird
 
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create

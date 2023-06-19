@@ -5,16 +5,19 @@ from pytest import MonkeyPatch
 class FunctionMock:
     """This class monkey patches a function and collects information how it is used."""
 
-    def __init__(self, monkeypatch: MonkeyPatch, function_to_mock: Callable, result = None):
+    def __init__(self, monkeypatch: MonkeyPatch, function_to_mock: Callable, result = None, target = None):
         """The `result` parameter represents the function resolution.
         It behaves differently depending on the type of the value passed:
         * `Exception`s are raised.
         * `function`s are invoked with the parameters received passed to them when the mock is invoked.
-        * Anything else is returned from the function as a value."""
+        * Anything else is returned from the function as a value.
+        
+        The `target` parameter allows direct setting of the mock target.
+        If not provided, the module's package module is looked for instead."""
+        self.result = result
         self._invocations: list[_Invocation] = []
-        self._result = result
         self._function_name = function_to_mock.__name__
-        module = _find_package_module(function_to_mock)
+        module = target or _find_package_module(function_to_mock)
         monkeypatch.setattr(module, self._function_name, self._mock_function)
     
     def received(self, *args, **kwargs):
@@ -40,9 +43,11 @@ class FunctionMock:
 
     def _mock_function(self, *args, **kwargs):
         self._invocations += [ _Invocation(*args, **kwargs) ]
-        if _is_exception(self._result): raise self._result
-        if callable(self._result): return self._result(*args, **kwargs)
-        return self._result
+        if _is_exception(self.result):
+            raise self.result
+        if callable(self.result):
+            return self.result(*args, **kwargs)
+        return self.result
     
     def _get_args_received(self):
         return [ arg
@@ -85,20 +90,26 @@ class _Invocation:
         self.args_received = list(args)
         self.kwargs_received = kwargs
 
-KNOWN_MODULES = {
+_KNOWN_MODULES = {
     "io": builtins,
     "ntpath": os.path,
+    "genericpath": os.path,
     "os": os,
 }
 
 def _find_package_module(function_to_mock: Callable):
     module = inspect.getmodule(function_to_mock)
-    if module.__name__ in KNOWN_MODULES:
-        return KNOWN_MODULES[module.__name__]
-
+    if module.__name__ in _KNOWN_MODULES:
+        return _KNOWN_MODULES[module.__name__]
+    
     module_path = inspect.getabsfile(module)
     package_name = pathlib.Path(module_path).parts[-2]
-    return importlib.import_module(package_name)
+
+    try:
+        return importlib.import_module(package_name)
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError(
+            f"Could not import '{module.__name__}'. Add it to _KNOWN_MODULES pointing the correct module.")
 
 def _is_exception(value):
     is_subclass = inspect.isclass(value) and issubclass(value, Exception)

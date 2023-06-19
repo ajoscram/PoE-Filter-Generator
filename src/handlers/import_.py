@@ -4,13 +4,20 @@ from core import Rule, Line, Block, Filter, GeneratorError
 NAME = "import"
 _SPLITTER = "->"
 _BLOCK_NAME = "name"
+_FILTER_EXTENSION = ".filter"
 
 _INCORRECT_RULE_FORMAT_ERROR = "The import '{0}' is formatted incorrectly. Make sure your import rules look like this:\n\n\tfile > path > to > filter -> block_name (optional) -> line_pattern (optional)"
 _FILTER_DOES_NOT_EXIST_ERROR = "Could not resolve the import '{0}' to a filter file on your disk."
-_CIRCULAR_REFERENCE_ERROR = "The import '{0}' creates a circular reference loop:\n{1}"
-_EMPTY_PARAMETER_ERROR = "The import '{0}' has no {1}. Make sure to provide one after the arrow."
 _BLOCK_NOT_FOUND_ERROR = "The block with name '{0}' was not found."
-_LINE_PATTERN_NOT_FOUND = "The line pattern '{0}' was not found in block '{1}'."
+_LINE_PATTERN_NOT_FOUND_ERROR = "The line pattern '{0}' was not found in block '{1}'."
+
+_EMPTY_PARAMETER_ERROR = "The import '{0}' has no {1}. Make sure to provide one after the arrow."
+_BLOCK_NAME_ERROR_TEXT = "block name"
+_LINE_PATTERN_ERROR_TEXT = "line pattern"
+
+_CIRCULAR_REFERENCE_ERROR = "The import '{0}' creates a circular reference loop:\n{1}"
+_LOOP_STARTS_HERE_ERROR_TEXT = " (LOOP STARTS HERE)"
+_LOOP_REPEATS_HERE_ERROR_TEXT = " (LOOP REPEATS HERE)"
 
 class _Params:
     def __init__(self, filepath: str, blockname: str = None, line_pattern: str = None):
@@ -18,7 +25,7 @@ class _Params:
         self.blockname = blockname
         self.line_pattern = line_pattern
     
-    def __eq__(self, other: object):
+    def __eq__(self, other):
         if not isinstance(other, _Params):
             return False
         equivalent_filepath = os.path.samefile(self.filepath, other.filepath)
@@ -37,33 +44,31 @@ _filter_cache: dict[str, Filter] = {}
 def handle(filter: Filter, block: Block, _):
     """Handles text import from filter files. Options are ignored."""
     params = _get_initial_params(filter.filepath, block)
-    return [ str(line) for line in _get_lines_from_block(block, params, True)]
+    return [ str(line) for line in _get_lines_from_block(block, [ params ], True)]
 
 def _get_initial_params(filepath: str, block: Block):
     name_rules = block.get_rules(_BLOCK_NAME)
     if len(name_rules) > 0:
         blockname = name_rules[-1].description.strip()
-        return [ _Params(filepath, blockname) ]
+        return _Params(filepath, blockname)
     else:
-        return [ _Params(filepath) ]
+        return _Params(filepath)
 
 def _get_lines_from_filter(filter: Filter, params: list[_Params]) -> list[Line]:
-    lines = []
-    for block in filter.blocks:
-        lines += _get_lines_from_block(block, params, True)
-    return lines
+    return [ line
+        for block in filter.blocks
+        for line in _get_lines_from_block(block, params, True) ]
 
 def _get_lines_from_block(block: Block, params: list[_Params], include_blockstarts: bool) -> list[Line]:
-    lines = []
-    for line in block.lines:
-        lines += _get_lines_from_line(line, params, include_blockstarts)
-    return lines
+    return [ line
+        for block_line in block.lines
+        for line in _get_lines_from_line(block_line, params, include_blockstarts) ]
 
 def _get_lines_from_line(line: Line, params: list[_Params], include_blockstarts: bool) -> list[Line]:
-    lines = [ line ] if not line.is_block_starter() or include_blockstarts else []
-    for rule in line.get_rules(NAME):
-        lines += _get_lines_from_rule(rule, params)
-    return lines
+    first_line = [ line ] if include_blockstarts or not line.is_block_starter() else []
+    return first_line + [ line
+        for rule in line.get_rules(NAME)
+        for line in _get_lines_from_rule(rule, params) ]
 
 def _get_lines_from_rule(rule: Rule, params: list[_Params]) -> list[Line]:
     new_params = _parse_rule_params(rule, params)
@@ -82,24 +87,24 @@ def _get_lines_from_rule(rule: Rule, params: list[_Params]) -> list[Line]:
 def _parse_rule_params(rule: Rule, previous_params: list[_Params]):
     current_filepath = previous_params[-1].filepath
     
-    parts = rule.description.split(_SPLITTER)
+    parts = [ part.strip() for part in rule.description.split(_SPLITTER) ]
     if len(parts) > 3:
         error = _INCORRECT_RULE_FORMAT_ERROR.format(rule.description)
         raise GeneratorError(error, rule.line_number, current_filepath)
     
-    filepath = _parse_rule_filepath(current_filepath, parts[0].strip())
+    filepath = _parse_rule_filepath(current_filepath, parts[0])
     if not os.path.exists(filepath):
         error = _FILTER_DOES_NOT_EXIST_ERROR.format(rule.description)
         raise GeneratorError(error, rule.line_number, current_filepath)
 
-    blockname = parts[1].strip() if len(parts) > 1 else None
+    blockname = parts[1] if len(parts) > 1 else None
     if blockname == "":
-        error = _EMPTY_PARAMETER_ERROR.format(rule.description, "block name")
+        error = _EMPTY_PARAMETER_ERROR.format(rule.description, _BLOCK_NAME_ERROR_TEXT)
         raise GeneratorError(error, rule.line_number, current_filepath)
     
-    line_pattern = parts[2].strip() if len(parts) > 2 else None
+    line_pattern = parts[2] if len(parts) > 2 else None
     if line_pattern == "":
-        error = _EMPTY_PARAMETER_ERROR.format(rule.description, "line pattern")
+        error = _EMPTY_PARAMETER_ERROR.format(rule.description, _LINE_PATTERN_ERROR_TEXT)
         raise GeneratorError(error, rule.line_number, current_filepath)
 
     params = _Params(filepath, blockname, line_pattern)
@@ -129,7 +134,7 @@ def _get_line(block: Block, line_pattern: str, filepath: str):
         if line.contains(line_pattern):
             return line
     blockname = _get_blockname(block)
-    error = _LINE_PATTERN_NOT_FOUND.format(line_pattern, blockname)
+    error = _LINE_PATTERN_NOT_FOUND_ERROR.format(line_pattern, blockname)
     raise GeneratorError(error, block.line_number, filepath)
 
 def _get_blockname(block: Block):
@@ -141,13 +146,13 @@ def _parse_rule_filepath(source_filepath: str, rule_filepath: str):
         return source_filepath
     
     directory = os.path.dirname(source_filepath)
-    directory = re.sub("([\w\.])$", "\\1/", directory)
+    directory = re.sub("([\\w\\.])$", "\\1/", directory)
 
-    filepath = re.sub("\s*>\s*", "/", rule_filepath)
-    filepath = re.sub("\s*<\s*", "../", filepath)
-    filepath = re.sub("([^\.^/])\.", "\\1/.", filepath)
+    filepath = re.sub("\\s*>\\s*", "/", rule_filepath)
+    filepath = re.sub("\\s*<\\s*", "../", filepath)
+    filepath = re.sub("([^\\.^/])\\.", "\\1/.", filepath)
     
-    filepath = directory + filepath + ".filter"
+    filepath = directory + filepath + _FILTER_EXTENSION
     filepath = os.path.normpath(filepath)
     filepath = re.sub("\\\\", "/", filepath)
 
@@ -158,6 +163,6 @@ def _create_circular_reference_error(rule_description: str, previous_params: lis
     for params in previous_params:
         params_trace += f"\n\t{params}"
         if looped_params == params:
-            params_trace += " (LOOP STARTS HERE)"
-    params_trace += f"\n\t{looped_params} (LOOP REPEATS HERE)"
+            params_trace += _LOOP_STARTS_HERE_ERROR_TEXT
+    params_trace += f"\n\t{looped_params}{_LOOP_REPEATS_HERE_ERROR_TEXT}"
     return _CIRCULAR_REFERENCE_ERROR.format(rule_description, params_trace)

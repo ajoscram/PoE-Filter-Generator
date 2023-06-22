@@ -1,6 +1,21 @@
-import builtins, inspect, importlib, pathlib, os
+import builtins, inspect, importlib, pathlib, os, sys, traceback
 from typing import Callable
 from pytest import MonkeyPatch
+
+_KNOWN_MODULES = {
+    "io": builtins,
+    "builtins": builtins,
+    "ntpath": os.path,
+    "genericpath": os.path,
+    "os": os,
+    "sys": sys,
+    "traceback": traceback
+}
+
+class _Invocation:
+    def __init__(self, *args, **kwargs):
+        self.args_received = list(args)
+        self.kwargs_received = kwargs
 
 class FunctionMock:
     """This class monkey patches a function and collects information how it is used."""
@@ -85,29 +100,15 @@ class FunctionMock:
         
         return True
 
-class _Invocation:
-    def __init__(self, *args, **kwargs):
-        self.args_received = list(args)
-        self.kwargs_received = kwargs
-
-_KNOWN_MODULES = {
-    "io": builtins,
-    "ntpath": os.path,
-    "genericpath": os.path,
-    "os": os,
-}
-
 def _find_package_module(function_to_mock: Callable):
-    module = inspect.getmodule(function_to_mock)
-    if module.__name__ in _KNOWN_MODULES:
-        return _KNOWN_MODULES[module.__name__]
-    
-    module_path = inspect.getabsfile(module)
-    package_name = pathlib.Path(module_path).parts[-2]
-
+    if function_to_mock.__module__ in _KNOWN_MODULES:
+        return _KNOWN_MODULES[function_to_mock.__module__]    
     try:
+        module = inspect.getmodule(function_to_mock)
+        module_path = inspect.getabsfile(module)
+        package_name = pathlib.Path(module_path).parts[-2]
         return importlib.import_module(package_name)
-    except ModuleNotFoundError:
+    except (ModuleNotFoundError, TypeError):
         raise ModuleNotFoundError(
             f"Could not import '{module.__name__}'. Add it to _KNOWN_MODULES pointing the correct module.")
 

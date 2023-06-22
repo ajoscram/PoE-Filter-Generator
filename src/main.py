@@ -5,13 +5,13 @@ For more information run "python main.py -h".
 """
 
 import sys, traceback
-from core import GeneratorError, Arguments, Filter, Generator
+from core import GeneratorError, Filter, Generator, Arguments
 from handlers import HANDLERS
 
-HELP_ARG = "-help"
-HELP_ARG_SHORT = "-h"
-HELP_WARNING = f"Use {HELP_ARG} or {HELP_ARG_SHORT} for more information."
-HELP = """
+_HELP_ARG = "-help"
+_HELP_ARG_SHORT = "-h"
+_HELP_WARNING = f"Use {_HELP_ARG} or {_HELP_ARG_SHORT} for more information."
+_HELP = """
 Usage:
 
     python main.py input.filter [output.filter] .handler [option1 option2 optionN] [.handler2 .handlerN]
@@ -33,37 +33,52 @@ Where:
         For more information on handlers visit the project's wiki at https://github.com/ajoscram/PoE-Filter-Generator/wiki/Handlers.
         Handlers may receive options, which can be provided after the handler's name.
         You may provide multiple handlers to perform in a single invocation of this program."""
-UNKNOWN_ERROR_WARNING = """
+
+_UNKNOWN_ERROR_MESSAGE = """
+UNKNOWN ERROR: Oopsie, my bad
+
 If your're reading this then an unforseen error has ocurred. Notify me immediately so I can fix it!
 Please provide either the following text from the error or a screenshot via an issue on GitHub:
 
 https://github.com/ajoscram/PoE-Filter-Generator/issues/new
 
 Thanks!"""
+_GENERATOR_ERROR_TEMPLATE = "\nERROR: {0}\n\n{1}"
+_EXCEPTION_TEMPLATE = "\n{0}: {1}"
 
-try:
-    raw_args = sys.argv[1:]
-    if HELP_ARG in raw_args or HELP_ARG_SHORT in raw_args:
-        print(HELP)
-        sys.exit()
-    args = Arguments(raw_args)
+_READING_FILTER_MESSAGE = "\nReading filter file from '{0}'...\n"
+_APPLYING_HANDLER_MESSAGE = "Applying .{0}..."
+_SAVING_FILTER_MESSAGE = "\nSaving filter file to '{0}'..."
+_DONE_MESSAGE = "Done!"
 
-    print(f"\nReading filter file from '{args.input_filepath}'...\n")
-    filter = Filter.load(args.input_filepath)
+def main():
+    try:
+        raw_args = sys.argv[1:]
+        if _HELP_ARG in raw_args or _HELP_ARG_SHORT in raw_args:
+            print(_HELP)
+            sys.exit()
+        args = Arguments(raw_args)
 
-    generator = Generator(HANDLERS)
-    for invocation in args.invocations:
-        print(f"Applying .{' '.join([invocation.handler_name] + invocation.options)}...")
-        filter = generator.generate(filter, args.output_filepath, invocation.handler_name, invocation.options)
-    
-    print(f"\nSaving filter file to '{args.output_filepath}'...")
-    filter.save()
+        print(_READING_FILTER_MESSAGE.format(args.input_filepath))
+        filter = Filter.load(args.input_filepath)
 
-    print("Done!")
+        generator = Generator(HANDLERS)
+        for invocation in args.invocations:
+            print(_APPLYING_HANDLER_MESSAGE.format(invocation))
+            filter = generator.generate(
+                filter, args.output_filepath, invocation.handler_name, invocation.options)
+        
+        print(_SAVING_FILTER_MESSAGE.format(args.output_filepath))
+        filter.save()
 
-except GeneratorError as error:
-    print(f"\nERROR: {error}\n\n{HELP_WARNING}")
-except Exception as e:
-    print(f"\nUNKNOWN ERROR: Oopsie, my bad\n\n{UNKNOWN_ERROR_WARNING}\n")
-    traceback.print_tb(e.__traceback__)
-    print("\n" + type(e).__name__ + ": " + str(e))
+        print(_DONE_MESSAGE)
+
+    except GeneratorError as error:
+        print(_GENERATOR_ERROR_TEMPLATE.format(error, _HELP_WARNING))
+    except Exception as e:
+        print(_UNKNOWN_ERROR_MESSAGE)
+        traceback.print_tb(e.__traceback__)
+        print(_EXCEPTION_TEMPLATE.format(type(e).__name__, e))
+
+if __name__ == "__main__":
+    main()

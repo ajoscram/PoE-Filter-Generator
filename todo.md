@@ -1,7 +1,6 @@
 # Backlog
-* Test main.py
 * Go through the tests and refactor stuff thats weird
-
+* Implement the if handler
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create
     Run the tests. If the tests fail then abort the deployment.

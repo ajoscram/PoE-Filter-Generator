@@ -9,7 +9,7 @@ _BOOL_VALUE_ERROR = "Could not translate the value(s) in the line to either 'Tru
 _INT_VALUE_ERROR = "Could not translate the value(s) in the line to a digit. Make sure to provide exactly one numeric value."
 
 _INDENTATION_REGEX = "\\s*"
-_OPERAND_REGEX = "[A-Za-z]*"
+_OPERAND_REGEX = f"[^\\s{COMMENT_START}]*"
 _VALUES_REGEX = f"[^{COMMENT_START}]+"
 _COMMENT_REGEX = f"{COMMENT_START}.*"
 _OPERATOR_REGEX = "[<|>|=|!|<|>]=?\\d*"
@@ -55,11 +55,16 @@ class Line:
             return int(self.values[0])
         raise GeneratorError(_INT_VALUE_ERROR, self.number)
     
-    def contains(self, pattern: str, exclude_comments: bool = False):
-        """Returns whether or not this line contains the pattern.
+    def is_empty(self, exclude_comments: bool = False):
+        """Returns `True` if the line contains no text other than whitespace.
         Comments are optionally excluded with `exclude_comments`."""
-        text = str(self).split(COMMENT_START, 1)[0] if exclude_comments else str(self)
-        return pattern in text
+        text = self._get_text(exclude_comments)
+        return len(text.strip()) == 0
+
+    def contains(self, string: str, exclude_comments: bool = False):
+        """Returns whether or not this line contains the string.
+        Comments are optionally excluded with `exclude_comments`."""
+        return string in self._get_text(exclude_comments)
     
     def get_rules(self, name_or_names: str | list[str]):
         """Gets every rule within the line with a name equal to or included in `name_or_names`."""
@@ -85,3 +90,6 @@ class Line:
         self.values: list[str] = re.findall(_SINGLE_VALUE_REGEX, parts[3] or "")
         self.comment: str = parts[4] or ""
         self.rules: list[Rule] = Rule.extract(self.number, self.comment)
+    
+    def _get_text(self, exclude_comments: bool):
+        return str(self).split(COMMENT_START, 1)[0] if exclude_comments else str(self)

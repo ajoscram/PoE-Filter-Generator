@@ -22,22 +22,20 @@ class Rule:
     @classmethod
     def extract(cls, line_number: int, text: str):
         """Returns all rules in a text as a list of rules."""
-        if not cls._should_extract(text):
+        if not _should_extract(text):
             return []
         text = text[text.index(RULE_START) + len(RULE_START):]
         rule_strings = text.split(RULE_SEPARATOR)
-        return [ cls._get_rule(rule_string, line_number) for rule_string in rule_strings ]
+        return [ _get_rule(rule_string, line_number) for rule_string in rule_strings ]
 
-    @classmethod
-    def _should_extract(cls, text: str):
-        split_text = text.split(RULE_START)
-        return len(split_text) >= 2 and not COMMENT_START in split_text[0]
-    
-    @classmethod
-    def _get_rule(cls, text: str, line_number: int):
-        if text.strip() == "":
-            raise GeneratorError(_EMPTY_RULE_ERROR, line_number)
-        fields = text.split(maxsplit=1)
-        name = fields[0].strip()
-        description = fields[1].strip() if len(fields) == 2 else ""
-        return Rule(line_number, name, description)
+def _should_extract(text: str):
+    split_text = text.split(RULE_START)
+    return len(split_text) >= 2 and not COMMENT_START in split_text[0]
+
+def _get_rule(text: str, line_number: int):
+    if text.strip() == "":
+        raise GeneratorError(_EMPTY_RULE_ERROR, line_number)
+    fields = text.split(maxsplit=1)
+    name = fields[0].strip()
+    description = fields[1].strip() if len(fields) == 2 else ""
+    return Rule(line_number, name, description)

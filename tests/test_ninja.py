@@ -5,21 +5,21 @@ from ninja.currency import _BASE_TYPE_FIELD as _CURRENCY_BASE_TYPE_FIELD, _VALUE
 from ninja.item import _LINKS_FIELD, _NAME_FIELD as _ITEM_NAME_FIELD, _BASE_TYPE_FIELD as _ITEM_BASE_TYPE_FIELD, _REPLICA_UNIQUE_PREFIX, _UNIQUE_ITEM_TYPES, _VALUE_FIELD as _ITEM_VALUE_FIELD, _URL as _ITEM_URL
 from test_utilities import FunctionMock
 
-LEAGUE_NAME = "league_name"
-LOWER_BOUND = 0
-UPPER_BOUND = 5
-CURRENCY_TYPE = CurrencyType.BASIC
-ITEM_TYPE = MiscItemType.BEAST
+_LEAGUE_NAME = "league_name"
+_LOWER_BOUND = 0
+_UPPER_BOUND = 5
+_CURRENCY_TYPE = CurrencyType.BASIC
+_ITEM_TYPE = MiscItemType.BEAST
 
 def test_get_currency_base_types_given_a_valid_record_was_found_should_return_it(monkeypatch: MonkeyPatch):
     REQUEST_RESULT, EXPECTED = _get_ninja_response(_CURRENCY_BASE_TYPE_FIELD, _CURRENCY_VALUE_FIELD)
     http_get_mock = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_currency_base_types(LEAGUE_NAME, CURRENCY_TYPE, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_currency_base_types(_LEAGUE_NAME, _CURRENCY_TYPE, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_CURRENCY_BASE_TYPE_FIELD]
-    assert http_get_mock.received(CURRENCY_URL.format(LEAGUE_NAME, CURRENCY_TYPE.value))
+    assert http_get_mock.received(CURRENCY_URL.format(_LEAGUE_NAME, _CURRENCY_TYPE.value))
 
 def test_get_currency_base_types_given_invalid_fragment_base_type_was_found_should_not_return_it(
     monkeypatch: MonkeyPatch):
@@ -27,7 +27,7 @@ def test_get_currency_base_types_given_invalid_fragment_base_type_was_found_shou
     EXPECTED_TO_FAIL[_CURRENCY_BASE_TYPE_FIELD] = _INVALID_FRAGMENT_BASE_TYPES[0]
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_currency_base_types(LEAGUE_NAME, CURRENCY_TYPE, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_currency_base_types(_LEAGUE_NAME, _CURRENCY_TYPE, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 0
 
@@ -35,22 +35,22 @@ def test_get_misc_base_types_given_a_valid_record_was_found_should_return_it(mon
     REQUEST_RESULT, EXPECTED = _get_ninja_response(_ITEM_NAME_FIELD, _ITEM_VALUE_FIELD)
     http_get_mock = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_misc_base_types(LEAGUE_NAME, ITEM_TYPE, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_misc_base_types(_LEAGUE_NAME, _ITEM_TYPE, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_ITEM_NAME_FIELD]
-    assert http_get_mock.received(_ITEM_URL.format(LEAGUE_NAME, ITEM_TYPE.value))
+    assert http_get_mock.received(_ITEM_URL.format(_LEAGUE_NAME, _ITEM_TYPE.value))
 
 def test_get_unique_base_types_given_an_empty_unique_filter_should_return_a_valid_record(monkeypatch: MonkeyPatch):
     REQUEST_RESULT, EXPECTED = _get_ninja_response(_ITEM_BASE_TYPE_FIELD, _ITEM_VALUE_FIELD)
     http_get_mock = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UniqueFilter(), LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UniqueFilter(), _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_ITEM_BASE_TYPE_FIELD]
     for unique_item_type in _UNIQUE_ITEM_TYPES:
-        assert http_get_mock.received(_ITEM_URL.format(LEAGUE_NAME, unique_item_type))
+        assert http_get_mock.received(_ITEM_URL.format(_LEAGUE_NAME, unique_item_type))
 
 def test_get_unique_base_types_given_record_has_a_required_class_should_return_it(monkeypatch: MonkeyPatch):
     CLASS = "class"
@@ -60,7 +60,7 @@ def test_get_unique_base_types_given_record_has_a_required_class_should_return_i
     _ = FunctionMock(monkeypatch, wiki.get_class_id_for_base_type, CLASS)
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
     
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_ITEM_BASE_TYPE_FIELD]
@@ -73,7 +73,7 @@ def test_get_unique_base_types_given_record_has_no_matching_class_should_not_ret
     _ = FunctionMock(monkeypatch, wiki.get_class_id_for_base_type, "class")
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 0
 
@@ -86,7 +86,7 @@ def test_get_unique_base_types_given_replica_match_on_record_and_filter_should_r
     UNIQUE_FILTER.is_replica = replica
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_ITEM_BASE_TYPE_FIELD]
@@ -100,7 +100,7 @@ def test_get_unique_base_types_given_replica_mismatch_on_record_and_filter_shoul
     UNIQUE_FILTER.is_replica = not replica
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 0
 
@@ -114,7 +114,7 @@ def test_get_unique_base_types_given_links_in_filter_and_within_bounds_on_record
     UNIQUE_FILTER.max_links = LINKS + 1
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_ITEM_BASE_TYPE_FIELD]
@@ -128,7 +128,7 @@ def test_get_unique_base_types_given_links_in_filter_and_below_min_links_on_reco
     UNIQUE_FILTER.min_links = LINKS + 1
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 0
 
@@ -141,7 +141,7 @@ def test_get_unique_base_types_given_links_in_filter_and_above_max_links_on_reco
     UNIQUE_FILTER.max_links = LINKS - 1
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    base_types = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    base_types = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert len(base_types) == 0
 
@@ -152,22 +152,22 @@ def test_get_unique_base_types_given_links_in_filter_and_no_links_on_record_shou
     UNIQUE_FILTER.min_links = 1
     _ = FunctionMock(monkeypatch, utils.http_get, REQUEST_RESULT)
 
-    _ = ninja.get_unique_base_types(LEAGUE_NAME, UNIQUE_FILTER, LOWER_BOUND, UPPER_BOUND)
+    _ = ninja.get_unique_base_types(_LEAGUE_NAME, UNIQUE_FILTER, _LOWER_BOUND, _UPPER_BOUND)
 
     assert EXPECTED[_LINKS_FIELD] == 0
 
 def _get_ninja_response(base_type_field_name: str, value_field_name: str):
     below_bound_record = {
         base_type_field_name: "below bound base type",
-        value_field_name: LOWER_BOUND - 1
+        value_field_name: _LOWER_BOUND - 1
     }
     within_bound_record = {
         base_type_field_name: "within bound base type",
-        value_field_name: (LOWER_BOUND + UPPER_BOUND) / 2
+        value_field_name: (_LOWER_BOUND + _UPPER_BOUND) / 2
     }
     above_bound_record = {
         base_type_field_name: "above bound base type",
-        value_field_name: UPPER_BOUND + 1
+        value_field_name: _UPPER_BOUND + 1
     }
     response = {
         common._RESPONSE_DATA_LOCATION: [

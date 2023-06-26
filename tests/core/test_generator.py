@@ -3,7 +3,7 @@ from core import Filter, Block, Generator, GeneratorError
 from core.generator import _HANDLER_NOT_FOUND_ERROR
 
 HANDLER_NAME = "handler"
-class MockHandler:
+class _MockHandler:
     def __init__(self, lines: list[str]):
         self.lines = lines
         self.options_handled = None
@@ -43,6 +43,6 @@ def test_generate_given_a_handler_could_not_be_found_should_raise():
     assert error.value.message == ERROR_MESSAGE
 
 def _get_mock_handler_and_dict(expected_lines: list[str]):
-    mock_handler = MockHandler(expected_lines)
+    mock_handler = _MockHandler(expected_lines)
     handler_dict = { HANDLER_NAME: mock_handler.handle }
     return (mock_handler, handler_dict)

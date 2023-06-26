@@ -3,7 +3,6 @@ from core.invocation import Invocation
 _HANDLER_NAME = "handler"
 
 def test_constructor_given_a_handler_name_should_instantiate_correctly():
-
     invocation = Invocation(_HANDLER_NAME)
 
     assert invocation.handler_name == _HANDLER_NAME

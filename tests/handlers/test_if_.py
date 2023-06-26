@@ -3,7 +3,7 @@ from handlers import if_
 from handlers.if_ import _EMPTY_DESCRIPTION_ERROR, NAME as IF
 from core.constants import COMMENT_START, HIDE, RULE_START, SHOW
 from core import GeneratorError
-from tests.test_utilities.miscellaneous import create_filter
+from test_utilities import create_filter
 
 def test_handle_given_text_is_contained_should_not_comment_out():
     TEXT = "text"

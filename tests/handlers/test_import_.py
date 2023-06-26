@@ -27,11 +27,11 @@ def path_exists_mock(monkeypatch: MonkeyPatch):
 def test_handle_given_a_filter_import_should_import_the_filter_text(monkeypatch: MonkeyPatch, dirname_mock: FunctionMock):
     DIRECTORY = "directory"
     target_filter = create_filter("target filter contents", filepath="target_filter")
-    import_filter = create_filter(f"{RULE_START}{IMPORT} {target_filter.filepath}", filepath="import_filter")
+    filter = create_filter(f"{RULE_START}{IMPORT} {target_filter.filepath}", filepath="import_filter")
     filter_load_mock = FunctionMock(monkeypatch, Filter.load, target_filter, Filter)
     dirname_mock.result = DIRECTORY
 
-    lines = import_.handle(import_filter, import_filter.blocks[0], None)
+    lines = import_.handle(filter, filter.blocks[0], None)
 
     assert filter_load_mock.received(f"{DIRECTORY}/{target_filter.filepath}{_FILTER_EXTENSION}")
     assert lines[-1] == str(target_filter.blocks[0].lines[0])

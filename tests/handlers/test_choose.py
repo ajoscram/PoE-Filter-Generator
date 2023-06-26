@@ -84,6 +84,6 @@ def _get_expected_line_count(set_size: int, subset_size: int, total_line_count: 
     return (subset_size + total_line_count - set_size) * block_count
 
 def _get_expected_block_count(set_size: int, subset_size: int):
-    # this calculates the binomial coefficient formula
+    # the binomial coefficient formula
     denominator = math.factorial(subset_size) * math.factorial(set_size - subset_size)
     return math.factorial(set_size) / denominator

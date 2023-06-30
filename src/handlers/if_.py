@@ -23,16 +23,15 @@ def handle(_, block: Block, __):
         elif remove_type == _RemoveType.MUTLI:
             _comment_out_starting_from_line(block, line)
             break
-    
     return block.get_raw_lines()
 
 def _get_block_text(block: Block):
-    raw_lines = [ re.sub(_IF_RULE_PATTERN, "", str(line)) for line in block.lines ]
+    raw_lines = [ re.sub(_IF_RULE_PATTERN, "", raw_line) for raw_line in block.get_raw_lines() ]
     return "\n".join(raw_lines)
 
 def _get_remove_type(line: Line, block_text: str):
     for rule in line.get_rules(NAME):
-        if len(rule.description) == 0:
+        if rule.description == "":
             raise GeneratorError(_EMPTY_DESCRIPTION_ERROR, rule.line_number)
         if rule.description in block_text:
             continue

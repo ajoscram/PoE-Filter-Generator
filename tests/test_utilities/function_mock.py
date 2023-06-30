@@ -32,8 +32,8 @@ class FunctionMock:
         self.result = result
         self._invocations: list[_Invocation] = []
         self._function_name = function_to_mock.__name__
-        module = target or _find_package_module(function_to_mock)
-        monkeypatch.setattr(module, self._function_name, self._mock_function)
+        target = target or _find_package_module(function_to_mock)
+        monkeypatch.setattr(target, self._function_name, self._mock_function)
     
     def received(self, *args, **kwargs):
         """Returns `True` if all `args` and `kwargs` were received during execution.

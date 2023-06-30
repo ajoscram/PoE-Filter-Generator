@@ -15,13 +15,14 @@ GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
 
 ### - Wiki Cargo Queries
 ### Docs: https://www.poewiki.net/wiki/Special:CargoQuery
-@tables = items
-@fields = class_id, base_item
-@where = base_item='Amethyst Flask'
+### Tables: https://www.poewiki.net/wiki/Special:CargoTables
+@tables = mod_spawn_weights
+@fields = _pageName, tag
+@where =
 @group_by = 
 @order_by =
 @join_on = 
-@limit = 1
+@limit = 200
 
 ### Direct API Queries
 GET https://www.poewiki.net/w/api.php?action=cargoquery&format=json&tables={{tables}}&fields={{fields}}&where={{where}}&group_by={{group_by}}&order_by={{order_by}}&join_on={{join_on}}&limit={{limit}}

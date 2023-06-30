@@ -55,8 +55,8 @@ def _get_raw_lines_from_rule(rule: Rule):
     section = _find_section_in_index(rule)
     if rule.name == _SECTION_RULE_NAME:
         return _get_section_lines(section)
-    else:
-        return [ _get_subsection_line(section) ]
+    
+    return [ _get_subsection_line(section) ]
 
 def _find_section_in_index(rule: Rule):
     global _index

@@ -48,11 +48,12 @@ def handle(filter: Filter, block: Block, _):
 
 def _get_initial_params(filepath: str, block: Block):
     name_rules = block.get_rules(_BLOCK_NAME)
+    
     if len(name_rules) > 0:
         blockname = name_rules[-1].description.strip()
         return _Params(filepath, blockname)
-    else:
-        return _Params(filepath)
+    
+    return _Params(filepath)
 
 def _get_lines_from_filter(filter: Filter, params: list[_Params]) -> list[Line]:
     return [ line

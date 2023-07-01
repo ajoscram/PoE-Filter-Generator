@@ -1,0 +1,21 @@
+name: test
+
+on: [push] # workflow_dispatch for manual triggering
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: scripts/install.sh 
+    
+    - name: Run tests
+      run: scripts/test.sh

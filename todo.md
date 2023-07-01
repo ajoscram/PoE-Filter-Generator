@@ -20,7 +20,6 @@ https://www.poewiki.net/wiki/Special:CargoTables/items
 Example: https://www.poewiki.net/wiki/Modifier:DamageChilledEnemiesInfluence1
 
     Account for: item level, class, basetype
-
     - Get the item tags
     - Get all mods that have those tags
 

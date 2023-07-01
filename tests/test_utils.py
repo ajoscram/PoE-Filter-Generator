@@ -25,6 +25,7 @@ def test_http_get_given_a_url_should_get_the_json(monkeypatch: MonkeyPatch):
 
     assert get_mock.received(_URL, headers=_HEADERS)
     assert response == MOCK_RESPONSE.json_response
+    assert False
 
 def test_http_get_given_multiple_requests_on_the_same_url_should_return_the_cached_value(monkeypatch: MonkeyPatch):
     MOCK_RESPONSE = _MockHttpResponse()

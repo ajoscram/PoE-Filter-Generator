@@ -20,6 +20,7 @@ def test_get_currency_base_types_given_a_valid_record_was_found_should_return_it
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_CURRENCY_BASE_TYPE_FIELD]
     assert http_get_mock.received(CURRENCY_URL.format(_LEAGUE_NAME, _CURRENCY_TYPE.value))
+    assert False
 
 def test_get_currency_base_types_given_invalid_fragment_base_type_was_found_should_not_return_it(
     monkeypatch: MonkeyPatch):

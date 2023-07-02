@@ -1,4 +1,5 @@
 name: release
+run-name: ${{ github.workflow }} on ${{ github.event_name }} by ${{ github.triggering_actor }}
 
 on: push #workflow_dispatch
 

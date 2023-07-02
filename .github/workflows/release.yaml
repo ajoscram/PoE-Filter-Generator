@@ -1,5 +1,5 @@
 name: release
-run-name: ${{ github.workflow }} on ${{ github.event_name }} by ${{ github.triggering_actor }}
+run-name: "${{ github.workflow }} on ${{ github.event_name }} by ${{ github.triggering_actor }}: \"${{ github.event.head_commit.message }}\""
 
 on: push #workflow_dispatch
 
@@ -13,12 +13,12 @@ jobs:
     - name: Get release version
       id: version
       shell: bash
-      run: VERSION=$(scripts/version.sh) >> $GITHUB_OUTPUT && echo "$VERSION"
+      run: echo "VERSION=$(scripts/version.sh)" >> $GITHUB_OUTPUT
     
     - name: Get release notes
       id: notes
       shell: bash
-      run: NOTES=$(scripts/notes.sh) >> $GITHUB_OUTPUT && echo "$NOTES"
+      run: echo "NOTES=$(scripts/notes.sh)" >> $GITHUB_OUTPUT
     
     - name: Print notes and version
       shell: bash

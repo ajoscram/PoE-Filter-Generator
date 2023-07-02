@@ -13,12 +13,16 @@ jobs:
     - name: Get release version
       id: version
       shell: bash
-      run: echo "VERSION=$(scripts/version.sh)" >> $GITHUB_OUTPUT
+      run: echo "VERSION=$(scripts/version.sh)" >> "$GITHUB_OUTPUT"
     
     - name: Get release notes
       id: notes
       shell: bash
-      run: echo "NOTES=$(scripts/notes.sh)" >> $GITHUB_OUTPUT
+      run: |
+        DELIMITER=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "NOTES=$DELIMITER" >> "$GITHUB_OUTPUT"
+        scripts/notes.sh >> "$GITHUB_OUTPUT"
+        echo "$DELIMITER" >> "GITHUB_OUTPUT"
     
     - name: Print notes and version
       shell: bash
@@ -26,11 +30,11 @@ jobs:
         echo ${{ steps.version.outputs.VERSION }}
         echo ${{ steps.notes.outputs.NOTES }}
 
-    - name: Create release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with: 
-        tag_name: ${{ steps.version.outputs.VERSION }}
-        release_name: ${{ steps.version.outputs.VERSION }} PoE Filter Generator Update
-        body: ${{ steps.notes.outputs.NOTES }}
+    # - name: Create release
+    #   uses: actions/create-release@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with: 
+    #     tag_name: ${{ steps.version.outputs.VERSION }}
+    #     release_name: ${{ steps.version.outputs.VERSION }} PoE Filter Generator Update
+    #     body: ${{ steps.notes.outputs.NOTES }}

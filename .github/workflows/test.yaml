@@ -1,4 +1,5 @@
 name: test
+run-name: "${{ github.workflow }} on ${{ github.event_name }} by ${{ github.triggering_actor }}: \"${{ github.event.head_commit.message }}\""
 
 on: [push, pull_request]
 

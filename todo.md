@@ -2,6 +2,13 @@
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create
     - Create a script for publishing a new release on GH. It should invoke the test and build scripts.
+        Composite actions could help to reuse installing and testing: https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+        https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
+        https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow
+        https://stackoverflow.com/questions/74282330/invalid-value-matching-delimiter-not-found
+        https://github.com/ajoscram/PoE-Filter-Generator/actions
+
+
     - Create a GH Action for testing the code. This runs on every commit to master.
     - Create a GH Action for publishing. This is ran manually via CLI or Actions on web.
 

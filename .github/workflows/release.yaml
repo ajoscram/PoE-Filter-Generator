@@ -22,7 +22,7 @@ jobs:
         DELIMITER=$(openssl rand -hex 8)
         echo "NOTES<<$DELIMITER" >> "$GITHUB_OUTPUT"
         scripts/notes.sh >> "$GITHUB_OUTPUT"
-        echo "$DELIMITER" >> "GITHUB_OUTPUT"
+        echo "$DELIMITER" >> "$GITHUB_OUTPUT"
     
     - name: Print notes and version
       shell: bash

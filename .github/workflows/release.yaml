@@ -21,14 +21,14 @@ jobs:
       run: |
         DELIMITER=$(openssl rand -hex 8)
         echo "NOTES<<$DELIMITER" >> "$GITHUB_OUTPUT"
-        echo "$(scripts/notes.sh)" >> "$GITHUB_OUTPUT"
+        scripts/notes.sh >> "$GITHUB_OUTPUT"
         echo "$DELIMITER" >> "$GITHUB_OUTPUT"
     
     - name: Print notes and version
       shell: bash
       run: |
-        echo ${{ steps.version.outputs.VERSION }}
-        echo ${{ steps.notes.outputs.NOTES }}
+        echo "${{ steps.version.outputs.VERSION }}"
+        echo "${{ steps.notes.outputs.NOTES }}"
 
     # - name: Create release
     #   uses: actions/create-release@v1

@@ -12,13 +12,19 @@ jobs:
     - name: Get release version
       id: version
       shell: bash
-      run: VERSION=$(scripts/version.sh) >> $GITHUB_OUTPUT && echo $VERSION
+      run: VERSION=$(scripts/version.sh) >> $GITHUB_OUTPUT && echo "$VERSION"
     
     - name: Get release notes
       id: notes
       shell: bash
-      run: NOTES=$(scripts/notes.sh) >> $GITHUB_OUTPUT && echo $NOTES
+      run: NOTES=$(scripts/notes.sh) >> $GITHUB_OUTPUT && echo "$NOTES"
     
+    - name: Print notes and version
+      shell: bash
+      run: |
+        echo ${{ steps.version.outputs.VERSION }}
+        echo ${{ steps.notes.outputs.NOTES }}
+
     - name: Create release
       uses: actions/create-release@v1
       env:

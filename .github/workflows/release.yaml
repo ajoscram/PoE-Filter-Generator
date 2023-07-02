@@ -3,7 +3,7 @@ name: release
 on: push #workflow_dispatch
 
 jobs:
-  test:
+  release:
     runs-on: windows-latest
 
     steps:
@@ -12,16 +12,12 @@ jobs:
     - name: Get release version
       id: version
       shell: bash
-      run: |
-        VERSION=$(scripts/version.sh) >> $GITHUB_OUTPUT
-        echo $VERSION
+      run: VERSION=$(scripts/version.sh) >> $GITHUB_OUTPUT && echo $VERSION
     
     - name: Get release notes
       id: notes
       shell: bash
-      run: |
-        NOTES=$(scripts/notes.sh) >> $GITHUB_OUTPUT
-        echo $version
+      run: NOTES=$(scripts/notes.sh) >> $GITHUB_OUTPUT && echo $NOTES
     
     - name: Create release
       uses: actions/create-release@v1

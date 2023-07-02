@@ -1,1 +1,1 @@
-cat changelog.md | sed '0,/^#[[:space:]]/b; /^#[[:space:]]/Q' | tail -n +2 | head -n -1
+cat changelog.md | sed '0,/^#[[:space:]]/b; /^#[[:space:]]/Q' | tail -n +2

@@ -20,7 +20,7 @@ jobs:
       shell: bash
       run: |
         DELIMITER=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-        echo "NOTES=$DELIMITER" >> "$GITHUB_OUTPUT"
+        echo "NOTES<<$DELIMITER" >> "$GITHUB_OUTPUT"
         scripts/notes.sh >> "$GITHUB_OUTPUT"
         echo "$DELIMITER" >> "GITHUB_OUTPUT"
     

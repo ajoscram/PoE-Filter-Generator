@@ -28,13 +28,13 @@ jobs:
       shell: bash
       run: |
         echo "${{ steps.version.outputs.VERSION }}"
-        echo $"${{ steps.notes.outputs.NOTES }}"
+        echo '${{ steps.notes.outputs.NOTES }}'
 
-    # - name: Create release
-    #   uses: actions/create-release@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with: 
-    #     tag_name: ${{ steps.version.outputs.VERSION }}
-    #     release_name: ${{ steps.version.outputs.VERSION }} PoE Filter Generator Update
-    #     body: ${{ steps.notes.outputs.NOTES }}
+    - name: Create release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with: 
+        tag_name: ${{ steps.version.outputs.VERSION }}
+        release_name: ${{ steps.version.outputs.VERSION }} PoE Filter Generator Update
+        body: ${{ steps.notes.outputs.NOTES }}

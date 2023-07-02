@@ -1,6 +1,6 @@
 name: release
 
-on: push
+on: push #workflow_dispatch
 
 jobs:
   test:
@@ -12,12 +12,16 @@ jobs:
     - name: Get release version
       id: version
       shell: bash
-      run: VERSION=$(scripts/version.sh) >> $GITHUB_OUTPUT
+      run: |
+        VERSION=$(scripts/version.sh) >> $GITHUB_OUTPUT
+        echo $VERSION
     
     - name: Get release notes
       id: notes
       shell: bash
-      run: NOTES=$(scripts/notes.sh) >> $GITHUB_OUTPUT
+      run: |
+        NOTES=$(scripts/notes.sh) >> $GITHUB_OUTPUT
+        echo $version
     
     - name: Create release
       uses: actions/create-release@v1

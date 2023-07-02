@@ -10,27 +10,29 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Get release version
+    # missing tests
+
+    - name: Build pfg.exe
+      id: build
+      shell: bash
+      run: scripts/build.sh
+
+    - name: Get version
       id: version
       shell: bash
-      run: echo "VERSION=$(scripts/version.sh)" >> "$GITHUB_OUTPUT"
+      run: echo "VERSION=$(scripts/version.sh)" >> $GITHUB_OUTPUT
     
-    - name: Get release notes
+    - name: Get notes
       id: notes
       shell: bash
       run: |
         DELIMITER=$(openssl rand -hex 8)
-        echo "NOTES<<$DELIMITER" >> "$GITHUB_OUTPUT"
-        scripts/notes.sh >> "$GITHUB_OUTPUT"
-        echo "$DELIMITER" >> "$GITHUB_OUTPUT"
-    
-    - name: Print notes and version
-      shell: bash
-      run: |
-        echo "${{ steps.version.outputs.VERSION }}"
-        echo '${{ steps.notes.outputs.NOTES }}'
+        echo "NOTES<<$DELIMITER" >> $GITHUB_OUTPUT
+        scripts/notes.sh >> $GITHUB_OUTPUT
+        echo "$DELIMITER" >> $GITHUB_OUTPUT
 
     - name: Create release
+      id: release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,3 +40,14 @@ jobs:
         tag_name: ${{ steps.version.outputs.VERSION }}
         release_name: ${{ steps.version.outputs.VERSION }} PoE Filter Generator Update
         body: ${{ steps.notes.outputs.NOTES }}
+        prerelease: false
+        draft: false
+
+    - name: Attach pfg.exe to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_path: build/pfg.exe
+        asset_name: pfg.exe

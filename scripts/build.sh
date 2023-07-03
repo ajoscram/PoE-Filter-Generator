@@ -1,4 +1,4 @@
-[ ! -d "./build" ] && mkdir "./build"
+[ ! -d "build" ] && mkdir "build"
 pyinstaller \
     -c -F \
     -i "../assets/icon.ico" \

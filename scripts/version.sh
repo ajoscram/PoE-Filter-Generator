@@ -1,0 +1,1 @@
+cat changelog.md | head -n 1 | sed s/^#[[:space:]]*//

@@ -2,6 +2,10 @@
 * Automate deployment on GitHub.
     https://cli.github.com/manual/gh_release_create
     - Create a script for publishing a new release on GH. It should invoke the test and build scripts.
+        Composite actions could help to reuse installing and testing: https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+        https://docs.github.com/en/actions/using-workflows/
+        https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow
+
     - Create a GH Action for testing the code. This runs on every commit to master.
     - Create a GH Action for publishing. This is ran manually via CLI or Actions on web.
 
@@ -20,7 +24,6 @@ https://www.poewiki.net/wiki/Special:CargoTables/items
 Example: https://www.poewiki.net/wiki/Modifier:DamageChilledEnemiesInfluence1
 
     Account for: item level, class, basetype
-
     - Get the item tags
     - Get all mods that have those tags
 

@@ -1,0 +1,16 @@
+name: 'Install and test'
+description: 'Runs the install and test scripts. Build dependencies can be optionally skipped'
+inputs:
+  skip-build-tools:
+    description: 'Skips installation of python packages used for building pfg.exe'
+    required: false
+    default: false
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        SKIP_BUILD_TOOLS=$([ ${{ inputs.skip-build-tools }} = true ] && echo "skip-build-tools" || echo "")
+        scripts/install.sh $SKIP_BUILD_TOOLS 
+    - shell: bash
+      run: scripts/test.sh

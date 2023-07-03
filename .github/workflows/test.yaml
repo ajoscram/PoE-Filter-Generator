@@ -1,0 +1,22 @@
+name: test
+run-name: "${{ github.workflow }} on ${{ github.event_name }} by ${{ github.triggering_actor }}: \"${{ github.event.head_commit.message }}\""
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: windows-latest
+  
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    - name: Install and test
+      uses: ./.github/actions/install-and-test
+      with:
+        skip-build-tools: true

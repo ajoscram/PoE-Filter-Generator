@@ -1,0 +1,60 @@
+name: release
+run-name: "${{ github.workflow }} on ${{ github.event_name }} by ${{ github.triggering_actor }}: \"${{ github.event.head_commit.message }}\""
+
+on: workflow_dispatch
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Check out code 
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    - name: Install and test
+      uses: ./.github/actions/install-and-test
+
+    - name: Build pfg.exe
+      shell: bash
+      run: scripts/build.sh
+
+    - name: Get release version
+      id: version
+      shell: bash
+      run: echo "VERSION=$(scripts/version.sh)" >> $GITHUB_OUTPUT
+    
+    - name: Get release notes
+      id: notes
+      shell: bash
+      run: |
+        DELIMITER=$(openssl rand -hex 8)
+        echo "NOTES<<$DELIMITER" >> $GITHUB_OUTPUT
+        scripts/notes.sh >> $GITHUB_OUTPUT
+        echo "$DELIMITER" >> $GITHUB_OUTPUT
+
+    - name: Create release
+      id: release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with: 
+        tag_name: ${{ steps.version.outputs.VERSION }}
+        release_name: ${{ steps.version.outputs.VERSION }} PoE Filter Generator Update
+        body: ${{ steps.notes.outputs.NOTES }}
+        prerelease: false
+        draft: false
+
+    - name: Attach pfg.exe to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_content_type: application/octet-stream
+        asset_path: build/pfg.exe
+        asset_name: pfg.exe

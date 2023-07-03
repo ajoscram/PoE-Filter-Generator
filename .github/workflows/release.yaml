@@ -8,32 +8,27 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Check out code 
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
-    - name: Install dependencies
-      shell: bash
-      run: scripts/install.sh
-    
-    - name: Run tests
-      shell: bash
-      run: scripts/test.sh
+    - name: Install and test
+      uses: ./.github/actions/install-and-test
 
     - name: Build pfg.exe
-      id: build
       shell: bash
       run: scripts/build.sh
 
-    - name: Get version
+    - name: Get release version
       id: version
       shell: bash
       run: echo "VERSION=$(scripts/version.sh)" >> $GITHUB_OUTPUT
     
-    - name: Get notes
+    - name: Get release notes
       id: notes
       shell: bash
       run: |

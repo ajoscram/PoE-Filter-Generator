@@ -8,17 +8,15 @@ jobs:
     runs-on: windows-latest
   
     steps:
-    - uses: actions/checkout@v3
+    - name: Check out code
+      uses: actions/checkout@v3
     
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
-    - name: Install dependencies
-      shell: bash
-      run: scripts/install.sh skip-build-tools
-    
-    - name: Run tests
-      shell: bash
-      run: scripts/test.sh
+    - name: Install and test
+      uses: ./.github/actions/install-and-test
+      with:
+        skip-build-tools: true

@@ -1,18 +1,6 @@
 # Backlog
-* Automate deployment on GitHub.
-    https://cli.github.com/manual/gh_release_create
-    - Create a script for publishing a new release on GH. It should invoke the test and build scripts.
-        Composite actions could help to reuse installing and testing: https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
-        https://docs.github.com/en/actions/using-workflows/
-        https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow
-
-    - Create a GH Action for testing the code. This runs on every commit to master.
-    - Create a GH Action for publishing. This is ran manually via CLI or Actions on web.
-
-* Create an Updater that downloads the most recent release from GitHub.
-
 * Update the GitHub wiki documentation.
-
+* Create an Updater that downloads the most recent release from GitHub.
 * Find a way in the wiki to change the _FILTER_TO_ID_CLASSES_DICT dictionary values from translate.py into a Wiki API call.
     The `translate.py` file in `utils` was left untested because it could be removed if this works.
 

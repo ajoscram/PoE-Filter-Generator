@@ -3,7 +3,7 @@ from pytest import MonkeyPatch
 from test_utilities import FunctionMock
 from core import GeneratorError, Filter, Generator, Arguments
 from core.constants import RULE_SEPARATOR
-from main import _APPLYING_HANDLER_MESSAGE, _DONE_MESSAGE, _EXCEPTION_TEMPLATE, _GENERATOR_ERROR_TEMPLATE, _HELP, _HELP_ARG, _HELP_ARG_SHORT, _HELP_WARNING, _READING_FILTER_MESSAGE, _SAVING_FILTER_MESSAGE, _UNKNOWN_ERROR_MESSAGE
+from main import _APPLYING_HANDLER_MESSAGE, _DONE_MESSAGE, _EXCEPTION_TEMPLATE, _GENERATOR_ERROR_TEMPLATE, _HELP_MESSAGE, _HELP_ARG, _HELP_ARG_SHORT, _READING_FILTER_MESSAGE, _SAVING_FILTER_MESSAGE, _UNKNOWN_ERROR_MESSAGE
 
 @pytest.mark.parametrize('help_arg', [ _HELP_ARG, _HELP_ARG_SHORT ])
 def test_main_given_a_help_parameter_was_passed_should_show_help(monkeypatch: MonkeyPatch, help_arg: str):
@@ -13,7 +13,7 @@ def test_main_given_a_help_parameter_was_passed_should_show_help(monkeypatch: Mo
 
     main.main()
 
-    assert print_mock.received(_HELP)
+    assert print_mock.received(_HELP_MESSAGE)
     assert exit_mock.get_invocation_count() == 1
 
 def test_main_given_normal_execution_should_succeed(monkeypatch: MonkeyPatch):
@@ -45,7 +45,7 @@ def test_main_given_a_generator_error_is_raised_should_print_it(monkeypatch: Mon
 
     main.main()
 
-    assert print_mock.received(_GENERATOR_ERROR_TEMPLATE.format(ERROR, _HELP_WARNING))
+    assert print_mock.received(_GENERATOR_ERROR_TEMPLATE.format(ERROR, _HELP_MESSAGE))
 
 def test_main_given_an_exception_is_raised_should_print_it(monkeypatch: MonkeyPatch):
     EXCEPTION = Exception("message")

@@ -10,30 +10,7 @@ from handlers import HANDLERS
 
 _HELP_ARG = "-help"
 _HELP_ARG_SHORT = "-h"
-_HELP_WARNING = f"Use {_HELP_ARG} or {_HELP_ARG_SHORT} for more information."
-_HELP = """
-Usage:
-
-    python main.py input.filter [output.filter] .handler [option1 option2 optionN] [.handler2 .handlerN]
-
-If you're using the .exe distribution:
-
-    pfg input.filter [output.filter] .handler [option1 option2 optionN] [.handler2 .handlerN]
-
-Where:
-    input.filter:
-        The filter file used as an input.
-        If the file is in a different directory you must provide the entire path to the file.
-    output.filter:
-        The name of the file to output the results to.
-        You can provide a path to another directory here as well if you like.
-        If ommited then the results are output to the input.filter file.
-    .handler:
-        The name of the handler used to modify the filter.
-        For more information on handlers visit the project's wiki at https://github.com/ajoscram/PoE-Filter-Generator/wiki/Handlers.
-        Handlers may receive options, which can be provided after the handler's name.
-        You may provide multiple handlers to perform in a single invocation of this program."""
-
+_HELP_MESSAGE = "\nVisit https://github.com/ajoscram/PoE-Filter-Generator/wiki#usage for more information about this tool's usage."
 _UNKNOWN_ERROR_MESSAGE = """
 UNKNOWN ERROR: Oopsie, my bad
 
@@ -43,7 +20,7 @@ Please provide either the following text from the error or a screenshot via an i
 https://github.com/ajoscram/PoE-Filter-Generator/issues/new
 
 Thanks!"""
-_GENERATOR_ERROR_TEMPLATE = "\nERROR: {0}\n\n{1}"
+_GENERATOR_ERROR_TEMPLATE = "\nERROR: {0}\n{1}"
 _EXCEPTION_TEMPLATE = "\n{0}: {1}"
 
 _READING_FILTER_MESSAGE = "\nReading filter file from '{0}'...\n"
@@ -55,7 +32,7 @@ def main():
     try:
         raw_args = sys.argv[1:]
         if _HELP_ARG in raw_args or _HELP_ARG_SHORT in raw_args:
-            print(_HELP)
+            print(_HELP_MESSAGE)
             sys.exit()
         args = Arguments(raw_args)
 
@@ -74,7 +51,7 @@ def main():
         print(_DONE_MESSAGE)
 
     except GeneratorError as error:
-        print(_GENERATOR_ERROR_TEMPLATE.format(error, _HELP_WARNING))
+        print(_GENERATOR_ERROR_TEMPLATE.format(error, _HELP_MESSAGE))
     except Exception as e:
         print(_UNKNOWN_ERROR_MESSAGE)
         traceback.print_tb(e.__traceback__)

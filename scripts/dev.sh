@@ -8,7 +8,7 @@ then
         touch $COVERAGE_FILE
         echo "<h1>Refresh this web page to see the coverage report!</h1>" > $COVERAGE_FILE
     fi
-    start $COVERAGE_FILE #Note: this is windows only!
+    start $COVERAGE_FILE # Windows only
 fi
 
-nodemon --exec "bash scripts/test.sh $@ || exit 1" --ext .py
+nodemon --exec "bash scripts/test.sh $@ || exit 1" --ext .py # Requires node and nodemon installed

@@ -10,7 +10,7 @@ runs:
   steps:
     - shell: bash
       run: |
-        SKIP_BUILD_TOOLS=$([ ${{ inputs.skip-build-tools }} = true ] && echo "skip-build-tools" || echo "")
+        SKIP_BUILD_TOOLS=$(${{ inputs.skip-build-tools }} && echo "skip-build-tools" || echo "")
         scripts/install.sh $SKIP_BUILD_TOOLS 
     - shell: bash
       run: scripts/test.sh

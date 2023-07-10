@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from core import Block, Line, GeneratorError
+from core import Block, Line, ExpectedError
 from core.constants import RULE_SEPARATOR
 
 NAME = "if"
@@ -32,7 +32,7 @@ def _get_block_text(block: Block):
 def _get_remove_type(line: Line, block_text: str):
     for rule in line.get_rules(NAME):
         if rule.description == "":
-            raise GeneratorError(_EMPTY_DESCRIPTION_ERROR, rule.line_number)
+            raise ExpectedError(_EMPTY_DESCRIPTION_ERROR, rule.line_number)
         if rule.description in block_text:
             continue
         if line.is_block_starter() or line.is_empty(exclude_comments=True):

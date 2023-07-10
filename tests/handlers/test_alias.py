@@ -1,5 +1,5 @@
 import pytest
-from core import GeneratorError
+from core import ExpectedError
 from core.constants import RULE_START
 from handlers import alias
 from handlers.alias import _ALIAS_NAME_ERROR_DESCRIPTOR, _ALIAS_SEPARATOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _INCORRECT_RULE_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, NAME as ALIAS
@@ -26,7 +26,7 @@ def test_handle_given_incorrect_description_format_should_raise():
     DESCRIPTION = "incorrect description"
     filter = create_filter(f"{RULE_START}{ALIAS} {DESCRIPTION}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)
 
     assert error.value.line_number == filter.blocks[0].lines[0].number
@@ -40,7 +40,7 @@ def test_handle_given_empty_alias_part_should_raise(name: str, replacement: str,
     DESCRIPTION = f"{name}{_ALIAS_SEPARATOR}{replacement}"
     filter = create_filter(f"{RULE_START}{ALIAS} {DESCRIPTION}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)
     
     assert error.value.line_number == filter.blocks[0].lines[0].number
@@ -51,7 +51,7 @@ def test_handle_given_duplicate_alias_name_should_raise():
     f"""{RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
         {RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} other replacement""")
     
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)
     
     assert error.value.line_number == filter.blocks[0].lines[1].number
@@ -67,7 +67,7 @@ def test_handle_given_contained_alias_names_should_raise(first_name: str, error_
     f"""{RULE_START}{ALIAS} {first_name} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
         {RULE_START}{ALIAS} {error_name} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}""")
     
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)
     
     assert error.value.line_number == filter.blocks[0].lines[1].number

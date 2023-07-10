@@ -1,5 +1,4 @@
 # Backlog
-* Rename `GeneratorError` to `ExpectedError` because the scope of it changed.
 * Add the following commands:
     - `-u`: to update the tool to the latest version.
     - `-p`: to register the current folder to the Windows PATH, so that users don't have to do it themselves.

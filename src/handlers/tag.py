@@ -1,4 +1,4 @@
-from core import Block, GeneratorError
+from core import Block, ExpectedError
 
 NAME = "tag"
 _WILDCARD = "_"
@@ -37,7 +37,7 @@ def _are_categories_equivalent(rule_category: list[str], handler_category: list[
 
 def _get_category_and_tag(tag_path: list[str], error_descriptor: str, line_number: int = None):
     if len(tag_path) == 0:
-        raise GeneratorError(_EMPTY_TAG_ERROR.format(error_descriptor), line_number)
+        raise ExpectedError(_EMPTY_TAG_ERROR.format(error_descriptor), line_number)
     category = tag_path[:-1]
     tag = tag_path[-1]
     return (category, tag)

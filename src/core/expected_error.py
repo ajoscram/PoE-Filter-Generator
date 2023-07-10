@@ -1,17 +1,17 @@
-class GeneratorError(Exception):
+class ExpectedError(Exception):
     """
-    Represents an error that occurred while generating the output filter.
-    This exception should be used when displaying expected errors to users in handlers.
+    Represents an error that occurred during execution which is expected.
+    Always raise these errors if applicable.
     """
     def __init__(self, message: str, line_number: int = None, filepath: str = None):
         """
         * `message`: the message to display as an error.
-        * `line_number`: the line number in the filter where the error happened.
-        * `filepath`: The filepath to the filter's where the error happened.
+        * `line_number`: the file line number where the error happened, if applicable.
+        * `filepath`: The filepath where the error happened, if applicable.
         """
-        self.message: str = message
-        self.filepath: str = filepath
-        self.line_number: int = line_number
+        self.message = message
+        self.filepath = filepath
+        self.line_number = line_number
     
     def __str__(self):
         result = self.message

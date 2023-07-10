@@ -1,6 +1,6 @@
 import re
 
-from .generator_error import GeneratorError
+from .expected_error import ExpectedError
 from .rule import Rule
 from .constants import BLOCK_STARTERS, COMMENT_START
 
@@ -29,7 +29,7 @@ class Line:
         """
         text = text.rstrip()
         if '\n' in text:
-            raise GeneratorError(_MULTILINE_STRING_ERROR, number)
+            raise ExpectedError(_MULTILINE_STRING_ERROR, number)
         self.number: int = number
         self._set_parts(text)
 
@@ -46,14 +46,14 @@ class Line:
                 return True
             if value == "false":
                 return False
-        raise GeneratorError(_BOOL_VALUE_ERROR, self.number)
+        raise ExpectedError(_BOOL_VALUE_ERROR, self.number)
     
     def get_value_as_int(self):
         """Returns the line's value as an integer.
         An error is returned if the line contains more than one value or the value cannot be parsed to a integer."""
         if len(self.values) == 1 and self.values[0].isdigit():
             return int(self.values[0])
-        raise GeneratorError(_INT_VALUE_ERROR, self.number)
+        raise ExpectedError(_INT_VALUE_ERROR, self.number)
     
     def is_empty(self, exclude_comments: bool = False):
         """Returns `True` if the line contains no text other than whitespace.

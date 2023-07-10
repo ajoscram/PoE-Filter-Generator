@@ -1,5 +1,5 @@
 import pytest, math
-from core import GeneratorError, Block
+from core import ExpectedError, Block
 from core.constants import COMMENT_START, RULE_SEPARATOR, RULE_START, SHOW
 from handlers.choose import _MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR,_RULE_PARAMETER_COUNT_ERROR, _SET_SIZE_TOO_LARGE_ERROR, _SET_SIZE_TYPE_ERROR, _SUBSET_SIZE_TOO_LARGE_ERROR, _SUBSET_SIZE_TYPE_ERROR, NAME as CHOOSE
 from handlers import choose
@@ -16,7 +16,7 @@ def test_handle_given_more_than_one_choose_rule_in_block_should_raise():
     RULES = [ f"{RULE_SEPARATOR} {CHOOSE}", f"{RULE_SEPARATOR} {CHOOSE}" ]
     FILTER = create_filter(f"{COMMENT_START}{' '.join(RULES)}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
 
     assert error.value.message == _MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR.format(len(RULES))
@@ -26,7 +26,7 @@ def test_handle_given_not_two_params_should_raise():
     PARAMS = [ "1", "2", "3" ]
     FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {' '.join(PARAMS)}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
 
     assert error.value.message == _RULE_PARAMETER_COUNT_ERROR.format(len(PARAMS))
@@ -40,7 +40,7 @@ def test_handle_given_not_two_params_should_raise():
 def test_handle_given_params_are_non_digit_(param_1: str, param_2: str, error_message: str):
     FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {param_1} {param_2}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
 
     assert error.value.message == error_message.format(param_1 if param_2.isdigit() else param_2)
@@ -51,7 +51,7 @@ def test_handle_given_subset_is_larger_than_set_should_raise():
     SUBSET_SIZE = SET_SIZE + 1
     FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SUBSET_SIZE}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
 
     assert error.value.message == _SUBSET_SIZE_TOO_LARGE_ERROR.format(SUBSET_SIZE, SET_SIZE)
@@ -61,7 +61,7 @@ def test_handle_given_set_larger_than_number_of_lines_available_should_raise():
     SET_SIZE = 2
     FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SET_SIZE - 1}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
     
     assert error.value.message == _SET_SIZE_TOO_LARGE_ERROR.format(SET_SIZE, 0)

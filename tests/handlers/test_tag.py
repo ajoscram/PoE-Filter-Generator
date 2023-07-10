@@ -1,6 +1,6 @@
 import pytest
 
-from core import GeneratorError
+from core import ExpectedError
 from core.constants import HIDE, RULE_START, SHOW
 from handlers import tag
 from handlers.tag import _HANDLER, _RULE, _EMPTY_TAG_ERROR, _WILDCARD, NAME as TAG
@@ -9,7 +9,7 @@ from test_utilities import create_filter
 def test_handle_given_no_options_were_provided_should_raise():
     OPTIONS = []
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         tag.handle(None, None, OPTIONS)
     
     assert error.value.message == _EMPTY_TAG_ERROR.format(_HANDLER)
@@ -17,7 +17,7 @@ def test_handle_given_no_options_were_provided_should_raise():
 def test_handle_given_a_rule_without_a_description_should_raise():
     FILTER = create_filter(f"{SHOW} {RULE_START}{TAG}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         tag.handle(FILTER, FILTER.blocks[0], ["tag"])
     
     assert error.value.message == _EMPTY_TAG_ERROR.format(_RULE)

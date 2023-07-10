@@ -1,7 +1,7 @@
 import builtins, pytest, os
 from pytest import MonkeyPatch
 from core.filter import _FILE_EXISTS_ERROR, _FILE_NOT_FOUND_ERROR, _PERMISSION_ERROR
-from core import Filter, GeneratorError, Block
+from core import Filter, ExpectedError, Block
 from test_utilities import FunctionMock
 
 _FILEPATH = "filepath"
@@ -38,7 +38,7 @@ def test_load_given_file_is_not_found_should_raise(
     monkeypatch: MonkeyPatch, error_to_raise: Exception, error_message: str):
     _ = FunctionMock(monkeypatch, builtins.open, error_to_raise)
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = Filter.load(_FILEPATH)
     
     assert error.value.message == error_message
@@ -67,7 +67,7 @@ def test_save_given_the_file_exists_and_cannot_be_overwritten_should_raise(
     _ = FunctionMock(monkeypatch, builtins.open, exception_to_raise)
     filter = Filter(_FILEPATH, Block.extract(_LINES))
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         filter.save()
 
     assert error.value.message == error_message

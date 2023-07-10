@@ -1,10 +1,10 @@
-from .generator_error import GeneratorError
+from .expected_error import ExpectedError
 from .constants import COMMENT_START, RULE_SEPARATOR, RULE_START
 
 _EMPTY_RULE_ERROR = "Empty rule (probably an extra '.')"
 
 class Rule:
-    """A rule is a bit of data that can be parsed by generators.
+    """A rule is a bit of data that can be parsed by handlers.
     They are included in comments inside lines and start with #. (hashtag and a dot).
     Multiple rules can be declared in the same line, separated by . (dot).
     Names and descriptions in a rule are separated by whitespace.
@@ -34,7 +34,7 @@ def _should_extract(text: str):
 
 def _get_rule(text: str, line_number: int):
     if text.strip() == "":
-        raise GeneratorError(_EMPTY_RULE_ERROR, line_number)
+        raise ExpectedError(_EMPTY_RULE_ERROR, line_number)
     fields = text.split(maxsplit=1)
     name = fields[0].strip()
     description = fields[1].strip() if len(fields) == 2 else ""

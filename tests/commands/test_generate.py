@@ -1,14 +1,14 @@
 import pytest, handlers
+
 from commands import generate
 from commands.generate import _HANDLER_NOT_FOUND_ERROR, _HANDLER_NOT_PROVIDED_ERROR, _TOO_LITTLE_ARGUMENTS_ERROR, _HANDLER_TAG
-from core import GeneratorError, Filter, Block
+from core import ExpectedError, Filter, Block
 from pytest import MonkeyPatch
 from test_utilities import create_filter, FunctionMock
 
 class _MockHandler:
     def __init__(self):
         self.name = "handler_name"
-        self.lines = [ "line 1", "line 2" ]
         self.options_handled = None
         self.filter_handled = None
         self.block_handled = None
@@ -17,7 +17,7 @@ class _MockHandler:
         self.options_handled = options
         self.filter_handled = filter
         self.block_handled = block
-        return self.lines
+        return [ "line 1", "line 2" ]
 
 @pytest.fixture(autouse=True)
 def filter(monkeypatch: MonkeyPatch):
@@ -49,7 +49,7 @@ def test_execute_given_a_handler_name_should_apply_it_and_save_the_new_filter(
 def test_execute_given_less_than_2_args_should_raise():
     ARGS = [ "one" ]
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         generate.execute(ARGS)
 
     assert error.value.message == _TOO_LITTLE_ARGUMENTS_ERROR
@@ -57,7 +57,7 @@ def test_execute_given_less_than_2_args_should_raise():
 def test_execute_given_no_handler_was_passed_should_raise():
     ARGS = [ "no", "handler" ]
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         generate.execute(ARGS)
     
     assert error.value.message == _HANDLER_NOT_PROVIDED_ERROR
@@ -66,7 +66,7 @@ def test_execute_given_an_unknown_handler_name_should_raise(filter: Filter):
     HANDLER_NAME = "unknown_handler"
     ARGS = [ filter.filepath, f"{_HANDLER_TAG}{HANDLER_NAME}" ]
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         generate.execute(ARGS)
     
     assert error.value.message == _HANDLER_NOT_FOUND_ERROR.format(HANDLER_NAME)

@@ -2,14 +2,14 @@ import pytest
 
 from core.constants import CLASS, COMMENT_START, BLOCK_STARTERS, RULE_SEPARATOR, RULE_START
 from core.line import _BOOL_VALUE_ERROR, _INT_VALUE_ERROR, _MULTILINE_STRING_ERROR
-from core import GeneratorError, Line
+from core import ExpectedError, Line
 
 _LINE_NUMBER = 1
 
 def test_constructor_given_text_has_linebreak_should_raise():
     TEXT = "a\nb"
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = Line(TEXT, _LINE_NUMBER)
     
     assert error.value.message == _MULTILINE_STRING_ERROR
@@ -57,7 +57,7 @@ def test_get_value_as_bool_given_incorrect_values_should_raise(values: str):
     TEXT = "operand " + values
     line = Line(TEXT, _LINE_NUMBER)
     
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = line.get_value_as_bool()
 
     assert error.value.message == _BOOL_VALUE_ERROR
@@ -77,7 +77,7 @@ def test_get_value_as_int_given_incorrect_values_should_raise(values: str):
     TEXT = "operand == " + values
     line = Line(TEXT, _LINE_NUMBER)
     
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = line.get_value_as_int()
 
     assert error.value.message == _INT_VALUE_ERROR

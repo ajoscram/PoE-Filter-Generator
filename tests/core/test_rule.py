@@ -1,7 +1,7 @@
 import pytest
 from core.constants import COMMENT_START, RULE_SEPARATOR, RULE_START
 from core.rule import _EMPTY_RULE_ERROR
-from core import Rule, GeneratorError
+from core import Rule, ExpectedError
 
 _LINE_NUMBER = 1
 
@@ -25,7 +25,7 @@ def test_extract_given_text_without_rules_should_return_an_empty_list():
 def test_extract_given_an_empty_rule_should_raise():
     TEXT_WITH_EMPTY_RULE = f"line {RULE_START}"
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         Rule.extract(_LINE_NUMBER, TEXT_WITH_EMPTY_RULE)
     
     assert error.value.message == _EMPTY_RULE_ERROR

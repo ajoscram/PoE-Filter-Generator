@@ -1,5 +1,5 @@
 import ggg, ninja, utils
-from core import GeneratorError, Block, Rule
+from core import ExpectedError, Block, Rule
 from core.constants import BASE_TYPE, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA
 
 NAME = "econ"
@@ -74,14 +74,14 @@ def _get_league_name(options: list[str]):
 def _get_params(rule: Rule, league_name: str):
     parts = rule.description.split()
     if len(parts) not in [2, 3]:
-        raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
+        raise ExpectedError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
     
     if not parts[1].isdigit():
-        raise GeneratorError(_RULE_BOUNDS_ERROR.format(_LOWER_BOUND_NAME, parts[1]), rule.line_number)
+        raise ExpectedError(_RULE_BOUNDS_ERROR.format(_LOWER_BOUND_NAME, parts[1]), rule.line_number)
     lower = float(parts[1])
 
     if len(parts) == 3 and not parts[2].isdigit(): 
-        raise GeneratorError(_RULE_BOUNDS_ERROR.format(_UPPER_BOUND_NAME, parts[2]), rule.line_number)
+        raise ExpectedError(_RULE_BOUNDS_ERROR.format(_UPPER_BOUND_NAME, parts[2]), rule.line_number)
     upper = float(parts[2]) if len(parts) == 3 else None
  
     return _Params(parts[0], league_name, rule.line_number, lower, upper)
@@ -99,7 +99,7 @@ def _get_base_types(params: _Params, block: Block):
         unique_filter = _get_unique_filter(block)
         return ninja.get_unique_base_types(params.league_name, unique_filter, params.lower, params.upper)
 
-    raise GeneratorError(_RULE_MNEMONIC_ERROR.format(params.mnemonic), params.line_number)
+    raise ExpectedError(_RULE_MNEMONIC_ERROR.format(params.mnemonic), params.line_number)
 
 def _get_unique_filter(block: Block):
     unique_filter = ninja.UniqueFilter()

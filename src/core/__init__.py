@@ -1,6 +1,6 @@
-""""Contains all core functionality shared by every handler."""
+""""Contains all core functionality shared by every handler or command."""
 from . import constants
-from .generator_error import GeneratorError
+from .expected_error import ExpectedError
 from .filter import Filter
 from .block import Block
 from .line import Line

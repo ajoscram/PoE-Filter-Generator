@@ -1,6 +1,6 @@
 import os, pytest
 from pytest import MonkeyPatch
-from core import GeneratorError, Filter
+from core import ExpectedError, Filter
 from handlers import import_
 from handlers.import_ import _BLOCK_NAME, _BLOCK_NAME_ERROR_TEXT, _BLOCK_NOT_FOUND_ERROR, _CIRCULAR_REFERENCE_ERROR, _EMPTY_PARAMETER_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _FILTER_EXTENSION, _INCORRECT_RULE_FORMAT_ERROR, _LINE_PATTERN_NOT_FOUND_ERROR, _LINE_PATTERN_ERROR_TEXT, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, _SPLITTER, NAME as IMPORT
 from core.constants import RULE_START, SHOW
@@ -58,7 +58,7 @@ def test_handle_given_import_file_doesnt_exist_should_raise(path_exists_mock: Fu
     filter = create_filter(f"{RULE_START}{IMPORT} {UNEXISTENT_FILEPATH}")
     path_exists_mock.result = False
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)
 
     assert path_exists_mock.received(f"{filter.filepath}/{UNEXISTENT_FILEPATH}{_FILTER_EXTENSION}")
@@ -71,7 +71,7 @@ def test_handle_given_blockname_doesnt_exist_should_raise(monkeypatch: MonkeyPat
     filter = create_filter(f"{RULE_START}{IMPORT} {_SPLITTER} {UNEXISTENT_BLOCKNAME}")
     _ = FunctionMock(monkeypatch, Filter.load, filter, Filter)
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)
     
     assert error.value.message == _BLOCK_NOT_FOUND_ERROR.format(UNEXISTENT_BLOCKNAME)
@@ -84,7 +84,7 @@ def test_handle_given_line_pattern_doesnt_exist_should_raise(monkeypatch: Monkey
         {SHOW} {RULE_START}{IMPORT} {_SPLITTER} {_TARGET_BLOCK_NAME} {_SPLITTER} {UNEXISTENT_LINE_PATTERN}""")
     _ = FunctionMock(monkeypatch, Filter.load, filter, Filter)
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[1], None)
     
     assert error.value.message == _LINE_PATTERN_NOT_FOUND_ERROR.format(UNEXISTENT_LINE_PATTERN, _TARGET_BLOCK_NAME)
@@ -95,7 +95,7 @@ def test_handle_given_incorrect_formatting_should_raise():
     RULE_DESCRPTION = f"1 {_SPLITTER} 2 {_SPLITTER} 3 {_SPLITTER} 4"
     filter = create_filter(f"{RULE_START}{IMPORT} {RULE_DESCRPTION}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)
 
     assert error.value.message == _INCORRECT_RULE_FORMAT_ERROR.format(RULE_DESCRPTION)
@@ -109,7 +109,7 @@ def test_handle_given_incorrect_formatting_should_raise():
 def test_handle_given_an_empty_parameter_should_raise(rule_description: str, error_param: str):
     filter = create_filter(f"{RULE_START}{IMPORT} {rule_description}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)
 
     assert error.value.message == _EMPTY_PARAMETER_ERROR.format(rule_description, error_param)
@@ -123,7 +123,7 @@ def test_handle_given_a_circular_reference_should_raise():
     f"""{SHOW}  {RULE_START}{_BLOCK_NAME} {BLOCK_NAME}
         {RULE_START}{IMPORT} {IMPORT_DESCRIPTION}""")
     
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)
     
     assert _CIRCULAR_REFERENCE_ERROR.format(IMPORT_DESCRIPTION, "") in error.value.message

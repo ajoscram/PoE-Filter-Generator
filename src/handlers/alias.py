@@ -1,5 +1,5 @@
 import re, string, random
-from core import Block, Filter, Rule, GeneratorError
+from core import Block, Filter, Rule, ExpectedError
 from core.constants import RULE_SEPARATOR
 
 NAME = "alias"
@@ -51,30 +51,30 @@ def _get_alias_from_rule(rule: Rule, aliases: list[_Alias]):
     parts = rule.description.split(_ALIAS_SEPARATOR)
     if len(parts) != 2:
         error = _INCORRECT_RULE_FORMAT_ERROR.format(rule.description)
-        raise GeneratorError(error, rule.line_number)
+        raise ExpectedError(error, rule.line_number)
     
     name = parts[0].rstrip()
     if name == "":
         error = _EMPTY_PARAMETER_ERROR.format(_ALIAS_NAME_ERROR_DESCRIPTOR, rule.description)
-        raise GeneratorError(error, rule.line_number)
+        raise ExpectedError(error, rule.line_number)
 
     replacement = parts[1].lstrip()
     if replacement == "":
         error = _EMPTY_PARAMETER_ERROR.format(_REPLACEMENT_ERROR_DESCRIPTOR, rule.description)
-        raise GeneratorError(error, rule.line_number)
+        raise ExpectedError(error, rule.line_number)
 
     for alias in aliases:
         if name == alias.name:
             error = _DUPLICATE_ALIAS_NAME_ERROR.format(name, alias.source_rule.line_number)
-            raise GeneratorError(error, rule.line_number)
+            raise ExpectedError(error, rule.line_number)
         if name in alias.name:
             error = _CONTAINED_ALIAS_NAME_ERROR.format(
                 name, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, alias.name, alias.source_rule.line_number)
-            raise GeneratorError(error, rule.line_number)
+            raise ExpectedError(error, rule.line_number)
         if alias.name in name:
             error = _CONTAINED_ALIAS_NAME_ERROR.format(
                 name, _CONTAINS, alias.name, alias.source_rule.line_number)
-            raise GeneratorError(error, rule.line_number)
+            raise ExpectedError(error, rule.line_number)
 
     return _Alias(name, replacement, rule)
 

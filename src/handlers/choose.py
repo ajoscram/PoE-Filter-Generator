@@ -1,5 +1,5 @@
 from itertools import combinations as Combinations
-from core import Block, Line, GeneratorError, Rule
+from core import Block, Line, ExpectedError, Rule
 
 NAME = "choose"
 
@@ -22,7 +22,7 @@ def handle(_, block: Block, __):
     if len(rules) == 0:
         return block.get_raw_lines()
     if len(rules) > 1:
-        raise GeneratorError(_MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR.format(len(rules)), block.line_number)
+        raise ExpectedError(_MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR.format(len(rules)), block.line_number)
     params = _get_params(rules[0], block)
 
     prefix_lines = block.lines[:params.start_index]
@@ -34,21 +34,21 @@ def handle(_, block: Block, __):
 def _get_params(rule: Rule, block: Block):
     parts = rule.description.split()
     if len(parts) != 2:
-        raise GeneratorError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
+        raise ExpectedError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
     if not parts[0].isdigit():
-        raise GeneratorError(_SET_SIZE_TYPE_ERROR.format(parts[0]), rule.line_number)
+        raise ExpectedError(_SET_SIZE_TYPE_ERROR.format(parts[0]), rule.line_number)
     if not parts[1].isdigit():
-        raise GeneratorError(_SUBSET_SIZE_TYPE_ERROR.format(parts[1]), rule.line_number)
+        raise ExpectedError(_SUBSET_SIZE_TYPE_ERROR.format(parts[1]), rule.line_number)
     
     set_size = int(parts[0])
     subset_size = int(parts[1])
     if subset_size > set_size:
-        raise GeneratorError(_SUBSET_SIZE_TOO_LARGE_ERROR.format(subset_size, set_size), rule.line_number)
+        raise ExpectedError(_SUBSET_SIZE_TOO_LARGE_ERROR.format(subset_size, set_size), rule.line_number)
     
     start_index = rule.line_number - block.line_number + 1
     max_set_size = len(block.lines) - start_index
     if set_size > max_set_size:
-        raise GeneratorError(_SET_SIZE_TOO_LARGE_ERROR.format(set_size, max_set_size), rule.line_number)
+        raise ExpectedError(_SET_SIZE_TOO_LARGE_ERROR.format(set_size, max_set_size), rule.line_number)
     
     return _Params(start_index, set_size, subset_size)
 

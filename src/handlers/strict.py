@@ -1,4 +1,4 @@
-from core import Block, GeneratorError
+from core import Block, ExpectedError
 
 NAME = "strict"
 _HANDLER = "handler"
@@ -14,7 +14,7 @@ def handle(_, block: Block, options:list[str]):
 
     for rule in block.get_rules(NAME):
         if not rule.description.isdigit():
-            raise GeneratorError(_STRICTNESS_ARG_TYPE_ERROR.format(_RULE, rule.description), rule.line_number)
+            raise ExpectedError(_STRICTNESS_ARG_TYPE_ERROR.format(_RULE, rule.description), rule.line_number)
         
         rule_strictness = int(rule.description)
         
@@ -27,9 +27,9 @@ def handle(_, block: Block, options:list[str]):
 
 def _get_handler_strictness(options: list[str]):
     if len(options) != 1:
-        raise GeneratorError(_STRICTNESS_ARG_COUNT_ERROR.format(_HANDLER, len(options)))
+        raise ExpectedError(_STRICTNESS_ARG_COUNT_ERROR.format(_HANDLER, len(options)))
 
     if not options[0].strip().isdigit():
-        raise GeneratorError(_STRICTNESS_ARG_TYPE_ERROR.format(_HANDLER, options[0]))
+        raise ExpectedError(_STRICTNESS_ARG_TYPE_ERROR.format(_HANDLER, options[0]))
 
     return int(options[0])

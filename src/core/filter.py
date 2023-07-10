@@ -1,6 +1,6 @@
 import os
 
-from .generator_error import GeneratorError
+from .expected_error import ExpectedError
 from .block import Block
 
 _FILE_EXISTS_ERROR = "The file path corresponds to an already existing file"
@@ -34,9 +34,9 @@ class Filter:
             with open(self.filepath, "w") as file:
                 file.write(text)
         except FileExistsError:
-            raise GeneratorError(_FILE_EXISTS_ERROR, filepath=self.filepath)
+            raise ExpectedError(_FILE_EXISTS_ERROR, filepath=self.filepath)
         except PermissionError:
-            raise GeneratorError(_PERMISSION_ERROR, filepath=self.filepath)
+            raise ExpectedError(_PERMISSION_ERROR, filepath=self.filepath)
 
 def _get_blocks(filepath: str):
     try:
@@ -44,6 +44,6 @@ def _get_blocks(filepath: str):
             raw_lines = file.readlines()
             return Block.extract(raw_lines)
     except FileNotFoundError:
-        raise GeneratorError(_FILE_NOT_FOUND_ERROR, filepath=filepath)
+        raise ExpectedError(_FILE_NOT_FOUND_ERROR, filepath=filepath)
     except PermissionError:
-        raise GeneratorError(_PERMISSION_ERROR, filepath=filepath)
+        raise ExpectedError(_PERMISSION_ERROR, filepath=filepath)

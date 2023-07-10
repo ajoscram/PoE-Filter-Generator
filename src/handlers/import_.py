@@ -1,5 +1,5 @@
 import os.path, re
-from core import Rule, Line, Block, Filter, GeneratorError
+from core import Rule, Line, Block, Filter, ExpectedError
 
 NAME = "import"
 _SPLITTER = "->"
@@ -91,27 +91,27 @@ def _parse_rule_params(rule: Rule, previous_params: list[_Params]):
     parts = [ part.strip() for part in rule.description.split(_SPLITTER) ]
     if len(parts) > 3:
         error = _INCORRECT_RULE_FORMAT_ERROR.format(rule.description)
-        raise GeneratorError(error, rule.line_number, current_filepath)
+        raise ExpectedError(error, rule.line_number, current_filepath)
     
     filepath = _parse_rule_filepath(current_filepath, parts[0])
     if not os.path.exists(filepath):
         error = _FILTER_DOES_NOT_EXIST_ERROR.format(rule.description)
-        raise GeneratorError(error, rule.line_number, current_filepath)
+        raise ExpectedError(error, rule.line_number, current_filepath)
 
     blockname = parts[1] if len(parts) > 1 else None
     if blockname == "":
         error = _EMPTY_PARAMETER_ERROR.format(rule.description, _BLOCK_NAME_ERROR_TEXT)
-        raise GeneratorError(error, rule.line_number, current_filepath)
+        raise ExpectedError(error, rule.line_number, current_filepath)
     
     line_pattern = parts[2] if len(parts) > 2 else None
     if line_pattern == "":
         error = _EMPTY_PARAMETER_ERROR.format(rule.description, _LINE_PATTERN_ERROR_TEXT)
-        raise GeneratorError(error, rule.line_number, current_filepath)
+        raise ExpectedError(error, rule.line_number, current_filepath)
 
     params = _Params(filepath, blockname, line_pattern)
     if any(params == previous for previous in previous_params):
         error = _create_circular_reference_error(rule.description, previous_params, params)
-        raise GeneratorError(error, rule.line_number, current_filepath)
+        raise ExpectedError(error, rule.line_number, current_filepath)
 
     return params
 
@@ -128,7 +128,7 @@ def _get_block(filter: Filter, blockname: str):
         if blockname == _get_blockname(block):
             return block
     error = _BLOCK_NOT_FOUND_ERROR.format(blockname)
-    raise GeneratorError(error, filepath=filter.filepath)
+    raise ExpectedError(error, filepath=filter.filepath)
 
 def _get_line(block: Block, line_pattern: str, filepath: str):
     for line in block.lines:
@@ -136,7 +136,7 @@ def _get_line(block: Block, line_pattern: str, filepath: str):
             return line
     blockname = _get_blockname(block)
     error = _LINE_PATTERN_NOT_FOUND_ERROR.format(line_pattern, blockname)
-    raise GeneratorError(error, block.line_number, filepath)
+    raise ExpectedError(error, block.line_number, filepath)
 
 def _get_blockname(block: Block):
     name_rules = block.get_rules(_BLOCK_NAME)

@@ -3,7 +3,7 @@ from test_utilities import FunctionMock
 from pytest import MonkeyPatch
 from requests import ConnectTimeout, HTTPError, ReadTimeout, Timeout
 from utils.http import _HEADERS, _HTTP_ERROR, _CONNECTION_ERROR
-from core import GeneratorError
+from core import ExpectedError
 
 class _MockHttpResponse:
     def __init__(self): self.json_response = {}
@@ -39,7 +39,7 @@ def test_http_get_given_an_http_error_should_raise(monkeypatch: MonkeyPatch):
     HTTP_ERROR = HTTPError()
     _ = FunctionMock(monkeypatch, requests.get, HTTP_ERROR)
     
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = utils.http_get(_URL, _HTTP_RESOURCE_DESCRIPTION)
 
     assert error.value.message == _HTTP_ERROR.format(_HTTP_RESOURCE_DESCRIPTION, HTTP_ERROR)
@@ -48,7 +48,7 @@ def test_http_get_given_an_http_error_should_raise(monkeypatch: MonkeyPatch):
 def test_http_get_given_a_connection_error_should_raise(monkeypatch: MonkeyPatch, error_to_raise: Exception):
     _ = FunctionMock(monkeypatch, requests.get, error_to_raise)
     
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = utils.http_get(_URL, _HTTP_RESOURCE_DESCRIPTION)
 
     assert error.value.message == _CONNECTION_ERROR.format(_HTTP_RESOURCE_DESCRIPTION)

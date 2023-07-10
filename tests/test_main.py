@@ -1,9 +1,9 @@
 import sys, main, traceback, pytest, commands
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock
-from core import GeneratorError
+from core import ExpectedError
 from commands import help, COMMAND_NAME_PREFIX
-from main import _COMMAND_NOT_FOUND_ERROR, _EXCEPTION_TEMPLATE, _GENERATOR_ERROR_TEMPLATE, _NO_ARGS_ERROR, _UNKNOWN_ERROR_MESSAGE
+from main import _COMMAND_NOT_FOUND_ERROR, _EXCEPTION_TEMPLATE, _EXPECTED_ERROR_TEMPLATE, _NO_ARGS_ERROR, _UNKNOWN_ERROR_MESSAGE
 
 class _CommandMock:
     def __init__(self, name: str):
@@ -53,8 +53,8 @@ def test_main_given_unknown_command_should_handle_the_error(
 
     main.main()
 
-    assert print_mock.received(_GENERATOR_ERROR_TEMPLATE.format(
-        GeneratorError(_COMMAND_NOT_FOUND_ERROR.format(UNKNOWN_COMMAND))))
+    assert print_mock.received(_EXPECTED_ERROR_TEMPLATE.format(
+        ExpectedError(_COMMAND_NOT_FOUND_ERROR.format(UNKNOWN_COMMAND))))
     assert help_mock.get_invocation_count() == 1
 
 def test_main_given_no_args_were_passed_should_handle_the_error(
@@ -64,7 +64,7 @@ def test_main_given_no_args_were_passed_should_handle_the_error(
 
     main.main()
 
-    assert print_mock.received(_GENERATOR_ERROR_TEMPLATE.format(GeneratorError(_NO_ARGS_ERROR)))
+    assert print_mock.received(_EXPECTED_ERROR_TEMPLATE.format(ExpectedError(_NO_ARGS_ERROR)))
     assert help_mock.get_invocation_count() == 1
 
 def test_main_given_an_exception_is_raised_should_handle_it(

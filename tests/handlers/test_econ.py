@@ -1,6 +1,6 @@
 import pytest, ggg, ninja, utils
 from ninja import UniqueFilter
-from core import GeneratorError
+from core import ExpectedError
 from pytest import MonkeyPatch
 from handlers import econ
 from handlers.econ import _CURRENCY_MNEMONICS, _LOWER_BOUND_NAME, _MISC_MNEMONICS, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UNIQUE_MNEMONIC, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR
@@ -24,7 +24,7 @@ def test_handle_given_incorrect_rule_params_count_should_raise(param_count: int)
     PARAMS = [ str(i) for i in range(param_count) ]
     FILTER = create_filter(f"{RULE_START}{ECON} {' '.join(PARAMS)}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = econ.handle(FILTER, FILTER.blocks[0], [])
     
     assert error.value.message == _RULE_PARAMETER_COUNT_ERROR.format(param_count)
@@ -37,7 +37,7 @@ def test_handle_given_incorrect_rule_params_count_should_raise(param_count: int)
 def test_handle_given_non_int_rule_params_should_raise(int_param_1: str, int_param_2: str, bound_name: str):
     FILTER = create_filter(f"{RULE_START}{ECON} nmemonic {int_param_1} {int_param_2}")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = econ.handle(FILTER, FILTER.blocks[0], [])
     
     assert error.value.message == _RULE_BOUNDS_ERROR.format(bound_name, _NON_INT)
@@ -47,7 +47,7 @@ def test_handle_given_unknown_mnemonic_should_raise():
     UNKNOWN_MNEMONIC = "unknown_mnemonic"
     FILTER = create_filter(f"{RULE_START}{ECON} {UNKNOWN_MNEMONIC} 1")
 
-    with pytest.raises(GeneratorError) as error:
+    with pytest.raises(ExpectedError) as error:
         _ = econ.handle(FILTER, FILTER.blocks[0], [])
     
     assert error.value.message == _RULE_MNEMONIC_ERROR.format(UNKNOWN_MNEMONIC)

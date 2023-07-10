@@ -17,7 +17,6 @@ LESS = "<"
 CONTAINS = "="
 EQUALS = "=="
 
-
 # Rules
 COMMENT_START = '#'
 RULE_SEPARATOR = '.'

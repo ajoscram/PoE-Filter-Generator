@@ -1,9 +1,8 @@
 # Backlog
-* Create a commands system with the following commands:
-    - `-g`, `--generate`: to perform the current PFG functionality. This is implied if no command is passed in.
-    - `-h`, `--help`: to show help.
-    - `-u`, `--update`: to update the tool to the latest version.
-    - `-p`, `--path`: to register the current folder to the Windows PATH, so that users don't have to do it themselves.
+* Rename `GeneratorError` to `ExpectedError` because the scope of it changed.
+* Add the following commands:
+    - `-u`: to update the tool to the latest version.
+    - `-p`: to register the current folder to the Windows PATH, so that users don't have to do it themselves.
 * Find a way in the wiki to change the _FILTER_TO_ID_CLASSES_DICT dictionary values from translate.py into a Wiki API call.
     The `translate.py` file in `utils` was left untested because it could be removed if this works.
 

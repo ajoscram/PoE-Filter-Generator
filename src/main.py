@@ -1,18 +1,12 @@
-"""
-PoE Filter Generator Main Script
+import sys, traceback, commands
+from core import GeneratorError
+from commands import COMMAND_NAME_PREFIX, DEFAULT_COMMAND_NAME, help
 
-For more information run "python main.py -h".
-"""
-
-import sys, traceback
-from core import GeneratorError, Filter, Generator, Arguments
-from handlers import HANDLERS
-
-_HELP_ARG = "-help"
-_HELP_ARG_SHORT = "-h"
-_HELP_MESSAGE = "\nVisit https://github.com/ajoscram/PoE-Filter-Generator/wiki#usage for more information about this tool's usage."
-_UNKNOWN_ERROR_MESSAGE = """
-UNKNOWN ERROR: Oopsie, my bad
+_NO_ARGS_ERROR = "No arguments were provided to PFG."
+_COMMAND_NOT_FOUND_ERROR = "Command '{0}' was not found."
+_GENERATOR_ERROR_TEMPLATE = "ERROR: {0}"
+_EXCEPTION_TEMPLATE = "\n{0}: {1}"
+_UNKNOWN_ERROR_MESSAGE = """UNKNOWN ERROR: Oopsie, my bad
 
 If your're reading this then an unforseen error has ocurred. Notify me immediately so I can fix it!
 Please provide either the following text from the error or a screenshot via an issue on GitHub:
@@ -20,38 +14,28 @@ Please provide either the following text from the error or a screenshot via an i
 https://github.com/ajoscram/PoE-Filter-Generator/issues/new
 
 Thanks!"""
-_GENERATOR_ERROR_TEMPLATE = "\nERROR: {0}\n{1}"
-_EXCEPTION_TEMPLATE = "\n{0}: {1}"
-
-_READING_FILTER_MESSAGE = "\nReading filter file from '{0}'...\n"
-_APPLYING_HANDLER_MESSAGE = "Applying .{0}..."
-_SAVING_FILTER_MESSAGE = "\nSaving filter file to '{0}'..."
-_DONE_MESSAGE = "Done!"
 
 def main():
     try:
-        raw_args = sys.argv[1:]
-        if _HELP_ARG in raw_args or _HELP_ARG_SHORT in raw_args:
-            print(_HELP_MESSAGE)
-            sys.exit()
-        args = Arguments(raw_args)
-
-        print(_READING_FILTER_MESSAGE.format(args.input_filepath))
-        filter = Filter.load(args.input_filepath)
-
-        generator = Generator(HANDLERS)
-        for invocation in args.invocations:
-            print(_APPLYING_HANDLER_MESSAGE.format(invocation))
-            filter = generator.generate(
-                filter, args.output_filepath, invocation.handler_name, invocation.options)
+        print() # print a newline for aesthetics
         
-        print(_SAVING_FILTER_MESSAGE.format(args.output_filepath))
-        filter.save()
+        args = sys.argv[1:]
+        if len(args) == 0:
+            raise GeneratorError(_NO_ARGS_ERROR)
 
-        print(_DONE_MESSAGE)
+        if not args[0].startswith(COMMAND_NAME_PREFIX):
+            args = [ COMMAND_NAME_PREFIX + DEFAULT_COMMAND_NAME ] + args
+        
+        command_name = args[0].lstrip(COMMAND_NAME_PREFIX)
+        if not command_name in commands.COMMANDS:
+            raise GeneratorError(_COMMAND_NOT_FOUND_ERROR.format(args[0]))
+        
+        command_to_execute = commands.COMMANDS[command_name]
+        command_to_execute(args[1:])
 
     except GeneratorError as error:
-        print(_GENERATOR_ERROR_TEMPLATE.format(error, _HELP_MESSAGE))
+        print(_GENERATOR_ERROR_TEMPLATE.format(error), '\n')
+        help.execute(None)
     except Exception as e:
         print(_UNKNOWN_ERROR_MESSAGE)
         traceback.print_tb(e.__traceback__)

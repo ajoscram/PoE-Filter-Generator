@@ -5,7 +5,7 @@ from core.constants import RULE_SEPARATOR as _HANDLER_TAG
 NAME = "g"
 
 _DONE_MESSAGE = "Done!"
-_APPLYING_HANDLER_MESSAGE = "Applying .{0}..."
+_APPLYING_HANDLER_MESSAGE = "Applying {0}..."
 _SAVING_FILTER_MESSAGE = "Saving filter file to '{0}'..."
 _READING_FILTER_MESSAGE = "Reading filter file from '{0}'..."
 
@@ -19,7 +19,7 @@ class _HandlerInvocation:
         self.options: list[str] = []
     
     def __str__(self):
-        return ' '.join([self.handler_name] + self.options)
+        return _HANDLER_TAG + ' '.join([self.handler_name] + self.options)
 
 class _Args:
     def __init__(self, input_filepath: str, output_filepath: str, invocations: list[_HandlerInvocation]):
@@ -45,15 +45,17 @@ def execute(raw_args: list[str]):
 def _create_args(raw_args: list[str]):
     if len(raw_args) < 2:
         raise ExpectedError(_TOO_LITTLE_ARGUMENTS_ERROR)
-    
+    input_filepath = raw_args[0]
+
     if raw_args[1].startswith(_HANDLER_TAG):
         raw_args =  [ raw_args[0] ] + raw_args
+    output_filepath = raw_args[1]
     
     if len(raw_args) == 2 or not raw_args[2].startswith(_HANDLER_TAG):
         raise ExpectedError(_HANDLER_NOT_PROVIDED_ERROR)
-    
     invocations = _create_invocations(raw_args[2:])
-    return _Args(raw_args[0], raw_args[1], invocations)
+    
+    return _Args(input_filepath, output_filepath, invocations)
 
 def _create_invocations(raw_args: list[str]):
     invocations: list[_HandlerInvocation] = []

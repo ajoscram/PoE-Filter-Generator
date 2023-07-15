@@ -1,4 +1,4 @@
-import builtins, inspect, importlib, pathlib, os, sys, traceback
+import builtins, inspect, importlib, pathlib, os, sys, traceback, subprocess
 from typing import Callable
 from pytest import MonkeyPatch
 
@@ -8,8 +8,10 @@ _KNOWN_MODULES = {
     "ntpath": os.path,
     "genericpath": os.path,
     "os": os,
+    "nt": os,
     "sys": sys,
-    "traceback": traceback
+    "traceback": traceback,
+    "subprocess": subprocess
 }
 
 class _Invocation:

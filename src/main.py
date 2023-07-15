@@ -37,7 +37,7 @@ def main():
         print(_EXPECTED_ERROR_TEMPLATE.format(error), '\n')
         help.execute(None)
     except Exception as e:
-        print(_UNKNOWN_ERROR_MESSAGE)
+        print(_UNKNOWN_ERROR_MESSAGE, '\n')
         traceback.print_tb(e.__traceback__)
         print(_EXCEPTION_TEMPLATE.format(type(e).__name__, e))
 

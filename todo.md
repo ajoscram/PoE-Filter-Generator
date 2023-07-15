@@ -1,7 +1,7 @@
 # Backlog
 * Add the following commands:
     - `-u`: to update the tool to the latest version.
-    - `-p`: to register the current folder to the Windows PATH, so that users don't have to do it themselves.
+    - `-h`: add support for fetching and displaying wiki pages
 * Find a way in the wiki to change the _FILTER_TO_ID_CLASSES_DICT dictionary values from translate.py into a Wiki API call.
     The `translate.py` file in `utils` was left untested because it could be removed if this works.
 

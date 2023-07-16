@@ -69,10 +69,10 @@ def test_execute_given_a_script_failed_should_raise(subprocess_run_mock: Functio
     completed_process_mock = _CompletedProcessMock(returncode=1) # non-zero return code means error
     subprocess_run_mock.result = completed_process_mock
 
-    with pytest.raises(RuntimeError) as error:
+    with pytest.raises(ExpectedError) as error:
         path.execute(None)
 
-    assert str(error.value) == _COMMAND_EXECUTION_ERROR.format(
+    assert error.value.message == _COMMAND_EXECUTION_ERROR.format(
         _GENERIC_POWERSHELL_SCRIPT.format(_GET_PATH_SCRIPT),
         completed_process_mock.returncode,
         completed_process_mock.stderr,

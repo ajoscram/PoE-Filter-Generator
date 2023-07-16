@@ -1,4 +1,4 @@
-import pytest, ggg, ninja, utils
+import pytest, ggg, ninja, wiki
 from ninja import UniqueFilter
 from core import ExpectedError
 from pytest import MonkeyPatch
@@ -17,7 +17,7 @@ _BASE_TYPES = [ "base_type_1", "base_type_2" ]
 @pytest.fixture(autouse=True)
 def setup(monkeypatch: MonkeyPatch):
     _ = FunctionMock(monkeypatch, ggg.get_league_name, _LEAGUE_NAME)
-    _ = FunctionMock(monkeypatch, utils.try_translate_class, lambda x: x)
+    _ = FunctionMock(monkeypatch, wiki.try_translate_class, lambda x: x)
 
 @pytest.mark.parametrize("param_count", [1, 4])
 def test_handle_given_incorrect_rule_params_count_should_raise(param_count: int):

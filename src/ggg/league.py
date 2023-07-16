@@ -1,8 +1,7 @@
-import utils
+import web
 from enum import Enum
 
 _LEAGUES_URL = "https://api.pathofexile.com/leagues?type=main&realm=pc"
-_LEAGUES_ERROR_DESCRIPTOR = "leagues from GGG's API"
 _LEAGUE_ID_FIELD = "id"
 
 class _LeagueIndex(Enum):
@@ -21,7 +20,7 @@ def get_league_name(standard: bool = False, hardcore: bool = False, ruthless: bo
     * `hardcore`: `True` for hardcore, `False` for softcore.
     * `ruthless`: `True` for ruthless, `False` for non-ruthless."""
     index = _get_league_index(standard, hardcore, ruthless)
-    leagues = utils.http_get(_LEAGUES_URL, _LEAGUES_ERROR_DESCRIPTOR)
+    leagues = web.get(_LEAGUES_URL)
     return leagues[index.value][_LEAGUE_ID_FIELD]
 
 def _get_league_index(standard: bool, hardcore: bool, ruthless: bool):

@@ -1,8 +1,9 @@
 # Backlog
+* Implement the `web.download` function and swap out the prints on `console` for rich console usage
 * Add the following commands:
-    - `-u`: to update the tool to the latest version.
-    - `-h`: add support for fetching and displaying wiki pages
-* Find a way in the wiki to change the _FILTER_TO_ID_CLASSES_DICT dictionary values from translate.py into a Wiki API call.
+    - `-update`: to update the tool to the latest version.
+    - `-help`: add support for fetching and displaying wiki pages
+* Find a way in the wiki to change the `_FILTER_TO_ID_CLASSES_DICT` dictionary values from `translate.py` into a Wiki API call.
     The `translate.py` file in `utils` was left untested because it could be removed if this works.
 
 # Ideas

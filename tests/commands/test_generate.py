@@ -29,7 +29,10 @@ def filter(monkeypatch: MonkeyPatch):
 def mock_handler(monkeypatch: MonkeyPatch):
     mock_handler = _MockHandler()
     handlers_dict = { mock_handler.name: mock_handler.handle }
-    monkeypatch.setattr(handlers, 'HANDLERS', handlers_dict)
+    
+    # performing this setattr is fine because it is an import from another module
+    monkeypatch.setattr(generate, 'HANDLERS', handlers_dict)
+    
     return mock_handler
 
 def test_execute_given_a_handler_name_should_apply_it_and_save_the_new_filter(

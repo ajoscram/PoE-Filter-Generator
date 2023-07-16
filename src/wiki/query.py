@@ -1,4 +1,4 @@
-import utils
+import web
 from .wiki_error import WikiError
 from .constants import COMMA, Field, Table
 from .order_by import OrderBy
@@ -12,8 +12,6 @@ _NO_FIELDS_ERROR = "No fields were provided to query the wiki with."
 _NO_JOIN_FOR_MULTITABLE_ERROR = "No join_on parameter provided for a query involving these tables: {0}."
 _JOIN_FOR_ONE_TABLE_ERROR = "Provided a join_on parameter '{0}' to query a single table '{1}'."
 _OUT_OF_RANGE_LIMIT_ERROR = "Provided an out-of-range 'limit' parameter: '{0}'. The value must be between 1 and 500."
-
-_WIKI_DATA_DESCRIPTOR = "data from poewiki.net"
 
 class Query:
     """Represents a Wiki database query."""
@@ -70,7 +68,7 @@ class Query:
 
     def run(self):
         """Executes the query and returns a list with the results."""
-        records = utils.http_get(self._get_query_string(), _WIKI_DATA_DESCRIPTOR)
+        records = web.get(self._get_query_string())
         return [ _remove_whitespace_in_keys(record) for record in records ]
     
     def _get_query_string(self):

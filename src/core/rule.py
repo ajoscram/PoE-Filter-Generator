@@ -1,7 +1,7 @@
 from .expected_error import ExpectedError
 from .constants import COMMENT_START, RULE_SEPARATOR, RULE_START
 
-_EMPTY_RULE_ERROR = "Empty rule (probably an extra '.')"
+_EMPTY_RULE_ERROR = f"Empty rule (probably an extra '{RULE_SEPARATOR}')"
 
 class Rule:
     """A rule is a bit of data that can be parsed by handlers.

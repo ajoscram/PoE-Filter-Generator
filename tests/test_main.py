@@ -1,9 +1,9 @@
-import sys, main, traceback, pytest, commands
+import sys, main, pytest, console
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock
 from core import ExpectedError
-from commands import help, COMMAND_NAME_PREFIX
-from main import _COMMAND_NOT_FOUND_ERROR, _EXCEPTION_TEMPLATE, _EXPECTED_ERROR_TEMPLATE, _NO_ARGS_ERROR, _UNKNOWN_ERROR_MESSAGE
+from commands import DEFAULT_COMMAND_NAME, COMMAND_NAME_PREFIX
+from main import _COMMAND_NOT_FOUND_ERROR, _NO_ARGS_ERROR
 
 class _CommandMock:
     def __init__(self, name: str):
@@ -21,14 +21,12 @@ def command_mock(monkeypatch: MonkeyPatch):
     return _mock_COMMANDS_and_get_mock(monkeypatch, "command_name")
 
 @pytest.fixture()
-def help_mock(monkeypatch: MonkeyPatch):
-    return FunctionMock(monkeypatch, help.execute, target=help)
+def console_err_mock(monkeypatch: MonkeyPatch):
+    return FunctionMock(monkeypatch, console.err)
 
-@pytest.fixture()
-def print_mock(monkeypatch: MonkeyPatch):
-    return FunctionMock(monkeypatch, print)
-
-def test_main_given_a_command_name_should_execute_the_command(monkeypatch: MonkeyPatch, command_mock: _CommandMock):
+def test_main_given_a_command_name_should_execute_the_command(
+    monkeypatch: MonkeyPatch, command_mock: _CommandMock):
+    
     ARGS = [ "some", "args" ]
     _mock_argv(monkeypatch, ARGS, command_mock)
 
@@ -38,48 +36,44 @@ def test_main_given_a_command_name_should_execute_the_command(monkeypatch: Monke
 
 def test_main_given_no_command_name_should_use_default_instead(monkeypatch: MonkeyPatch):
     ARGS = [ "some", "args" ]
-    command_mock = _mock_COMMANDS_and_get_mock(monkeypatch, commands.DEFAULT_COMMAND_NAME)
+    command_mock = _mock_COMMANDS_and_get_mock(monkeypatch, DEFAULT_COMMAND_NAME)
     _mock_argv(monkeypatch, ARGS)
 
     main.main()
 
     assert command_mock.args_received == ARGS
 
-def test_main_given_unknown_command_should_handle_the_error(
-    monkeypatch: MonkeyPatch, help_mock: FunctionMock, print_mock: FunctionMock):
+def test_main_given_unknown_command_should_call_console_err(
+    monkeypatch: MonkeyPatch, console_err_mock: FunctionMock):
     
     UNKNOWN_COMMAND = f"{COMMAND_NAME_PREFIX}unknown_command"
     _mock_argv(monkeypatch, [ UNKNOWN_COMMAND ])
 
     main.main()
 
-    assert print_mock.received(_EXPECTED_ERROR_TEMPLATE.format(
-        ExpectedError(_COMMAND_NOT_FOUND_ERROR.format(UNKNOWN_COMMAND))))
-    assert help_mock.get_invocation_count() == 1
+    error_received: ExpectedError = console_err_mock.get_arg(ExpectedError)
+    assert error_received.message == _COMMAND_NOT_FOUND_ERROR.format(UNKNOWN_COMMAND)
 
-def test_main_given_no_args_were_passed_should_handle_the_error(
-    monkeypatch: MonkeyPatch, help_mock: FunctionMock, print_mock: FunctionMock):
+def test_main_given_no_args_were_passed_should_call_console_err(
+    monkeypatch: MonkeyPatch, console_err_mock: FunctionMock):
 
     _mock_argv(monkeypatch, [])
 
     main.main()
 
-    assert print_mock.received(_EXPECTED_ERROR_TEMPLATE.format(ExpectedError(_NO_ARGS_ERROR)))
-    assert help_mock.get_invocation_count() == 1
+    error_received: ExpectedError = console_err_mock.get_arg(ExpectedError)
+    assert error_received.message == _NO_ARGS_ERROR
 
-def test_main_given_an_exception_is_raised_should_handle_it(
-    monkeypatch: MonkeyPatch, command_mock: _CommandMock, print_mock: FunctionMock):
+def test_main_given_an_exception_is_raised_should_call_console_err(
+    monkeypatch: MonkeyPatch, command_mock: _CommandMock, console_err_mock: FunctionMock):
     
     command_mock.exception = Exception("message")
-    traceback_mock = FunctionMock(monkeypatch, traceback.print_tb)
     _mock_argv(monkeypatch, command_mock=command_mock)
 
     main.main()
 
-    assert print_mock.received(_UNKNOWN_ERROR_MESSAGE)
-    assert traceback_mock.received(command_mock.exception.__traceback__)
-    assert print_mock.received(_EXCEPTION_TEMPLATE.format(
-        type(command_mock.exception).__name__, command_mock.exception))
+    exception_received: Exception = console_err_mock.get_arg(Exception)
+    assert exception_received == command_mock.exception
 
 def _mock_argv(monkeypatch: MonkeyPatch, args: list[str] = [], command_mock: _CommandMock = None):
     if command_mock != None:
@@ -90,5 +84,8 @@ def _mock_argv(monkeypatch: MonkeyPatch, args: list[str] = [], command_mock: _Co
 def _mock_COMMANDS_and_get_mock(monkeypatch: MonkeyPatch, command_name: str):
     command_mock = _CommandMock(command_name)
     mock_commands_dict = { command_mock.name: command_mock.execute }
-    monkeypatch.setattr(commands, "COMMANDS", mock_commands_dict)
+
+    # performing this setattr is fine because it is an import from another module
+    monkeypatch.setattr(main, "COMMANDS", mock_commands_dict)
+    
     return command_mock

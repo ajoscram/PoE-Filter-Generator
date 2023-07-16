@@ -1,3 +1,4 @@
+# this dictionary solution is a hack that needs to be changed eventually for an actual query
 _FILTER_TO_ID_CLASSES_DICT = {
     "Gloves": "Gloves",
     "Incursion Items": "IncursionItem",

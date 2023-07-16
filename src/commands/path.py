@@ -1,7 +1,7 @@
-import os, subprocess
+import os, subprocess, console
 from core import ExpectedError
 
-NAME = "p"
+NAME = "path"
 
 _WINDOWS_OS_NAME = "nt"
 _GET_PATH_SCRIPT = "echo $([Environment]::GetEnvironmentVariable('PATH', [EnvironmentVariableTarget]::User))"
@@ -14,7 +14,7 @@ _PATH_ALREADY_SET_MESSAGE = "The current directory is already a part of the user
 
 _NOT_ON_WINDOWS_ERROR = "This command is only available on Windows systems."
 _POWERSHELL_NOT_FOUND_ERROR = "Could not find PowerShell, which is required for this command. Please ensure PowerShell is installed on your computer."
-_COMMAND_EXECUTION_ERROR = """An unknown error occurred executing a PowerShell command. Debug information:
+_COMMAND_EXECUTION_ERROR = """An error occurred while executing a PowerShell command. Debug information:
 \tcommand: {0}
 \terror_code: {1}
 \tstderr: {2}
@@ -28,11 +28,11 @@ def execute(_):
     current_path = os.getcwd()
     paths = _get_env_paths()
     if _is_path_in_env_paths(current_path, paths):
-        return print(_PATH_ALREADY_SET_MESSAGE)
+        return console.write(_PATH_ALREADY_SET_MESSAGE)
 
-    print(_SETTING_PATH_MESSAGE.format(current_path))
+    console.write(_SETTING_PATH_MESSAGE.format(current_path))
     _set_env_paths(paths + [ current_path ])
-    print(_PATH_SET_COMPLETE_MESSAGE)
+    console.write(_PATH_SET_COMPLETE_MESSAGE)
 
 def _get_env_paths():
     env_paths_str = _execute_powershell(_GET_PATH_SCRIPT).rstrip()
@@ -60,7 +60,7 @@ def _execute_powershell(command: str):
             completed_process.returncode,
             completed_process.stderr,
             completed_process.stdout)
-        raise RuntimeError(error)
+        raise ExpectedError(error)
 
     return completed_process.stdout
     

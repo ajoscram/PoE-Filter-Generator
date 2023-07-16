@@ -1,4 +1,4 @@
-import ggg, ninja, utils
+import ggg, ninja, wiki
 from core import ExpectedError, Block, Rule
 from core.constants import BASE_TYPE, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA
 
@@ -106,7 +106,7 @@ def _get_unique_filter(block: Block):
 
     classes = block.get_classes()
     if len(classes) > 0:
-        classes = [ utils.try_translate_class(class_) for class_ in classes ]
+        classes = [ wiki.try_translate_class(class_) for class_ in classes ]
         unique_filter.classes = classes
     
     replica_lines = block.find(operand=REPLICA)

@@ -1,6 +1,5 @@
-import utils
+import web
 
-_NINJA_DATA_DESCRIPTOR = "data from poe.ninja"
 _RESPONSE_DATA_LOCATION = "lines"
 
 def is_value_within_range(value: float, lower: float, upper: float = None):
@@ -10,5 +9,5 @@ def is_value_within_range(value: float, lower: float, upper: float = None):
 
 def get_records(url: str):
     """Returns poe.ninja item records from the `url` passed in."""
-    response = utils.http_get(url, _NINJA_DATA_DESCRIPTOR)
+    response = web.get(url)
     return response[_RESPONSE_DATA_LOCATION]

@@ -1,32 +1,43 @@
-import traceback
 from core import ExpectedError
-from commands import help
+from rich.console import Console
+from rich.markdown import Markdown
 
-_EXPECTED_ERROR_TEMPLATE = "ERROR: {0}"
-_EXCEPTION_TEMPLATE = "\n{0}: {1}"
-_UNKNOWN_ERROR_MESSAGE = """UNKNOWN ERROR: Oopsie, my bad
+_DONE_MESSAGE = "[green]Done![/]"
+_EXPECTED_ERROR_TEMPLATE = "[red]ERROR[/]: {0}"
+_UNKNOWN_ERROR_MESSAGE = """[red]UNKNOWN ERROR[/]: Oopsie, my bad.
 
-If your're reading this then an unforseen error has ocurred. Notify me immediately so I can fix it!
-Please provide either the following text from the error or a screenshot via an issue on GitHub:
+If your're reading this then an unforseen error has ocurred.
+I'd greatly appreciate if you could submit an issue on Github:
 
 https://github.com/ajoscram/PoE-Filter-Generator/issues/new
 
-Thanks!"""
+With the following text (or a screenshot of it):"""
 
-# md = Markdown(text)
-# console = Console()
-# console.print(md)
+_CONSOLE = Console()
 
-# https://rich.readthedocs.io/en/stable/markdown.html
+def write(*values, markdown: bool = False, done: bool = False):
+    """Writes the values passed in to the stdout, with formatting depending on the object.
+        - If `markdown` is `True` the text is formatted as markdown.
+        - If `done` is `True`, then a green "Done!" message is prepended to the values.
+    """
+    if markdown:
+        values = (_create_markdown(*values), )
+    if done:
+        values = (_DONE_MESSAGE, ) + values
 
-def write(*values, markdown = False):
-    print(*values)
+    _CONSOLE.print(*values, end="\n\n")
 
 def err(exception: Exception):
+    """Prints the `exception` passed in.
+    If `exception` is NOT an `ExpectedError` then a preamble is printed
+    alongside the `exception`'s traceback and message.
+    """
     if isinstance(exception, ExpectedError):
-        write(_EXPECTED_ERROR_TEMPLATE.format(exception), '\n')
-        return help.execute(None)
+        return write(_EXPECTED_ERROR_TEMPLATE.format(exception))
     
-    write(_UNKNOWN_ERROR_MESSAGE, '\n')
-    traceback.print_tb(exception.__traceback__)
-    write(_EXCEPTION_TEMPLATE.format(type(exception).__name__, exception))
+    write(_UNKNOWN_ERROR_MESSAGE)
+    _CONSOLE.print_exception(show_locals=True)
+
+def _create_markdown(*values):
+    text = "".join(str(value) for value in values)
+    return Markdown(text)

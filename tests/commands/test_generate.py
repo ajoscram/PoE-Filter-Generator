@@ -1,4 +1,4 @@
-import pytest, handlers
+import pytest
 
 from commands import generate
 from commands.generate import _HANDLER_NOT_FOUND_ERROR, _HANDLER_NOT_PROVIDED_ERROR, _TOO_LITTLE_ARGUMENTS_ERROR, _HANDLER_TAG
@@ -42,7 +42,7 @@ def test_execute_given_a_handler_name_should_apply_it_and_save_the_new_filter(
     ARGS = [ filter.filepath, _HANDLER_TAG + mock_handler.name ] + OPTIONS
     save_filter_mock = FunctionMock(monkeypatch, Filter.save, target=Filter)
 
-    generate.execute(ARGS)
+    generate.execute(None, ARGS)
     
     assert mock_handler.filter_handled == filter
     assert mock_handler.block_handled == filter.blocks[0]
@@ -53,7 +53,7 @@ def test_execute_given_less_than_2_args_should_raise():
     ARGS = [ "one" ]
 
     with pytest.raises(ExpectedError) as error:
-        generate.execute(ARGS)
+        generate.execute(None, ARGS)
 
     assert error.value.message == _TOO_LITTLE_ARGUMENTS_ERROR
 
@@ -61,7 +61,7 @@ def test_execute_given_no_handler_was_passed_should_raise():
     ARGS = [ "no", "handler" ]
 
     with pytest.raises(ExpectedError) as error:
-        generate.execute(ARGS)
+        generate.execute(None, ARGS)
     
     assert error.value.message == _HANDLER_NOT_PROVIDED_ERROR
 
@@ -70,6 +70,6 @@ def test_execute_given_an_unknown_handler_name_should_raise(filter: Filter):
     ARGS = [ filter.filepath, f"{_HANDLER_TAG}{HANDLER_NAME}" ]
 
     with pytest.raises(ExpectedError) as error:
-        generate.execute(ARGS)
+        generate.execute(None, ARGS)
     
     assert error.value.message == _HANDLER_NOT_FOUND_ERROR.format(HANDLER_NAME)

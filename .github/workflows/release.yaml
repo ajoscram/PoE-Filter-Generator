@@ -19,9 +19,9 @@ jobs:
     - name: Install and test
       uses: ./.github/actions/install-and-test
 
-    - name: Build pfg.exe
+    - name: Build pfg.exe and updater.exe
       shell: bash
-      run: scripts/build.sh
+      run: scripts/build.sh include-updater
 
     - name: Get release version
       id: version
@@ -58,3 +58,13 @@ jobs:
         asset_content_type: application/octet-stream
         asset_path: build/pfg.exe
         asset_name: pfg.exe
+    
+    - name: Attach updater.exe to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_content_type: application/octet-stream
+        asset_path: build/updater.exe
+        asset_name: updater.exe

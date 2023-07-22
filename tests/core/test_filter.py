@@ -2,33 +2,17 @@ import builtins, pytest, os
 from pytest import MonkeyPatch
 from core.filter import _FILE_EXISTS_ERROR, _FILE_NOT_FOUND_ERROR, _PERMISSION_ERROR
 from core import Filter, ExpectedError, Block
-from test_utilities import FunctionMock
+from test_utilities import FunctionMock, FileMock
 
 _FILEPATH = "filepath"
 _LINES: list[str] = [ "line 1", "line 2" ]
 
-class _MockFile:
-    written_text: str = None
-
-    def readlines(self):
-        return _LINES
-    
-    def write(self, text: str):
-        self.written_text = text
-    
-    def __enter__(self):
-        return self
-    
-    def __exit__(self, _, __, ___):
-        return self
-
 def test_load_given_a_valid_filepath_should_return_a_filter(monkeypatch: MonkeyPatch):
-    MOCK_FILE = _MockFile()
-    open_mock = FunctionMock(monkeypatch, builtins.open, MOCK_FILE)
+    file_mock = FileMock(monkeypatch, _LINES)
 
     filter = Filter.load(_FILEPATH)
 
-    assert open_mock.received(_FILEPATH, "r")
+    assert file_mock.opened_with(_FILEPATH, "r")
     assert filter.filepath == _FILEPATH
     assert [ str(line) for line in filter.blocks[0].lines ] == _LINES
 
@@ -46,23 +30,23 @@ def test_load_given_file_is_not_found_should_raise(
 
 def test_save_should_save_the_lines_in_the_filter(monkeypatch: MonkeyPatch):
     DIRECTORY = "directory"
-    MOCK_FILE = _MockFile()
     FILTER = Filter(_FILEPATH, Block.extract(_LINES))
+    file_mock = FileMock(monkeypatch, _LINES)
     dirname_mock = FunctionMock(monkeypatch, os.path.dirname, DIRECTORY)
     makedirs_mock = FunctionMock(monkeypatch, os.makedirs)
-    open_mock = FunctionMock(monkeypatch, builtins.open, MOCK_FILE)
 
     FILTER.save()
 
     assert dirname_mock.received(_FILEPATH)
     assert makedirs_mock.received(DIRECTORY, exist_ok=True)
-    assert open_mock.received(_FILEPATH, "w")
-    assert MOCK_FILE.written_text == str(FILTER.blocks[0])
+    assert file_mock.opened_with(_FILEPATH, "w")
+    assert file_mock.got_written(str(FILTER.blocks[0]))
 
 _WRITE_FILE_EXCEPTIONS = [ (FileExistsError, _FILE_EXISTS_ERROR), (PermissionError, _PERMISSION_ERROR) ]
 @pytest.mark.parametrize("exception_to_raise, error_message", _WRITE_FILE_EXCEPTIONS)
 def test_save_given_the_file_exists_and_cannot_be_overwritten_should_raise(
     monkeypatch: MonkeyPatch, exception_to_raise: Exception, error_message: str):
+    
     _ = FunctionMock(monkeypatch, os.path.dirname, "")
     _ = FunctionMock(monkeypatch, builtins.open, exception_to_raise)
     filter = Filter(_FILEPATH, Block.extract(_LINES))

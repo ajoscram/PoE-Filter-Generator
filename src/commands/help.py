@@ -5,7 +5,7 @@ NAME = "help"
 
 _HELP_MESSAGE = "Visit https://github.com/ajoscram/PoE-Filter-Generator/wiki#usage for more information."
 
-def execute(_):
+def execute(_, __):
     console.write(_HELP_MESSAGE)
 
     # response = requests.get("https://raw.githubusercontent.com/wiki/ajoscram/PoE-Filter-Generator/asdas.md")

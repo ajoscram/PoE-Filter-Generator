@@ -20,7 +20,7 @@ class _Invocation:
         self.kwargs_received = kwargs
 
 class FunctionMock:
-    """This class monkey patches a function and collects information how it is used."""
+    """This class monkeypatches a function and collects information how it is used."""
 
     def __init__(self, monkeypatch: MonkeyPatch, function_to_mock: Callable, result = None, target = None):
         """The `result` parameter represents the function resolution.
@@ -42,20 +42,21 @@ class FunctionMock:
         If any of them were not, an `AssertionError` is raised instead."""
         return self._check_args_were_received(*args) and self._check_kwargs_were_received(**kwargs)
     
-    def get_arg(self, type: type):
-        """Gets the first argument received during execution that has the `type` passed in.
+    def get_arg(self, type: type, n: int = 0):
+        """Gets the `n`th argument received during execution that has the `type` passed in.
         Raises a `ValueError` if none are found."""
         args_received = self._get_args_received()
         args_received += [ value for _, value in self._get_kwargs_received() ]
         args_received = [ arg for arg in args_received if isinstance(arg, type) ]
 
-        if len(args_received) > 0:
-            return args_received[0]
+        if len(args_received) > 0 and n < len(args_received):
+            return args_received[n]
         
         raise ValueError(
-            f"Could not find argument of type '{type.__name__}' passed to '{self._function_name}'")
+            f"Could not find {n}th argument of type '{type.__name__}' passed to '{self._function_name}'")
     
     def get_invocation_count(self):
+        """Returns the number of times the function got invoked."""
         return len(self._invocations)
 
     def _mock_function(self, *args, **kwargs):

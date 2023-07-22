@@ -9,7 +9,7 @@ _SET_PATH_SCRIPT = "$NEW_PATH='{0}';[Environment]::SetEnvironmentVariable('PATH'
 _GENERIC_POWERSHELL_SCRIPT = "powershell -command \"{0}\""
 
 _SETTING_PATH_MESSAGE = "Adding '{0}' to the user's PATH. This might take a while..."
-_PATH_SET_COMPLETE_MESSAGE = "Done! Restart your console for changes to take effect."
+_PATH_SET_COMPLETE_MESSAGE = "Restart your console for changes to take effect."
 _PATH_ALREADY_SET_MESSAGE = "The current directory is already a part of the user's PATH. No need to add it again!"
 
 _NOT_ON_WINDOWS_ERROR = "This command is only available on Windows systems."
@@ -21,18 +21,17 @@ _COMMAND_EXECUTION_ERROR = """An error occurred while executing a PowerShell com
 \tstdout: {3}
 """
 
-def execute(_):
+def execute(curr_dir: str, _):
     if os.name != _WINDOWS_OS_NAME:
         raise ExpectedError(_NOT_ON_WINDOWS_ERROR)
 
-    current_path = os.getcwd()
     paths = _get_env_paths()
-    if _is_path_in_env_paths(current_path, paths):
+    if _is_path_in_env_paths(curr_dir, paths):
         return console.write(_PATH_ALREADY_SET_MESSAGE)
 
-    console.write(_SETTING_PATH_MESSAGE.format(current_path))
-    _set_env_paths(paths + [ current_path ])
-    console.write(_PATH_SET_COMPLETE_MESSAGE)
+    console.write(_SETTING_PATH_MESSAGE.format(curr_dir))
+    _set_env_paths(paths + [ curr_dir ])
+    console.write(_PATH_SET_COMPLETE_MESSAGE, done=True)
 
 def _get_env_paths():
     env_paths_str = _execute_powershell(_GET_PATH_SCRIPT).rstrip()
@@ -41,8 +40,9 @@ def _get_env_paths():
         if env_path != "" ]
 
 def _is_path_in_env_paths(path: str, env_paths: list[str]):
-    path = os.path.abspath(path)
     env_paths = [ os.path.abspath(env_path) for env_path in env_paths ]
+    print("path: ", path)
+    print("env_paths: ", env_paths)
     return path in env_paths
 
 def _set_env_paths(paths: list[str]):

@@ -6,7 +6,7 @@ from pytest import MonkeyPatch
 from test_utilities import FunctionMock
 
 _PATHSEP = ";"
-_CURRENT_DIRECTORY = "current_directory"
+_EXE_DIR = "exe_dir"
 _ENV_PATHS = "directory_1;directory_2"
 
 class _CompletedProcessMock:
@@ -17,12 +17,9 @@ class _CompletedProcessMock:
 
 @pytest.fixture(autouse=True)
 def os_props(monkeypatch: MonkeyPatch):
+    _ = FunctionMock(monkeypatch, os.path.abspath, lambda x: x)
     monkeypatch.setattr(os, "name", _WINDOWS_OS_NAME)
     monkeypatch.setattr(os, "pathsep", _PATHSEP)
-
-@pytest.fixture(autouse=True)
-def os_getcwd_mock(monkeypatch: MonkeyPatch):
-    return FunctionMock(monkeypatch, os.getcwd, _CURRENT_DIRECTORY)
 
 @pytest.fixture(autouse=True)
 def subprocess_run_mock(monkeypatch: MonkeyPatch):
@@ -31,21 +28,21 @@ def subprocess_run_mock(monkeypatch: MonkeyPatch):
 def test_execute_given_current_directory_is_new_should_append_it_to_env_path(
     subprocess_run_mock: FunctionMock):
     
-    NEW_PATH = _ENV_PATHS + _PATHSEP + _CURRENT_DIRECTORY
+    NEW_PATH = _ENV_PATHS + _PATHSEP + _EXE_DIR
     SET_PATH_COMMAND = _GENERIC_POWERSHELL_SCRIPT.format(_SET_PATH_SCRIPT.format(NEW_PATH))
 
-    path.execute(None)
+    path.execute(_EXE_DIR, None)
 
     assert subprocess_run_mock.received(SET_PATH_COMMAND)
 
 def test_execute_given_current_directory_was_already_in_path_should_not_set_env_path(
     subprocess_run_mock: FunctionMock):
     
-    ENV_PATHS = _ENV_PATHS + _PATHSEP + _CURRENT_DIRECTORY
+    ENV_PATHS = _ENV_PATHS + _PATHSEP + _EXE_DIR
     completed_process_mock = _CompletedProcessMock(stdout=ENV_PATHS)
     subprocess_run_mock.result = completed_process_mock
 
-    path.execute(None)
+    path.execute(_EXE_DIR, None)
 
     assert subprocess_run_mock.get_invocation_count() == 1 # invoked only once to get the path
 
@@ -53,7 +50,7 @@ def test_execute_given_not_on_windows_should_raise(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(os, "name", "not windows")
 
     with pytest.raises(ExpectedError) as error:
-        path.execute(None)
+        path.execute(_EXE_DIR, None)
 
     assert error.value.message == _NOT_ON_WINDOWS_ERROR
 
@@ -61,7 +58,7 @@ def test_execute_given_powershell_is_not_found_should_raise(subprocess_run_mock:
     subprocess_run_mock.result = FileNotFoundError()
 
     with pytest.raises(ExpectedError) as error:
-        path.execute(None)
+        path.execute(_EXE_DIR, None)
     
     assert error.value.message == _POWERSHELL_NOT_FOUND_ERROR
 
@@ -70,7 +67,7 @@ def test_execute_given_a_script_failed_should_raise(subprocess_run_mock: Functio
     subprocess_run_mock.result = completed_process_mock
 
     with pytest.raises(ExpectedError) as error:
-        path.execute(None)
+        path.execute(_EXE_DIR, None)
 
     assert error.value.message == _COMMAND_EXECUTION_ERROR.format(
         _GENERIC_POWERSHELL_SCRIPT.format(_GET_PATH_SCRIPT),

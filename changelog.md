@@ -1,4 +1,4 @@
-# 1.3.1
+# 1.4.0
 
 # 1.3.0
 * `.econ` now supports uniques. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).

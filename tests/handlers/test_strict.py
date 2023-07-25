@@ -1,6 +1,5 @@
 import pytest
-from core import ExpectedError
-from core.constants import HIDE, RULE_START, SHOW
+from core import ExpectedError, HIDE, RULE_START, SHOW
 from handlers import strict
 from handlers.strict import _HANDLER, _RULE, _STRICTNESS_ARG_COUNT_ERROR, _STRICTNESS_ARG_TYPE_ERROR, NAME as STRICT
 from test_utilities import create_filter

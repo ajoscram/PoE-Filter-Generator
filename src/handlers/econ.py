@@ -1,6 +1,6 @@
 import ggg, ninja, wiki
-from core import ExpectedError, Block, Rule
-from core.constants import BASE_TYPE, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA
+from core import ExpectedError, Block, Rule,\
+    BASE_TYPE, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA
 
 NAME = "econ"
 

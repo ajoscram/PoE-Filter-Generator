@@ -1,8 +1,8 @@
 import sys, main, pytest, console, os
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock
-from core import ExpectedError
-from commands import DEFAULT_COMMAND_NAME, COMMAND_NAME_PREFIX
+from core import ExpectedError, COMMAND_START
+from commands import DEFAULT_COMMAND_NAME
 from main import _COMMAND_NOT_FOUND_ERROR, _NO_ARGS_ERROR
 
 class _CommandMock:
@@ -56,7 +56,7 @@ def test_main_given_no_command_name_should_use_default_instead(monkeypatch: Monk
 def test_main_given_unknown_command_should_call_console_err(
     monkeypatch: MonkeyPatch, console_err_mock: FunctionMock):
     
-    UNKNOWN_COMMAND = f"{COMMAND_NAME_PREFIX}unknown_command"
+    UNKNOWN_COMMAND = f"{COMMAND_START}unknown_command"
     _mock_argv(monkeypatch, [ UNKNOWN_COMMAND ])
 
     main.main()
@@ -87,7 +87,7 @@ def test_main_given_an_exception_is_raised_should_call_console_err(
 
 def _mock_argv(monkeypatch: MonkeyPatch, args: list[str] = [], command_mock: _CommandMock = None):
     if command_mock != None:
-        args = [ COMMAND_NAME_PREFIX + command_mock.name ] + args
+        args = [ COMMAND_START + command_mock.name ] + args
     args = [ "program.py" ] + args
     monkeypatch.setattr(sys, 'argv', args)
 

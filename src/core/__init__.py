@@ -1,5 +1,5 @@
 """"Contains all core functionality shared by every handler or command."""
-from . import constants
+from .constants import *
 from .expected_error import ExpectedError
 from .filter import Filter
 from .block import Block

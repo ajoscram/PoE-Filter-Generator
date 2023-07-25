@@ -1,6 +1,6 @@
 import os, sys, console
-from core import ExpectedError
-from commands import COMMAND_NAME_PREFIX, DEFAULT_COMMAND_NAME, COMMANDS
+from core import ExpectedError, COMMAND_START
+from commands import DEFAULT_COMMAND_NAME, COMMANDS
 
 _NO_ARGS_ERROR = "No arguments were provided to PFG."
 _COMMAND_NOT_FOUND_ERROR = "Command '{0}' was not found."
@@ -14,10 +14,10 @@ def main():
         if len(args) == 0:
             raise ExpectedError(_NO_ARGS_ERROR)
 
-        if not args[0].startswith(COMMAND_NAME_PREFIX):
-            args = [ COMMAND_NAME_PREFIX + DEFAULT_COMMAND_NAME ] + args
+        if not args[0].startswith(COMMAND_START):
+            args = [ COMMAND_START + DEFAULT_COMMAND_NAME ] + args
         
-        command_name = args[0].lstrip(COMMAND_NAME_PREFIX)
+        command_name = args[0].lstrip(COMMAND_START)
         if not command_name in COMMANDS:
             raise ExpectedError(_COMMAND_NOT_FOUND_ERROR.format(args[0]))
         

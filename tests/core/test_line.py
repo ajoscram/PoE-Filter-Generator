@@ -1,8 +1,6 @@
 import pytest
-
-from core.constants import CLASS, COMMENT_START, BLOCK_STARTERS, RULE_SEPARATOR, RULE_START
+from core import ExpectedError, Line, CLASS, COMMENT_START, BLOCK_STARTERS, RULE_SEPARATOR, RULE_START
 from core.line import _BOOL_VALUE_ERROR, _INT_VALUE_ERROR, _MULTILINE_STRING_ERROR
-from core import ExpectedError, Line
 
 _LINE_NUMBER = 1
 

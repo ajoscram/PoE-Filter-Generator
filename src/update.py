@@ -4,7 +4,7 @@ from commands.update import ASSET_DOWNLOAD_URL_FIELD as EXE_DOWNLOAD_URL_FIELD, 
 
 _UNEXPECTED_DATA_ERROR = """The update process failed because the updater received unexpected data.
 This is likely due to a breaking change between versions.
-Please download your update manually from it's release page:
+Please download the latest version manually from it's release page:
 
 https://github.com/ajoscram/PoE-Filter-Generator/releases/latest
 

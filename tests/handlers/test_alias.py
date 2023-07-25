@@ -1,6 +1,5 @@
 import pytest
-from core import ExpectedError
-from core.constants import RULE_START
+from core import ExpectedError, RULE_START
 from handlers import alias
 from handlers.alias import _ALIAS_NAME_ERROR_DESCRIPTOR, _ALIAS_SEPARATOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _INCORRECT_RULE_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, NAME as ALIAS
 from test_utilities import create_filter

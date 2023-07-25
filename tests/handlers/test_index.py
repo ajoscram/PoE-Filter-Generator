@@ -1,6 +1,6 @@
 from handlers import index
 from test_utilities import create_filter
-from core.constants import RULE_START
+from core import RULE_START
 from handlers.index import _INDEX_RULE_NAME, _SECTION_RULE_NAME, _SUBSECTION_RULE_NAME, _INDEX_HEADER, _INDEX_HINT
 
 def test_handle_given_an_index_section_and_subsection_should_write_them():

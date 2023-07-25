@@ -1,10 +1,9 @@
 import pytest, ggg, ninja, wiki
 from ninja import UniqueFilter
-from core import ExpectedError
 from pytest import MonkeyPatch
 from handlers import econ
+from core import ExpectedError, CLASS, COMMENT_START, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA, RULE_START, BASE_TYPE as BASE_TYPES_OPERAND
 from handlers.econ import _CURRENCY_MNEMONICS, _LOWER_BOUND_NAME, _MISC_MNEMONICS, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UNIQUE_MNEMONIC, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR
-from core.constants import CLASS, COMMENT_START, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA, RULE_START, BASE_TYPE as BASE_TYPES_OPERAND
 from test_utilities import FunctionMock, create_filter
 
 _LEAGUE_NAME = "league_name"

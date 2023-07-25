@@ -1,7 +1,6 @@
 import pytest
-from core.constants import COMMENT_START, RULE_SEPARATOR, RULE_START
+from core import Rule, ExpectedError, COMMENT_START, RULE_SEPARATOR, RULE_START
 from core.rule import _EMPTY_RULE_ERROR
-from core import Rule, ExpectedError
 
 _LINE_NUMBER = 1
 

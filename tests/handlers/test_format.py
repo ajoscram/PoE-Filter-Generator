@@ -1,5 +1,5 @@
 from handlers import format
-from core.constants import HIDE, RULE_START, SHOW
+from core import HIDE, RULE_START, SHOW
 from test_utilities import create_filter
 
 def test_handle_given_lines_with_rules_should_remove_them():

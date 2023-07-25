@@ -1,8 +1,7 @@
 import pytest
 from handlers import if_
 from handlers.if_ import _EMPTY_DESCRIPTION_ERROR, NAME as IF
-from core.constants import COMMENT_START, HIDE, RULE_START, SHOW
-from core import ExpectedError
+from core import ExpectedError, COMMENT_START, HIDE, RULE_START, SHOW
 from test_utilities import create_filter
 
 def test_handle_given_text_is_contained_should_not_comment_out():

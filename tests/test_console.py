@@ -1,11 +1,17 @@
-import pytest, console
+import pytest, console, traceback
 from pytest import MonkeyPatch
 from console import functions
-from core import ExpectedError
+from core import ExpectedError, COMMAND_START, HANDLER_START
 from test_utilities import FunctionMock
 from rich.markdown import Markdown
 from rich.console import Console
-from console.functions import _DONE_MESSAGE, _EXPECTED_ERROR_TEMPLATE, _UNKNOWN_ERROR_MESSAGE
+from console.functions import _COMMANDS_FOLDER_NAME, _DONE_MESSAGE, _EXPECTED_ERROR_TEMPLATE, _HANDLERS_FOLDER_NAME, _HINT_MESSAGE, _UNKNOWN_ERROR_MESSAGE, _DEFAULT_HINT_TERM, _WIKI_PAGE_URL
+
+class _MockTrace:
+    def __init__(self, filename: str):
+        self.filename = filename
+
+_ERROR = ExpectedError("an error", line_number=1, filepath="filepath")
 
 @pytest.fixture()
 def console_print_mock(monkeypatch: MonkeyPatch):
@@ -35,13 +41,6 @@ def test_write_given_done_should_prepend_the_done_value(console_print_mock: Func
 
     assert console_print_mock.received(_DONE_MESSAGE)
 
-def test_err_given_an_expected_error_should_use_the_expected_error_template(console_print_mock: FunctionMock):
-    ERROR = ExpectedError("an error", line_number=1, filepath="filepath")
-
-    console.err(ERROR)
-
-    assert console_print_mock.received(_EXPECTED_ERROR_TEMPLATE.format(ERROR))
-
 def test_err_given_an_exception_should_write_the_unknown_error_message(
     console_print_mock: FunctionMock, console_print_exception_mock: FunctionMock):
 
@@ -51,3 +50,30 @@ def test_err_given_an_exception_should_write_the_unknown_error_message(
 
     assert console_print_mock.received(_UNKNOWN_ERROR_MESSAGE)
     assert console_print_exception_mock.received(show_locals=True)
+
+def test_err_given_an_expected_error_should_use_the_expected_error_template_and_default_hint(
+    console_print_mock: FunctionMock):
+    
+    console.err(_ERROR)
+
+    assert console_print_mock.received(_EXPECTED_ERROR_TEMPLATE.format(_ERROR))
+    assert console_print_mock.received( \
+        _HINT_MESSAGE.format(_DEFAULT_HINT_TERM, _WIKI_PAGE_URL.format(_DEFAULT_HINT_TERM)))
+
+_TRACEBACK_INFO = [(_HANDLERS_FOLDER_NAME, HANDLER_START), (_COMMANDS_FOLDER_NAME, COMMAND_START) ]
+@pytest.mark.parametrize("folder, term_prefix", _TRACEBACK_INFO)
+def test_err_given_an_expected_error_in_a_with_a_known_module_should_use_that_term_in_the_hint(
+    folder: str, term_prefix: str, monkeypatch: MonkeyPatch, console_print_mock: FunctionMock):
+    
+    TERM_NAME = "term"
+    _setup_traceback(monkeypatch, folder, TERM_NAME)
+
+    console.err(_ERROR)
+
+    term = term_prefix + TERM_NAME
+    assert console_print_mock.received(_HINT_MESSAGE.format(term, _WIKI_PAGE_URL.format(term)))
+
+def _setup_traceback(monkeypatch: MonkeyPatch, folder: str, filename: str):
+    filepaths = [ "src\\main.py", f"src\\{folder}\\{filename}.py" ]
+    mock_traces = [ _MockTrace(filepath) for filepath in reversed(filepaths) ]
+    _ = FunctionMock(monkeypatch, traceback.extract_tb, mock_traces)

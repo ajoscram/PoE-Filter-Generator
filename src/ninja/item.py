@@ -1,8 +1,7 @@
 import wiki
-
 from enum import Enum
 from . import common
-from core.constants import REPLICA
+from core import REPLICA
 
 _URL = "https://poe.ninja/api/data/itemoverview?league={0}&type={1}"
 _UNIQUE_ITEM_TYPES = [ "UniqueWeapon", "UniqueArmour", "UniqueAccessory", "UniqueFlask", "UniqueJewel", "UniqueMap" ]

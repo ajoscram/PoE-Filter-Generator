@@ -1,9 +1,4 @@
 # Backlog
-* Add support for `console.err` to display custom help depending on the context:
-    `ExpectedError`s could include a `source` attribute on commands and handlers, which is then passed to `help` when errors are printed. This displays the short help for that source
-    Another way to do this (although obscure) is to use the exception trace info to build the help options passed in
-        this has the upside of needing no changes elsewhere and clears up issues where errors occurr on packages and not handlers / commands.
-
 * Add documentation for the new command functions and usage article.
 
 # Ideas

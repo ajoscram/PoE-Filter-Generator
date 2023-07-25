@@ -1,6 +1,5 @@
 import re, string, random
-from core import Block, Filter, Rule, ExpectedError
-from core.constants import RULE_SEPARATOR
+from core import Block, Filter, Rule, ExpectedError, RULE_SEPARATOR
 
 NAME = "alias"
 _ALIAS_SEPARATOR = "="

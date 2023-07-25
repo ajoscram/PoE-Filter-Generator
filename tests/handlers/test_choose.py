@@ -1,6 +1,5 @@
 import pytest, math
-from core import ExpectedError, Block
-from core.constants import COMMENT_START, RULE_SEPARATOR, RULE_START, SHOW
+from core import ExpectedError, Block, COMMENT_START, RULE_SEPARATOR, RULE_START, SHOW
 from handlers.choose import _MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR,_RULE_PARAMETER_COUNT_ERROR, _SET_SIZE_TOO_LARGE_ERROR, _SET_SIZE_TYPE_ERROR, _SUBSET_SIZE_TOO_LARGE_ERROR, _SUBSET_SIZE_TYPE_ERROR, NAME as CHOOSE
 from handlers import choose
 from test_utilities import create_filter

@@ -1,9 +1,8 @@
 import os, pytest
 from pytest import MonkeyPatch
-from core import ExpectedError, Filter
+from core import ExpectedError, Filter, RULE_START, SHOW
 from handlers import import_
 from handlers.import_ import _BLOCK_NAME, _BLOCK_NAME_ERROR_TEXT, _BLOCK_NOT_FOUND_ERROR, _CIRCULAR_REFERENCE_ERROR, _EMPTY_PARAMETER_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _FILTER_EXTENSION, _INCORRECT_RULE_FORMAT_ERROR, _LINE_PATTERN_NOT_FOUND_ERROR, _LINE_PATTERN_ERROR_TEXT, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, _SPLITTER, NAME as IMPORT
-from core.constants import RULE_START, SHOW
 from test_utilities import create_filter, FunctionMock
 
 _TARGET_BLOCK_NAME = "block_name"

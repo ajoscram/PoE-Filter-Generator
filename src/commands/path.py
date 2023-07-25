@@ -41,8 +41,6 @@ def _get_env_paths():
 
 def _is_path_in_env_paths(path: str, env_paths: list[str]):
     env_paths = [ os.path.abspath(env_path) for env_path in env_paths ]
-    print("path: ", path)
-    print("env_paths: ", env_paths)
     return path in env_paths
 
 def _set_env_paths(paths: list[str]):

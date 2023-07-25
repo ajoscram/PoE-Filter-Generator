@@ -1,7 +1,6 @@
 import re
 from enum import Enum
-from core import Block, Line, ExpectedError
-from core.constants import RULE_SEPARATOR
+from core import Block, Line, ExpectedError, RULE_SEPARATOR
 
 NAME = "if"
 _IF_RULE_PATTERN = f"\\{RULE_SEPARATOR}{NAME}[^\\{RULE_SEPARATOR}]*"

@@ -1,4 +1,11 @@
 # 1.4.0
+* Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).
+* Added the `:generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did previously. More information can be found on the [`:generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:generate).
+* Added the `:help` command, which provides information for a term found within the PFG wiki (commands, handlers, blocks, rules, etc). More information can be found on the [`:help` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:help).
+* Added the `:path` command, which adds the tool's current path to the user's Windows PATH environment variable. More information can be found on the [`:path` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:path).
+* Added the `:update` command, which updates the tool to the most recent version available. More information can be found on the [`:update` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:update).
+* Revamped the visuals of the tool with different colors to provide context to messages shown on the console.
+* Implemented a system to show contextual usage hints for a user when an error happens.
 
 # 1.3.0
 * `.econ` now supports uniques. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).

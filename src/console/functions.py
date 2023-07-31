@@ -5,7 +5,7 @@ from rich.markdown import Markdown
 
 _DONE_MESSAGE = "[green]Done![/]"
 _EXPECTED_ERROR_TEMPLATE = "[red]ERROR[/]: {0}"
-_HINT_MESSAGE = "Run [cyan]pfg -help {0}[/] or visit {1} for more information."
+_HINT_MESSAGE = "Run [cyan]pfg " + COMMAND_START + "help {0}[/] or visit {1} for more information."
 _UNKNOWN_ERROR_MESSAGE = """[red]UNKNOWN ERROR[/]: Oopsie, my bad.
 
 If your're reading this then an unforseen error has ocurred.
@@ -15,12 +15,12 @@ https://github.com/ajoscram/PoE-Filter-Generator/issues/new
 
 With the following text (or a screenshot of it):"""
 
+_WIKI_PAGE_URL = "https://github.com/ajoscram/PoE-Filter-Generator/wiki/{0}"
+_FILENAME_REGEX = r"\\([^\.]+)\.py"
 _HANDLERS_FOLDER_NAME = "handlers"
 _COMMANDS_FOLDER_NAME = "commands"
-_FILENAME_REGEX = r"\\([^\.]+)\.py"
 _HANDLER_FILENAME_REGEX = _HANDLERS_FOLDER_NAME + _FILENAME_REGEX
 _COMMAND_FILENAME_REGEX = _COMMANDS_FOLDER_NAME + _FILENAME_REGEX
-_WIKI_PAGE_URL = "https://github.com/ajoscram/PoE-Filter-Generator/wiki/{0}"
 
 _CONSOLE = Console()
 
@@ -36,9 +36,11 @@ def write(*values, markdown: bool = False, done: bool = False):
     _CONSOLE.print(*values, end="\n\n")
 
 def err(exception: Exception):
-    """Prints the `exception` passed in.
-    If `exception` is NOT an `ExpectedError` then a preamble is printed
+    """Writes the `exception` passed in to the console.
+    - If `exception` is NOT an `ExpectedError` then a preamble is written
     alongside the `exception`'s traceback and message.
+    - If the `exception` is an `ExpectedError` then it is written alongside a
+    help hint.
     """
     if not isinstance(exception, ExpectedError):
         write(_UNKNOWN_ERROR_MESSAGE)
@@ -60,16 +62,13 @@ def _get_hint_term(error: ExpectedError):
     reversed_traceback = reversed(traceback.extract_tb(error.__traceback__))
     filepath_trace = [ trace.filename for trace in reversed_traceback ]
     for filepath in filepath_trace:
-        handler_filename = _try_get_filename(filepath, _HANDLER_FILENAME_REGEX)
-        if handler_filename != None:
+        if handler_filename := _try_get_filename(filepath, _HANDLER_FILENAME_REGEX):
             return HANDLER_START + handler_filename
-        command_filename = _try_get_filename(filepath, _COMMAND_FILENAME_REGEX)
-        if command_filename != None:
+        if command_filename := _try_get_filename(filepath, _COMMAND_FILENAME_REGEX):
             return COMMAND_START + command_filename
     return _DEFAULT_HINT_TERM
 
 def _try_get_filename(filepath: str, pattern: str):
-    match = re.search(pattern, filepath)
-    if match == None:
-        return None
-    return match.groups()[0]
+    if match := re.search(pattern, filepath):
+        return match.groups()[0]
+    return None

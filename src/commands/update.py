@@ -21,7 +21,8 @@ _GETTING_RELEASE_MESSAGE = "Getting the latest release information..."
 _RELEASE_NOTES_PREFIX = "# Release notes\n"
 
 def execute(curr_dir: str, _):
-    
+    """Downloads and executes the updater found on the latest release.
+    The updater is a separate program whose entry point can be found on `src/update.py`."""
     console.write(_GETTING_RELEASE_MESSAGE)
     release = web.get(_LATEST_RELEASE_URL)
 

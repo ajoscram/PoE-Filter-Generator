@@ -43,11 +43,10 @@ class _Params:
 
 def handle(_, block: Block, options: list[str]):
     """Handles creation of economy adjusted filters.
-    Hardcore standard is not supported because poe.ninja doesn't support it.
     Options:
-        - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead
-        - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead
-        - if `rth` is passed then ruthless leagues will be queried"""
+    - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead
+    - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead
+    - if `rth` is passed then ruthless leagues will be queried"""
     rules = block.get_rules(NAME)
     if len(rules) > 0:
         league_name = _get_league_name(options)

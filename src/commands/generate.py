@@ -28,6 +28,13 @@ class _Params:
         self.invocations = invocations
 
 def execute(_, args: list[str]):
+    """Applies handlers to .filter files and writes the output to a new file.
+    Arguments, listed in the order expected:
+    - the path to the .filter file expected as input.
+    - the path where the output should be placed. If none, then the input filepath is used instead.
+    - a list of handlers with their respective options (i.e. `.handler1 option1 option2 .handler2 option3 ...`).
+        These handlers will be applied to the input filter in regular reading order.
+    """
     params = _create_params(args)
     
     console.write(_READING_FILTER_MESSAGE.format(params.input_filepath))

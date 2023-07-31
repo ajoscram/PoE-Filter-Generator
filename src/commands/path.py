@@ -22,6 +22,8 @@ _COMMAND_EXECUTION_ERROR = """An error occurred while executing a PowerShell com
 """
 
 def execute(curr_dir: str, _):
+    """Adds the path where the current script / executable is placed to the system's environment variables.
+    Only available on Windows."""
     if os.name != _WINDOWS_OS_NAME:
         raise ExpectedError(_NOT_ON_WINDOWS_ERROR)
 

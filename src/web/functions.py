@@ -39,9 +39,9 @@ def get(url: str, json: bool = True, custom_http_errors: dict[int, str] = {}):
 
 def download(url: str, directory: str, filename: str, custom_http_errors: dict[int, str] = {}):
     """Downloads a file and places it in `directory` with the `filename` passed in.
+    - This operation overwrites if there's a previous file with the same name.
     - If it fails with an HTTP error and its code is a key in the `custom_http_errors` dictionary,
-    the custom error message is displayed instead.
-    - NOTE: This operation overwrites if there's a previous file with the same name."""
+    the custom error message is displayed instead."""
     if not os.path.isdir(directory):
         raise ExpectedError(_UNEXISTENT_DIRECTORY_ERROR.format(directory))
     temp_filepath = os.path.join(directory, _TEMP_DOWNLOAD_PREFIX + filename)

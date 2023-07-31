@@ -1,5 +1,4 @@
 # Backlog
-* Add documentation for the new command functions and usage article.
 
 # Ideas
 * Find a way in the wiki to change the `_FILTER_TO_ID_CLASSES_DICT` dictionary values from `translate.py` into a Wiki API call.

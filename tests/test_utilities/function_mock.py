@@ -1,8 +1,10 @@
-import builtins, inspect, importlib, pathlib, os, sys, traceback, subprocess
+import builtins, inspect, importlib, pathlib, os, sys, traceback, subprocess, random
 from typing import Callable
 from pytest import MonkeyPatch
 
+_PATH_FUNCTION_PREFIX = "_path_"
 _KNOWN_MODULES = {
+    "_io": builtins,
     "io": builtins,
     "builtins": builtins,
     "ntpath": os.path,
@@ -11,7 +13,8 @@ _KNOWN_MODULES = {
     "nt": os,
     "sys": sys,
     "traceback": traceback,
-    "subprocess": subprocess
+    "subprocess": subprocess,
+    "random": random,
 }
 
 class _Invocation:
@@ -20,21 +23,23 @@ class _Invocation:
         self.kwargs_received = kwargs
 
 class FunctionMock:
-    """This class monkeypatches a function and collects information how it is used."""
+    """This class monkeypatches a function and collects information on how it is used."""
 
-    def __init__(self, monkeypatch: MonkeyPatch, function_to_mock: Callable, result = None, target = None):
+    def __init__(self, monkeypatch: MonkeyPatch,function_to_mock: Callable, result = None, target = None):
         """The `result` parameter represents the function resolution.
         It behaves differently depending on the type of the value passed:
         * `Exception`s are raised.
+        * `Generator`s and `GeneratorFunction`s yield expectedly.
         * `function`s are invoked with the parameters received passed to them when the mock is invoked.
         * Anything else is returned from the function as a value.
         
         The `target` parameter allows direct setting of the mock target.
         If not provided, the module's package module is looked for instead."""
-        self.result = result
+        self.result = result() if inspect.isgeneratorfunction(result) else result
         self._invocations: list[_Invocation] = []
-        self._function_name = function_to_mock.__name__
-        target = target or _find_package_module(function_to_mock)
+        target = target or _get_target_module(function_to_mock)
+        self._function_name = function_to_mock.__name__.removeprefix(_PATH_FUNCTION_PREFIX) \
+            if target == os.path else function_to_mock.__name__
         monkeypatch.setattr(target, self._function_name, self._mock_function)
     
     def received(self, *args, **kwargs):
@@ -61,6 +66,8 @@ class FunctionMock:
 
     def _mock_function(self, *args, **kwargs):
         self._invocations += [ _Invocation(*args, **kwargs) ]
+        if inspect.isgenerator(self.result):
+            return next(self.result)
         if _is_exception(self.result):
             raise self.result
         if callable(self.result):
@@ -103,9 +110,9 @@ class FunctionMock:
         
         return True
 
-def _find_package_module(function_to_mock: Callable):
-    if function_to_mock.__module__ in _KNOWN_MODULES:
-        return _KNOWN_MODULES[function_to_mock.__module__]    
+def _get_target_module(function_to_mock: Callable):
+    if module := _try_get_known_module(function_to_mock):
+        return module
     try:
         module = inspect.getmodule(function_to_mock)
         module_path = inspect.getabsfile(module)
@@ -114,6 +121,16 @@ def _find_package_module(function_to_mock: Callable):
     except (ModuleNotFoundError, TypeError):
         raise ModuleNotFoundError(
             f"Could not import '{module.__name__}'. Add it to _KNOWN_MODULES pointing the correct module.")
+
+def _try_get_known_module(function_to_mock: Callable):
+    if function_to_mock.__module__ not in _KNOWN_MODULES:
+        return None
+    
+    module = _KNOWN_MODULES[function_to_mock.__module__]
+    if module == os and function_to_mock.__name__.startswith(_PATH_FUNCTION_PREFIX):
+        return os.path
+
+    return module
 
 def _is_exception(value):
     is_subclass = inspect.isclass(value) and issubclass(value, Exception)

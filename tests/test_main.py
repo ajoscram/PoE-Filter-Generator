@@ -8,22 +8,13 @@ from main import _COMMAND_NOT_FOUND_ERROR, _NO_ARGS_ERROR
 class _CommandMock:
     def __init__(self, name: str):
         self.name = name
-        self.curr_dir_received = None
         self.args_received = None
         self.exception: Exception = None
     
-    def execute(self, curr_dir: str, args: list[str]):
-        self.curr_dir_received = curr_dir
+    def execute(self, args: list[str]):
         self.args_received = args
         if self.exception != None:
             raise self.exception
-
-@pytest.fixture(autouse=True)
-def curr_dir(monkeypatch: MonkeyPatch):
-    CURR_DIR = "curr_dir"
-    _ = FunctionMock(monkeypatch, os.path.abspath, lambda x: x)
-    _ = FunctionMock(monkeypatch, os.path.dirname, CURR_DIR)
-    return CURR_DIR
 
 @pytest.fixture()
 def command_mock(monkeypatch: MonkeyPatch):
@@ -34,14 +25,13 @@ def console_err_mock(monkeypatch: MonkeyPatch):
     return FunctionMock(monkeypatch, console.err)
 
 def test_main_given_a_command_name_should_execute_the_command(
-    monkeypatch: MonkeyPatch, command_mock: _CommandMock, curr_dir: str):
+    monkeypatch: MonkeyPatch, command_mock: _CommandMock):
     
     ARGS = [ "some", "args" ]
     _mock_argv(monkeypatch, ARGS, command_mock)
 
     main.main()
 
-    assert command_mock.curr_dir_received == curr_dir
     assert command_mock.args_received == ARGS
 
 def test_main_given_no_command_name_should_use_default_instead(monkeypatch: MonkeyPatch):

@@ -3,8 +3,8 @@ GET https://api.pathofexile.com/leagues?type=main&realm=pc
 User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/
 
 ### - PoE Ninja queries
-@league = Sanctum
-@item_type = UniqueFlask
+@league = Ancestor
+@item_type = Omen
 @currency_type = Currency
 
 ### Currency or Frags

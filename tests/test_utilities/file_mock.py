@@ -22,6 +22,9 @@ class FileMock:
     def readlines(self):
         return self.lines
     
+    def read(self):
+        return "".join(self.lines)
+    
     def write(self, value):
         self._written_values += [ value ]
     

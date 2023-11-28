@@ -19,7 +19,7 @@ def test_execute_given_a_term_should_write_as_markdown(
     
     TERM = "Term"
 
-    help.execute(None, [ TERM ])
+    help.execute([ TERM ])
 
     text_written = console_write_mock.get_arg(str)
     assert TERM in text_written
@@ -28,7 +28,7 @@ def test_execute_given_a_term_should_write_as_markdown(
     assert console_write_mock.received(markdown=True)
 
 def test_execute_given_no_parameters_should_default_to_the_usage_page(web_get_mock: FunctionMock):
-    help.execute(None, [])
+    help.execute([])
 
     assert web_get_mock.received(_API_URL.format(DEFAULT_WIKI_PAGE_NAME))
 
@@ -36,6 +36,6 @@ def test_execute_given_more_than_1_argument_should_raise():
     TERMS = [ "1", "2" ]
 
     with pytest.raises(ExpectedError) as error:
-        help.execute(None, TERMS)
+        help.execute(TERMS)
 
     assert error.value.message == _TOO_MANY_ARGS_ERROR.format(len(TERMS))

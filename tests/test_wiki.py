@@ -1,6 +1,6 @@
 import wiki, pytest, web
 from pytest import MonkeyPatch
-from wiki.class_id_for_base_type import _CLASS_FOR_BASE_TYPE_NOT_FOUND_ERROR
+from wiki.functions import _CLASS_FOR_BASE_TYPE_NOT_FOUND_ERROR
 from wiki.constants import Field
 from wiki.wiki_error import WikiError
 from test_utilities import FunctionMock

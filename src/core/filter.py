@@ -8,13 +8,14 @@ _FILE_NOT_FOUND_ERROR = "The input file was not found"
 _PERMISSION_ERROR = "You don't have permission to read or write on this directory or file"
 
 class Filter:
-    """The filter class is a representation of a .filter file."""
+    """The Filter class is a representation of a .filter file."""
     def __init__(self, filepath: str, blocks: list[Block]):
         self.filepath: str = filepath
         self.blocks: list[Block] = blocks
 
     @classmethod
     def load(cls, filepath: str):
+        """Creates a new Filter objects from a `.filter` file."""
         blocks = _get_blocks(filepath)
         return Filter(filepath, blocks)
 

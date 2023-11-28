@@ -16,6 +16,7 @@ _LEAGUES = [
 @pytest.mark.parametrize("standard, hardcore, ruthless, league_index", _LEAGUES)
 def test_get_league_name_given_league_flags_should_return_the_correct_league(
     monkeypatch: MonkeyPatch, standard: bool, hardcore: bool, ruthless: bool, league_index: _LeagueIndex):
+    
     LEAGUE_NAME = "league name"
     QUERY_RESULT = { league_index.value : { _LEAGUE_ID_FIELD : LEAGUE_NAME } }
     get_mock = FunctionMock(monkeypatch, web.get, QUERY_RESULT)

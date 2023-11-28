@@ -1,4 +1,4 @@
-import os, subprocess, console
+import os, subprocess, console, utils
 from core import ExpectedError
 
 NAME = "path"
@@ -21,13 +21,14 @@ _COMMAND_EXECUTION_ERROR = """An error occurred while executing a PowerShell com
 \tstdout: {3}
 """
 
-def execute(curr_dir: str, _):
+def execute(_):
     """Adds the path where the current script / executable is placed to the system's environment variables.
     Only available on Windows."""
     if os.name != _WINDOWS_OS_NAME:
         raise ExpectedError(_NOT_ON_WINDOWS_ERROR)
-
+    
     paths = _get_env_paths()
+    curr_dir = utils.get_execution_dir()
     if _is_path_in_env_paths(curr_dir, paths):
         return console.write(_PATH_ALREADY_SET_MESSAGE)
 

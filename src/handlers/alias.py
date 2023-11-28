@@ -1,12 +1,9 @@
-import re, string, random
+import re, utils
 from core import Block, Filter, Rule, ExpectedError, RULE_SEPARATOR
 
 NAME = "alias"
 _ALIAS_SEPARATOR = "="
 _ALIAS_RULE_PATTERN = f"\\{RULE_SEPARATOR}{NAME}[^\\{RULE_SEPARATOR}]*"
-
-_TEMP_ALIAS_LENGTH = 20
-_TEMP_ALIAS_CHARSET = string.ascii_letters + string.digits
 
 _INCORRECT_RULE_FORMAT_ERROR = "The alias '{0}' is formatted incorrectly. Make sure it looks like this:\n\n\talias_name = replacement text"
 
@@ -17,7 +14,7 @@ _ALIAS_NAME_ERROR_DESCRIPTOR = "name"
 _DUPLICATE_ALIAS_NAME_ERROR = "The alias name '{0}' was already declared on line {1}."
 _CONTAINED_ALIAS_NAME_ERROR = "The alias name '{0}' {1} the alias name '{2}' which is declared on line {3}."
 _IS_CONTAINED_BY_ERROR_DESCRIPTOR = "is contained by"
-_CONTAINS = "contains"
+_CONTAINS_ERROR_DESCRIPTOR = "contains"
 
 class _Alias:
     def __init__(self, name: str, replacement: str, source_rule: Rule):
@@ -72,7 +69,7 @@ def _get_alias_from_rule(rule: Rule, aliases: list[_Alias]):
             raise ExpectedError(error, rule.line_number)
         if alias.name in name:
             error = _CONTAINED_ALIAS_NAME_ERROR.format(
-                name, _CONTAINS, alias.name, alias.source_rule.line_number)
+                name, _CONTAINS_ERROR_DESCRIPTOR, alias.name, alias.source_rule.line_number)
             raise ExpectedError(error, rule.line_number)
 
     return _Alias(name, replacement, rule)
@@ -96,7 +93,7 @@ def _get_temp_aliases(raw_line: str):
     temp_aliases: dict[str, str] = {}
     
     for raw_rule in raw_rules:
-        temp_alias = "".join(random.choices(_TEMP_ALIAS_CHARSET, k=_TEMP_ALIAS_LENGTH))
+        temp_alias = utils.get_random_str()
         temp_aliases[temp_alias] = raw_rule
     
     return temp_aliases

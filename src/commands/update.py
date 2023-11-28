@@ -1,4 +1,4 @@
-import web, console, os, json
+import web, console, os, json, utils
 from core import ExpectedError
 
 NAME = "update"
@@ -20,12 +20,13 @@ _EXECUTING_UPDATER_MESSAGE = "Executing the latest version's updater..."
 _GETTING_RELEASE_MESSAGE = "Getting the latest release information..."
 _RELEASE_NOTES_PREFIX = "# Release notes\n"
 
-def execute(curr_dir: str, _):
+def execute(_):
     """Downloads and executes the updater found on the latest release.
     The updater is a separate program whose entry point can be found on `src/update.py`."""
     console.write(_GETTING_RELEASE_MESSAGE)
     release = web.get(_LATEST_RELEASE_URL)
 
+    curr_dir = utils.get_execution_dir()
     updater_download_url = _get_download_url(_UPDATER_EXE_NAME, release)
     updater_params = _get_serialized_updater_params(release, curr_dir)
     updater_filepath = os.path.join(curr_dir, _UPDATER_EXE_NAME)

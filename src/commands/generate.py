@@ -27,7 +27,7 @@ class _Params:
         self.output_filepath = output_filepath
         self.invocations = invocations
 
-def execute(_, args: list[str]):
+def execute(args: list[str]):
     """Applies handlers to .filter files and writes the output to a new file.
     Arguments, listed in the order expected:
     - the path to the .filter file expected as input.

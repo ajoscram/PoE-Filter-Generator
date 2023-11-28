@@ -2,8 +2,10 @@ import os, requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 from core import ExpectedError
 from io import BufferedWriter
+from .cache_entry import Expiration
+from . import cache
 
-_HEADERS = { 'User-Agent': "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/" }
+_HEADERS = { "User-Agent": "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/" }
 _DOWNLOAD_CHUNK_SIZE = 1024 * 8 # eight megabytes
 _TEMP_DOWNLOAD_PREFIX = "temp_"
 
@@ -23,19 +25,19 @@ One of the following things is likely happening here:
 - The server where data is being requested from is currently down."""
 _UNEXISTENT_DIRECTORY_ERROR = "'{0}' does not correspond to an existing directory on this computer."
 
-_get_cache: dict[str, dict | str] = {}
-
-def get(url: str, json: bool = True, custom_http_errors: dict[int, str] = {}):
+def get(url: str, json: bool = True, expiration: Expiration = Expiration.MONTHLY, custom_http_errors: dict[int, str] = {}):
     """Performs a `get` request on the `url` passed in.
     - If successful and `json=True`, the `json` object obtained from the request is returned.
     - If successful and `json=False`, the request's body is returned as a string.
+    - `expiration` determines the amount of time before deleting the object's from the cache.
     - If it fails with an HTTP error and its code is a key in the `custom_http_errors` dictionary,
     the custom error message is displayed instead."""
-    global _get_cache
-    if url not in _get_cache:
+    data = cache.try_get(url)
+    if data == None:
         response = _get_response(url, custom_http_errors)
-        _get_cache[url] = response.json() if json else response.text
-    return _get_cache[url]
+        data = response.json() if json else response.text
+        cache.add(url, expiration, json, data)
+    return data
 
 def download(url: str, directory: str, filename: str, custom_http_errors: dict[int, str] = {}):
     """Downloads a file and places it in `directory` with the `filename` passed in.

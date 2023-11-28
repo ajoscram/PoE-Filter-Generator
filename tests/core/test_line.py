@@ -15,6 +15,7 @@ def test_constructor_given_text_has_linebreak_should_raise():
 
 _LINE_PARTS = [
     ("    ", CLASS, "", "", ""),
+    ("    ", CLASS, "", "\"\"", ""),
     ("    ", CLASS, "==", "", ""),
     ("    ", CLASS, "==", '"Body Armours"', ""),
     ("    ", CLASS, "==2", '"Body Armours"', ""),

@@ -26,6 +26,8 @@ class MiscItemType(Enum):
     INVITATION = "Invitation"
     VIAL = "Vial"
     DELIRIUM_ORB = "DeliriumOrb"
+    TATTOO = "Tattoo"
+    OMEN = "Omen"
 
 class UniqueFilter:
     classes: list[str] = None

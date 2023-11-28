@@ -1,3 +1,9 @@
+# 1.4.1
+* Moved to Python 3.12.
+* Added **Omens** and **Tattoos** to `.econ`.
+* Fixed a bug where empty strings (`""`) could not count as admissible values in filter lines.
+* Added a caching system to significantly improve performance for web requests.
+
 # 1.4.0
 * Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).
 * Added the `:generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did previously. More information can be found on the [`:generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:generate).

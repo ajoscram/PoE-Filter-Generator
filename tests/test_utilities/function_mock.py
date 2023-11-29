@@ -35,7 +35,7 @@ class FunctionMock:
         
         The `target` parameter allows direct setting of the mock target.
         If not provided, the module's package module is looked for instead."""
-        self.result = result() if inspect.isgeneratorfunction(result) else result
+        self.result = result
         self._invocations: list[_Invocation] = []
         target = target or _get_target_module(function_to_mock)
         self._function_name = function_to_mock.__name__.removeprefix(_PATH_FUNCTION_PREFIX) \
@@ -66,6 +66,8 @@ class FunctionMock:
 
     def _mock_function(self, *args, **kwargs):
         self._invocations += [ _Invocation(*args, **kwargs) ]
+        if inspect.isgeneratorfunction(self.result):
+            self.result = self.result(*args, **kwargs)
         if inspect.isgenerator(self.result):
             return next(self.result)
         if _is_exception(self.result):

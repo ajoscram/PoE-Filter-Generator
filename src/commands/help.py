@@ -26,8 +26,11 @@ def _get_search_term(args: list[str]):
     return args[0].lower().capitalize()
 
 def _get_text(term: str):
-    custom_errors = { _HTTP_NOT_FOUND_CODE: _NOT_FOUND_ERROR.format(term) }
-    markdown_text = web.get(_API_URL.format(term), json=False, custom_http_errors=custom_errors)
+    markdown_text = web.get(
+        _API_URL.format(term),
+        json=False,
+        expiration=web.Expiration.DAILY,
+        custom_http_errors={ _HTTP_NOT_FOUND_CODE: _NOT_FOUND_ERROR.format(term) })
     return _format_markdown(markdown_text, term)
     
 def _format_markdown(text: str, header: str):

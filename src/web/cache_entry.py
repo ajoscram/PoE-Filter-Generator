@@ -9,9 +9,9 @@ _FILENAME_FIELD = "filename"
 _EXPIRATION_DATE_FIELD = "expiration_date"
 
 class Expiration(Enum):
+    IMMEDIATE = timedelta(seconds=0)
     DAILY = timedelta(days=1)
     WEEKLY = timedelta(weeks=1)
-    MONTHLY = timedelta(weeks=4)
 
 class CacheEntry:
     def __init__(self, url: str, is_json: bool, expiration_date: datetime, filename: str):
@@ -44,7 +44,7 @@ class CacheEntry:
         return entry
     
     def is_stale(self):
-        return datetime.now() > self.expiration_date
+        return datetime.now() >= self.expiration_date
 
 def _get_filename(is_json: bool):
     name = utils.get_random_str()

@@ -1,7 +1,7 @@
 import pytest, ggg, web
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock
-from ggg.league import _LEAGUES_URL, _LEAGUE_ID_FIELD, _LeagueIndex
+from ggg.functions import _LEAGUES_URL, _LEAGUE_ID_FIELD, _LeagueIndex
 
 _LEAGUES = [
     (True, False, False, _LeagueIndex.STANDARD),
@@ -23,5 +23,5 @@ def test_get_league_name_given_league_flags_should_return_the_correct_league(
 
     league_name = ggg.get_league_name(standard, hardcore, ruthless)
 
-    assert get_mock.received(_LEAGUES_URL)
+    assert get_mock.received(_LEAGUES_URL, expiration=web.Expiration.DAILY)
     assert league_name == LEAGUE_NAME

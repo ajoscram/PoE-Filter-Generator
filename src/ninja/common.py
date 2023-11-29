@@ -9,5 +9,5 @@ def is_value_within_range(value: float, lower: float, upper: float = None):
 
 def get_records(url: str):
     """Returns poe.ninja item records from the `url` passed in."""
-    response = web.get(url)
+    response = web.get(url, expiration=web.Expiration.DAILY)
     return response[_RESPONSE_DATA_LOCATION]

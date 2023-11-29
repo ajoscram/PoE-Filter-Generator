@@ -19,7 +19,9 @@ def test_get_currency_base_types_given_a_valid_record_was_found_should_return_it
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_CURRENCY_BASE_TYPE_FIELD]
-    assert get_mock.received(CURRENCY_URL.format(_LEAGUE_NAME, _CURRENCY_TYPE.value))
+    assert get_mock.received(
+        CURRENCY_URL.format(_LEAGUE_NAME, _CURRENCY_TYPE.value),
+        expiration=web.Expiration.DAILY)
 
 def test_get_currency_base_types_given_invalid_fragment_base_type_was_found_should_not_return_it(
     monkeypatch: MonkeyPatch):
@@ -39,7 +41,9 @@ def test_get_misc_base_types_given_a_valid_record_was_found_should_return_it(mon
 
     assert len(base_types) == 1
     assert base_types[0] == EXPECTED[_ITEM_NAME_FIELD]
-    assert get_mock.received(_ITEM_URL.format(_LEAGUE_NAME, _ITEM_TYPE.value))
+    assert get_mock.received(
+        _ITEM_URL.format(_LEAGUE_NAME, _ITEM_TYPE.value),
+        expiration=web.Expiration.DAILY)
 
 def test_get_unique_base_types_given_an_empty_unique_filter_should_return_a_valid_record(monkeypatch: MonkeyPatch):
     REQUEST_RESULT, EXPECTED = _get_ninja_response(_ITEM_BASE_TYPE_FIELD, _ITEM_VALUE_FIELD)

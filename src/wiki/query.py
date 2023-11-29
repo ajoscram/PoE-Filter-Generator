@@ -68,8 +68,8 @@ class Query:
 
     def run(self):
         """Executes the query and returns a list with the results."""
-        records = web.get(self._get_query_string())
-        return [ _remove_whitespace_in_keys(record) for record in records ]
+        records = web.get(self._get_query_string(), expiration=web.Expiration.WEEKLY)
+        return [ _get_record_with_whitespace_in_keys_removed(record) for record in records ]
     
     def _get_query_string(self):
         tables = COMMA.join([ table.value for table in self._tables ])
@@ -77,8 +77,6 @@ class Query:
         where = str(self._where) if self._where != None else ""
         return _PHP_URL.format(tables, fields, where, self._group_by.value, str(self._order_by), self._join_on.value, str(self._limit))
     
-def _remove_whitespace_in_keys(dictionary: dict[str]):
-    new_dictionary = {}
-    for key in dictionary:
-        new_dictionary[key.replace(" ", "_")] = dictionary[key]
-    return new_dictionary
+def _get_record_with_whitespace_in_keys_removed(dictionary: dict[str]):
+    return { key.replace(" ", "_"): value
+        for key, value in dictionary.items() }

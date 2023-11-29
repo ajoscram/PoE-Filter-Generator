@@ -29,7 +29,7 @@ class CacheEntry:
     @classmethod
     def from_dict(cls, raw_entry: dict[str, str]):
         url: str = raw_entry[_URL_FIELD]
-        is_json: bool = bool(raw_entry[_IS_JSON_FIELD])
+        is_json: bool = raw_entry[_IS_JSON_FIELD]
         filename: str = raw_entry[_FILENAME_FIELD]
         expiration_date: datetime = datetime.strptime(raw_entry[_EXPIRATION_DATE_FIELD], _EXPIRATION_FORMAT)
         return CacheEntry(url, is_json, expiration_date, filename)
@@ -37,7 +37,7 @@ class CacheEntry:
     def to_dict(self):
         entry = {
             _URL_FIELD: self.url,
-            _IS_JSON_FIELD: str(self.is_json),
+            _IS_JSON_FIELD: self.is_json,
             _FILENAME_FIELD: self.filename,
             _EXPIRATION_DATE_FIELD: self.expiration_date.strftime(_EXPIRATION_FORMAT)
         }

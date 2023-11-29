@@ -11,5 +11,7 @@ def get_execution_dir(*subdirs_to_append: str):
     """Gets the directory where this script or executable is.
     This is different from the current process directory, which is obtained from `os.get_cwd()`.
     Additional subdirectories can be appended to the resulting directory."""
-    execution_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+    is_exe = getattr(sys, 'frozen', False)
+    execution_path = sys.executable if is_exe else sys.argv[0]
+    execution_dir = os.path.abspath(os.path.dirname(execution_path))
     return os.path.join(execution_dir, *subdirs_to_append)

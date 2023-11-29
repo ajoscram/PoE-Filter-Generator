@@ -2,6 +2,7 @@
 
 * Implement disk-caching for HTTP requests.
     - use expiration on requests in the code and add tests for it, then commit
+        Make sure that non-json requests are marked as such, definitely bugged
     - add a clean command which deletes the cache, then commit
         update must clean up the cache to avoid stale cache structure
         remember to add logging indicating where the cache was created

@@ -1,4 +1,4 @@
-import os, sys, console
+import sys, console
 from core import ExpectedError, COMMAND_START
 from commands import DEFAULT_COMMAND_NAME, COMMANDS
 

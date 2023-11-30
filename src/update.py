@@ -10,6 +10,10 @@ https://github.com/ajoscram/PoE-Filter-Generator/releases/latest
 
 Sorry for the hassle!"""
 
+DOWNLOADING_EXE_MESSAGE = "Downloading the latest version's executable. This might take a while..."
+DELETING_CACHE_MESSAGE = "Deleting the previous version's cache..."
+SUCCESSFUL_UPDATE_MESSAGE = "Successfully updated to version {0}."
+
 def main():
     try:
         if len(sys.argv) != 2:
@@ -21,10 +25,13 @@ def main():
         tag = _get_param(TAG_FIELD, params)
         notes = _get_param(NOTES_FIELD, params)
 
-        console.write("Downloading the latest version's executable. This might take a while...")
+        console.write(DOWNLOADING_EXE_MESSAGE)
         web.download(download_url, exe_dir, EXE_NAME)
+
+        console.write(DELETING_CACHE_MESSAGE)
+        web.clear_cache()
         
-        console.write("Successfully updated to version {0}.".format(tag), done=True)
+        console.write(SUCCESSFUL_UPDATE_MESSAGE.format(tag), done=True)
         console.write(notes, markdown=True)
     
     except Exception as error:

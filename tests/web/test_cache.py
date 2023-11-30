@@ -1,10 +1,10 @@
-import pytest, os, json
+import pytest, os, json, shutil
 from datetime import datetime
 from web import cache, Expiration
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock, FileMock
 from web.cache_entry import _EXPIRATION_DATE_FIELD, _EXPIRATION_FORMAT, _URL_FIELD, _IS_JSON_FIELD, _FILENAME_FIELD
-from web.cache import _ENTRIES_FILEPATH
+from web.cache import _ENTRIES_FILEPATH, _DIR
 
 _JSON_DATA = { "some": "data" }
 _TEXT_DATA = "some text"
@@ -84,7 +84,19 @@ def test_add_given_text_data_should_save_it_with_its_entry(monkeypatch: MonkeyPa
 
     assert json_dump_mock.get_invocation_count() == 1
     assert file_mock.got_written(_TEXT_DATA)
-        
+
+
+@pytest.mark.parametrize("cache_exists", [ True, False ])
+def test_clear_cache_should_delete_the_cache_folder_and_return_if_it_did(monkeypatch: MonkeyPatch, cache_exists: bool):
+    path_isdir_mock = FunctionMock(monkeypatch, os.path.isdir, cache_exists)
+    shutil_rmtree_mock = FunctionMock(monkeypatch, shutil.rmtree)
+
+    result = cache.clear_cache()
+
+    assert result == cache_exists
+    assert path_isdir_mock.received(_DIR)
+    assert shutil_rmtree_mock.get_invocation_count() == (1 if cache_exists else 0)
+
 
 def _create_entry(expiration_date: datetime | str = datetime.max, is_json: bool = True):
     return {

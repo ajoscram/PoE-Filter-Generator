@@ -1,4 +1,4 @@
-import os, json, utils
+import os, json, utils, shutil
 from .cache_entry import CacheEntry, Expiration
 
 _DIR = utils.get_execution_dir("cache")
@@ -9,9 +9,7 @@ _entries: dict[str, CacheEntry] = None
 def try_get(url: str):
     """Attempts to get an item previously added to the cache via it's `url`."""
     global _entries
-    
-    if _entries == None:
-        _entries = _get_entries()
+    _entries = _entries or _get_entries()
     
     if not url in _entries:
         return None
@@ -36,9 +34,7 @@ def add(url: str, expiration: Expiration, is_json: bool, data):
     * `is_json` determines if the item should be stored and returned as a dictionary.
     If not, the cache will save and return the item as a string."""
     global _entries
-
-    if _entries == None:
-        _entries = _get_entries()
+    _entries = _entries or _get_entries()
     
     entry = CacheEntry.create(url, is_json, expiration)
     filepath = os.path.join(_DIR, entry.filename)
@@ -46,7 +42,16 @@ def add(url: str, expiration: Expiration, is_json: bool, data):
     _entries[url] = entry
     _save_entries(_entries)
     _save_file(filepath, data, is_json)
-   
+
+def clear_cache():
+    """Removes all cache files and entries from disk.
+    Returns `True` is the cache is found. `False` otherwise."""
+    if not os.path.isdir(_DIR):
+        return False
+    
+    shutil.rmtree(_DIR)
+    return True
+
 def _get_entries():
     if not os.path.isfile(_ENTRIES_FILEPATH):
         return {}

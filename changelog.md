@@ -3,6 +3,7 @@
 * Added **Omens** and **Tattoos** to `.econ`.
 * Fixed a bug where empty strings (`""`) could not count as admissible values in filter lines.
 * Added a caching system to significantly improve performance for web requests.
+* Added a `:clean` command which allows for manual deletion of the cache. More information can be found on the [`:clean` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:clean).
 
 # 1.4.0
 * Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).

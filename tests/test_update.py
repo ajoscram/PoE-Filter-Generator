@@ -9,10 +9,12 @@ def test_main_given_params_should_download_the_latest_update(monkeypatch: Monkey
     PARAMS = { EXE_DOWNLOAD_URL_FIELD: "1", DIRECTORY_FIELD: "2", TAG_FIELD: "3", NOTES_FIELD: "4" }
     _mock_argv_with_params(monkeypatch, PARAMS)
     web_download_mock = FunctionMock(monkeypatch, web.download)
+    web_clear_cache_mock = FunctionMock(monkeypatch, web.clear_cache)
 
     update.main()
 
     assert web_download_mock.received(PARAMS[EXE_DOWNLOAD_URL_FIELD], EXE_NAME)
+    assert web_clear_cache_mock.get_invocation_count() == 1
 
 
 def test_main_given_incorrect_number_of_args_should_call_console_err(monkeypatch: MonkeyPatch):

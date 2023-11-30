@@ -1,4 +1,4 @@
-import builtins, inspect, importlib, pathlib, os, sys, traceback, subprocess, random
+import builtins, inspect, importlib, pathlib, os, sys, traceback, subprocess, random, shutil
 from typing import Callable
 from pytest import MonkeyPatch
 
@@ -12,9 +12,10 @@ _KNOWN_MODULES = {
     "os": os,
     "nt": os,
     "sys": sys,
+    "random": random,
     "traceback": traceback,
     "subprocess": subprocess,
-    "random": random,
+    "shutil": shutil
 }
 
 class _Invocation:
@@ -25,7 +26,7 @@ class _Invocation:
 class FunctionMock:
     """This class monkeypatches a function and collects information on how it is used."""
 
-    def __init__(self, monkeypatch: MonkeyPatch,function_to_mock: Callable, result = None, target = None):
+    def __init__(self, monkeypatch: MonkeyPatch, function_to_mock: Callable, result = None, target = None):
         """The `result` parameter represents the function resolution.
         It behaves differently depending on the type of the value passed:
         * `Exception`s are raised.
@@ -34,7 +35,10 @@ class FunctionMock:
         * Anything else is returned from the function as a value.
         
         The `target` parameter allows direct setting of the mock target.
-        If not provided, the module's package module is looked for instead."""
+        If not provided, the module's package is looked for instead.
+        
+        The `name` parameter provides an override for the function name in case of aliases.
+        If not provided, the `__name__` of the function will be used instead."""
         self.result = result
         self._invocations: list[_Invocation] = []
         target = target or _get_target_module(function_to_mock)

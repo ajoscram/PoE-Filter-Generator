@@ -1,18 +1,10 @@
 # Backlog
 
-* Implement disk-caching for HTTP requests.
-    - use expiration on requests in the code and add tests for it, then commit
-    - add a clean command which deletes the cache, then commit
-        update must clean up the cache to avoid stale cache structure
-        remember to add logging indicating where the cache was created
-    - consider re-adding mem-caching
-
+* Add a wiki page for the `:clean` command.
 * Find a way in the wiki to change the `_FILTER_TO_ID_CLASSES_DICT` dictionary values from `translate.py` into a Wiki API call.
     The `translate.py` file in `wiki` was left untested because it could be removed if this works.
-
     This contains the code used to populate that table
     https://www.poewiki.net/wiki/Module:Item_class
-* Add a mechanism for lines with a particular operand to be upserted into a block.
 * Add a `.mods` handler that looks at the info in a block and returns all mods available.
     https://www.poewiki.net/wiki/Special:CargoTables/mods
     https://www.poewiki.net/wiki/Special:CargoTables/mod_spawn_weights
@@ -23,7 +15,9 @@
         - Get all mods that have those tags
 
 # Ideas
-* Use levenshtein distances to improve `-help`'s searching of the correct page.
+* Add a mechanism for lines with a particular operand to be upserted into a block.
+* Add a way for a user to remove the current path from it's PATH env variable to via a flag on `:path`.
+* Use levenshtein distances to improve `:help`'s searching of the correct page.
     If the user types something slightly different then any existing page, then the closest page within a distance threshold is used instead.
     The sidebar Markdown page in the Wiki can be used to get the name of all pages.
 * Add a mechanism to emit warnings and return no block on econ if base_types is empty OR add the `.block` rule to split the commented out block from the previous block.

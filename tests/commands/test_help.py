@@ -3,7 +3,7 @@ from core import ExpectedError
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock
 from commands import help
-from commands.help import _API_URL, _TOO_MANY_ARGS_ERROR, DEFAULT_WIKI_PAGE_NAME
+from commands.help import _API_URL, _SIDEBAR_PAGE_NAME, _TOO_MANY_ARGS_ERROR, DEFAULT_WIKI_PAGE_NAME
 
 @pytest.fixture(autouse=True)
 def console_write_mock(monkeypatch: MonkeyPatch):
@@ -30,10 +30,11 @@ def test_execute_given_a_term_should_write_as_markdown(
         json=False,
         expiration=web.Expiration.DAILY)
 
-def test_execute_given_no_parameters_should_default_to_the_usage_page(web_get_mock: FunctionMock):
+def test_execute_given_no_parameters_should_default_to_the_usage_page_and_sidebar(web_get_mock: FunctionMock):
     help.execute([])
 
     assert web_get_mock.received(_API_URL.format(DEFAULT_WIKI_PAGE_NAME))
+    assert web_get_mock.received(_API_URL.format(_SIDEBAR_PAGE_NAME))
 
 def test_execute_given_more_than_1_argument_should_raise():
     TERMS = [ "1", "2" ]

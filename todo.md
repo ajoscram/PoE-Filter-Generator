@@ -1,6 +1,6 @@
 # Backlog
 
-* Add a wiki page for the `:clean` command.
+* Add a way to remove the current PFG path from PATH via a flag on `:path`.
 * Find a way in the wiki to change the `_FILTER_TO_ID_CLASSES_DICT` dictionary values from `translate.py` into a Wiki API call.
     The `translate.py` file in `wiki` was left untested because it could be removed if this works.
     This contains the code used to populate that table
@@ -16,7 +16,6 @@
 
 # Ideas
 * Add a mechanism for lines with a particular operand to be upserted into a block.
-* Add a way for a user to remove the current path from it's PATH env variable to via a flag on `:path`.
 * Use levenshtein distances to improve `:help`'s searching of the correct page.
     If the user types something slightly different then any existing page, then the closest page within a distance threshold is used instead.
     The sidebar Markdown page in the Wiki can be used to get the name of all pages.

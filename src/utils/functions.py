@@ -8,7 +8,7 @@ def get_random_str(length: int = 20):
     return "".join(random.choices(_GENERATION_CHARSET, k=length))
 
 def get_execution_dir(*subdirs_to_append: str):
-    """Gets the directory where this script or executable is.
+    """Gets the absolute directory where this script or executable is running from.
     This is different from the current process directory, which is obtained from `os.get_cwd()`.
     Additional subdirectories can be appended to the resulting directory."""
     is_exe = getattr(sys, 'frozen', False)

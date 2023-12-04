@@ -7,10 +7,6 @@
 * The `:help` command now displays a list of the terms that can be queried with it after displaying [the Usage article](https://github.com/ajoscram/PoE-Filter-Generator/wiki/Usage).
 * The `:path` command now supports an argument called `remove`, which removes the directory where the PFG executable resides from the PATH environment variable.
 
-system path: %SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;%SYSTEMROOT%\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\GitHub CLI\
-
-user path: C:\Users\Alejandro\AppData\Local\Programs\Python\Python312\Scripts\;C:\Users\Alejandro\AppData\Local\Programs\Python\Python312\;C:\Users\Alejandro\AppData\Local\Microsoft\WindowsApps;C:\Users\Alejandro\AppData\Roaming\npm;C:\Users\Alejandro\Dropbox\Code\PoE-Filter-Generator\build
-
 # 1.4.0
 * Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).
 * Added the `:generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did previously. More information can be found on the [`:generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:generate).

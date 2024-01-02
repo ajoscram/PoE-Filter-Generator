@@ -3,7 +3,7 @@ from ninja import UniqueFilter
 from pytest import MonkeyPatch
 from handlers import econ
 from core import ExpectedError, CLASS, COMMENT_START, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA, RULE_START, BASE_TYPE as BASE_TYPES_OPERAND
-from handlers.econ import _CURRENCY_MNEMONICS, _LOWER_BOUND_NAME, _MISC_MNEMONICS, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UNIQUE_MNEMONIC, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR
+from handlers.econ import _CURRENCY_MNEMONICS, _LOWER_BOUND_NAME, _MISC_MNEMONICS, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UNIQUE_MNEMONIC, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR, _MIN_LINKS, _MAX_LINKS
 from test_utilities import FunctionMock, create_filter
 
 _LEAGUE_NAME = "league_name"
@@ -16,7 +16,6 @@ _BASE_TYPES = [ "base_type_1", "base_type_2" ]
 @pytest.fixture(autouse=True)
 def setup(monkeypatch: MonkeyPatch):
     _ = FunctionMock(monkeypatch, ggg.get_league_name, _LEAGUE_NAME)
-    _ = FunctionMock(monkeypatch, wiki.try_translate_class, lambda x: x)
 
 @pytest.mark.parametrize("param_count", [1, 4])
 def test_handle_given_incorrect_rule_params_count_should_raise(param_count: int):
@@ -118,17 +117,17 @@ def test_given_a_unique_rule_with_replica_should_filter_for_replicas(monkeypatch
     unique_filter: UniqueFilter = ninja_mock.get_arg(UniqueFilter)
     assert unique_filter.is_replica == replica
 
-@pytest.mark.parametrize("operator, expected_min_links, expected_max_links", [
-    (GREATER_EQUALS, _SOCKET_LINKS, None),
-    (GREATER, _SOCKET_LINKS + 1, None),
-    (LESS_EQUALS, None, _SOCKET_LINKS),
-    (LESS, None, _SOCKET_LINKS - 1),
-    ("", _SOCKET_LINKS, _SOCKET_LINKS),
-    (CONTAINS, _SOCKET_LINKS, _SOCKET_LINKS),
-    (EQUALS, _SOCKET_LINKS, _SOCKET_LINKS),
+@pytest.mark.parametrize("operator, expected_links_range", [
+    (GREATER_EQUALS, (_SOCKET_LINKS, _MAX_LINKS)),
+    (GREATER, (_SOCKET_LINKS + 1, _MAX_LINKS)),
+    (LESS_EQUALS, (_MIN_LINKS, _SOCKET_LINKS)),
+    (LESS, (_MIN_LINKS, _SOCKET_LINKS - 1)),
+    ("", (_SOCKET_LINKS, _SOCKET_LINKS)),
+    (CONTAINS, (_SOCKET_LINKS, _SOCKET_LINKS)),
+    (EQUALS, (_SOCKET_LINKS, _SOCKET_LINKS)),
 ])
 def test_given_a_unique_rule_with_links_should_filter_for_links(
-    monkeypatch: MonkeyPatch, operator: str, expected_min_links: int, expected_max_links: int):
+    monkeypatch: MonkeyPatch, operator: str, expected_links_range: (int, int)):
     FILTER = create_filter(
     f"""{BASE_TYPES_OPERAND} {RULE_START}{ECON} {_UNIQUE_MNEMONIC} {_LOWER_BOUND} {_UPPER_BOUND}
         {LINKED_SOCKETS} {operator} {_SOCKET_LINKS}""")
@@ -137,5 +136,4 @@ def test_given_a_unique_rule_with_links_should_filter_for_links(
     _ = econ.handle(FILTER, FILTER.blocks[0], [])
 
     unique_filter: UniqueFilter = ninja_mock.get_arg(UniqueFilter)
-    assert unique_filter.min_links == expected_min_links
-    assert unique_filter.max_links == expected_max_links
+    assert unique_filter.links_range == expected_links_range

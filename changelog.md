@@ -6,6 +6,7 @@
 * Added a `:clean` command which allows for manual deletion of the cache. More information can be found on the [`:clean` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:clean).
 * The `:help` command now displays a list of the terms that can be queried with it after displaying [the Usage article](https://github.com/ajoscram/PoE-Filter-Generator/wiki/Usage).
 * The `:path` command now supports an argument called `remove`, which removes the directory where the PFG executable resides from the PATH environment variable.
+* Moved from using the PoE Wiki to [RePoE](https://lvlvllvlvllvlvl.github.io/RePoE) for the primary game data source.
 
 # 1.4.0
 * Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).

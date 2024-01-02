@@ -62,6 +62,16 @@ def test_get_given_value_is_cached_should_return_the_cached_value(
     assert response == _MOCK_RESPONSE
     assert request_get_mock.get_invocation_count() == 0
 
+def test_get_given_a_formatter_should_apply_it_before_adding_it_to_cache_and_return_the_formatted_data(
+    cache_add_mock: FunctionMock):
+
+    FORMATTED_DATA = "formatted data"
+    formatter = lambda _: FORMATTED_DATA
+
+    response = web.get(_URL, formatter=formatter)
+
+    assert response == FORMATTED_DATA
+    assert cache_add_mock.received(FORMATTED_DATA)
 
 def test_get_given_an_http_error_should_raise(request_get_mock: FunctionMock):
     request_get_mock.result = _HTTP_ERROR

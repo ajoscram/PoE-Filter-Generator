@@ -1,4 +1,4 @@
-import ggg, ninja, wiki
+import ggg, ninja
 from core import ExpectedError, Block, Rule,\
     BASE_TYPE, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA
 
@@ -34,6 +34,8 @@ _RULE_MNEMONIC_ERROR = "The .econ rule expects a valid type mnemonic, got '{0}'.
 _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 _LOWER_BOUND_NAME = "lower"
 _UPPER_BOUND_NAME = "upper"
+_MIN_LINKS = 0
+_MAX_LINKS = 6
 
 class _Params:
     def __init__(self, mnemonic: str, league_name: str, line_number: int, lower: float, upper: float = None):
@@ -107,17 +109,17 @@ def _get_unique_filter(block: Block):
 
     classes = block.get_classes()
     if len(classes) > 0:
-        classes = [ wiki.try_translate_class(class_) for class_ in classes ]
         unique_filter.classes = classes
     
     replica_lines = block.find(operand=REPLICA)
     if len(replica_lines) > 0:
         unique_filter.is_replica = replica_lines[-1].get_value_as_bool()
 
-    equals_links = _get_equals_link_values(block)
-    unique_filter.min_links = equals_links if equals_links != None else _get_min_links(block)
-    unique_filter.max_links = equals_links if equals_links != None else _get_max_links(block)
-
+    if equals_links := _try_get_equals_links(block):
+        unique_filter.links_range = (equals_links, equals_links)
+    else:
+        unique_filter.links_range = (_get_min_links(block), _get_max_links(block))
+    
     return unique_filter
 
 def _get_min_links(block: Block):
@@ -127,7 +129,7 @@ def _get_min_links(block: Block):
     greater_than_lines = block.find(operand=LINKED_SOCKETS, operator=GREATER)
     values += [ line.get_value_as_int() + 1 for line in greater_than_lines ]
 
-    return min(values) if len(values) > 0 else None
+    return min(values) if len(values) > 0 else _MIN_LINKS
 
 def _get_max_links(block: Block):
     less_than_or_equal_lines = block.find(operand=LINKED_SOCKETS, operator=LESS_EQUALS)
@@ -136,14 +138,14 @@ def _get_max_links(block: Block):
     less_than_lines = block.find(operand=LINKED_SOCKETS, operator=LESS)
     values += [ line.get_value_as_int() - 1 for line in less_than_lines ]
 
-    return max(values) if len(values) > 0 else None
+    return max(values) if len(values) > 0 else _MAX_LINKS
 
-def _get_equals_link_values(block: Block):
+def _try_get_equals_links(block: Block):
     empty_equals_lines = block.find(operand=LINKED_SOCKETS, operator="")
     equals_lines = block.find(operand=LINKED_SOCKETS, operator=CONTAINS)
     strict_equals_lines = block.find(operand=LINKED_SOCKETS, operator=EQUALS)
     values = [
         line.get_value_as_int()
-        for line in empty_equals_lines + equals_lines + strict_equals_lines
-    ]
+        for line in empty_equals_lines + equals_lines + strict_equals_lines ]
+    
     return max(values) if len(values) > 0 else None

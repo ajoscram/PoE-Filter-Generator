@@ -1,4 +1,4 @@
-import pytest, os, subprocess, utils, console
+import pytest, os, subprocess, utils
 from commands import path
 from commands.path import _ARGS_ERROR, _COMMAND_EXECUTION_ERROR, _GENERIC_POWERSHELL_SCRIPT, _GET_PATH_SCRIPT, _NOT_ON_WINDOWS_ERROR, _POWERSHELL_NOT_FOUND_ERROR, _REMOVE_ARG, _SET_PATH_SCRIPT, _WINDOWS_OS_NAME
 from core import ExpectedError
@@ -104,7 +104,6 @@ def test_execute_given_a_script_failed_should_raise(subprocess_run_mock: Functio
 
 @pytest.mark.parametrize("args", [ [ "more_than", "one_arg" ], [ "not_remove" ] ])
 def test_execute_given_incorrect_args_should_raise(args: list[str]):
-
     with pytest.raises(ExpectedError) as error:
         path.execute(args)
 

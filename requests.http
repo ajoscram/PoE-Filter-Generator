@@ -1,21 +1,33 @@
-### - PoE Leagues
+### PoE Leagues
 GET https://api.pathofexile.com/leagues?type=main&realm=pc
 User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/
 
-### - PoE Ninja queries
-@league = Ancestor
-@item_type = Omen
+### PoE Ninja queries
+@league = Affliction
+@item_type = UniqueWeapon
 @currency_type = Currency
 
-### Currency or Frags
+#### Currency or Frags
 GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currency_type}}
 
-### Items
+#### Items
 GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
 
-### - Wiki Cargo Queries
-### Docs: https://www.poewiki.net/wiki/Special:CargoQuery
-### Tables: https://www.poewiki.net/wiki/Special:CargoTables
+### RePoE Queries
+#### Docs: https://github.com/brather1ng/RePoE/tree/master/RePoE/docs
+
+#### Item classes
+GET https://lvlvllvlvllvlvl.github.io/RePoE/item_classes.min.json
+
+#### Item mods
+GET https://lvlvllvlvllvlvl.github.io/RePoE/mods.min.json
+
+#### Base items
+GET https://lvlvllvlvllvlvl.github.io/RePoE/base_items.min.json
+
+### Wiki Cargo Queries
+#### Docs: https://www.poewiki.net/wiki/Special:CargoQuery
+#### Tables: https://www.poewiki.net/wiki/Special:CargoTables
 @tables = mod_spawn_weights
 @fields = _pageName, tag
 @where =
@@ -24,8 +36,8 @@ GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
 @join_on = 
 @limit = 200
 
-### Direct API Queries
+#### Direct API Queries
 GET https://www.poewiki.net/w/api.php?action=cargoquery&format=json&tables={{tables}}&fields={{fields}}&where={{where}}&group_by={{group_by}}&order_by={{order_by}}&join_on={{join_on}}&limit={{limit}}
 
-### PHP Queries
+#### PHP Queries
 GET https://www.poewiki.net/index.php?title=Special:CargoExport&format=json&tables={{tables}}&fields={{fields}}&where={{where}}&order+by={{order_by}}&join+on={{join_on}}&limit={{limit}}

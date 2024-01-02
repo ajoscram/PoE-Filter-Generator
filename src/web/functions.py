@@ -1,9 +1,9 @@
 import os, requests
+from typing import Callable
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 from core import ExpectedError
 from io import BufferedWriter
-from .cache_entry import Expiration
-from . import cache
+from . import cache, Expiration
 
 _HEADERS = { "User-Agent": "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/" }
 _DOWNLOAD_CHUNK_SIZE = 1024 * 8 # eight megabytes
@@ -25,17 +25,23 @@ One of the following things is likely happening here:
 - The server where data is being requested from is currently down."""
 _UNEXISTENT_DIRECTORY_ERROR = "'{0}' does not correspond to an existing directory on this computer."
 
-def get(url: str, json: bool = True, expiration: Expiration = Expiration.IMMEDIATE, custom_http_errors: dict[int, str] = {}):
+def get(url: str,
+    json: bool = True,
+    expiration: Expiration = Expiration.IMMEDIATE,
+    formatter: Callable = lambda data: data,
+    custom_http_errors: dict[int, str] = {}):
     """Performs a `get` request on the `url` passed in.
-    - If successful and `json=True`, a `dict` object obtained from the request is returned representing the JSON.
+    - If successful and `json=True`, an object obtained from the request is returned representing the JSON.
     - If successful and `json=False`, the request's body is returned as a `str`.
-    - `expiration` determines the amount of time before deleting the `data` from the cache.
+    - `expiration` determines the amount of time before deleting the data received from the cache.
+    - `formatter` applies a transformation function to the data received before caching and returning.
     - If it fails with an HTTP error and its code is a key in the `custom_http_errors` dictionary,
     the custom error message is displayed instead."""
     data = cache.try_get(url)
     if data == None:
         response = _get_response(url, custom_http_errors)
         data = response.json() if json else response.text
+        data = formatter(data)
         cache.add(url, expiration, json, data)
     return data
 

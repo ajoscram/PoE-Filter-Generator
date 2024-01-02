@@ -1,7 +1,7 @@
 import pytest, console, web
 from core import ExpectedError
 from pytest import MonkeyPatch
-from test_utilities import FunctionMock
+from test_utilities import FunctionMock, WebGetMock
 from commands import help
 from commands.help import _API_URL, _SIDEBAR_PAGE_NAME, _TOO_MANY_ARGS_ERROR, DEFAULT_WIKI_PAGE_NAME
 
@@ -12,10 +12,10 @@ def console_write_mock(monkeypatch: MonkeyPatch):
 @pytest.fixture(autouse=True)
 def web_get_mock(monkeypatch: MonkeyPatch):
     WIKI_TEXT = "Text returned by doing a request from the Wiki."
-    return FunctionMock(monkeypatch, web.get, WIKI_TEXT)
+    return WebGetMock(monkeypatch, WIKI_TEXT)
 
 def test_execute_given_a_term_should_write_as_markdown(
-    console_write_mock: FunctionMock, web_get_mock: FunctionMock):
+    console_write_mock: FunctionMock, web_get_mock: WebGetMock):
     
     TERM = "Term"
 
@@ -30,7 +30,7 @@ def test_execute_given_a_term_should_write_as_markdown(
         json=False,
         expiration=web.Expiration.DAILY)
 
-def test_execute_given_no_parameters_should_default_to_the_usage_page_and_sidebar(web_get_mock: FunctionMock):
+def test_execute_given_no_parameters_should_default_to_the_usage_page_and_sidebar(web_get_mock: WebGetMock):
     help.execute([])
 
     assert web_get_mock.received(_API_URL.format(DEFAULT_WIKI_PAGE_NAME))

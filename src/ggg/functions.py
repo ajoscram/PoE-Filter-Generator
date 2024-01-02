@@ -1,5 +1,6 @@
 import web
 from enum import Enum
+from web import Expiration
 
 _LEAGUES_URL = "https://api.pathofexile.com/leagues?type=main&realm=pc"
 _LEAGUE_ID_FIELD = "id"
@@ -20,7 +21,7 @@ def get_league_name(standard: bool = False, hardcore: bool = False, ruthless: bo
     * `hardcore`: `True` for hardcore, `False` for softcore.
     * `ruthless`: `True` for ruthless, `False` for non-ruthless."""
     index = _get_league_index(standard, hardcore, ruthless)
-    leagues = web.get(_LEAGUES_URL, expiration=web.Expiration.DAILY)
+    leagues = web.get(_LEAGUES_URL, expiration=Expiration.DAILY)
     return leagues[index.value][_LEAGUE_ID_FIELD]
 
 def _get_league_index(standard: bool, hardcore: bool, ruthless: bool):

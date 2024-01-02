@@ -1,5 +1,4 @@
 # Backlog
-* Check if other `web.get` invocations can benefit from a formatter.
 * Add a `.mods` handler that looks at the info in a block and returns all mods available.
     Use RePoE.
     Account for: item level, class, basetype

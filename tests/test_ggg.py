@@ -1,6 +1,6 @@
 import pytest, ggg, web
 from pytest import MonkeyPatch
-from test_utilities import FunctionMock
+from test_utilities import WebGetMock
 from ggg.functions import _LEAGUES_URL, _LEAGUE_ID_FIELD, _LeagueIndex
 
 _LEAGUES = [
@@ -19,7 +19,7 @@ def test_get_league_name_given_league_flags_should_return_the_correct_league(
     
     LEAGUE_NAME = "league name"
     QUERY_RESULT = { league_index.value : { _LEAGUE_ID_FIELD : LEAGUE_NAME } }
-    get_mock = FunctionMock(monkeypatch, web.get, QUERY_RESULT)
+    get_mock = WebGetMock(monkeypatch, QUERY_RESULT)
 
     league_name = ggg.get_league_name(standard, hardcore, ruthless)
 

@@ -31,12 +31,12 @@ def _get_search_term(args: list[str]):
     return args[0].lower().capitalize()
 
 def _get_text(term: str):
-    markdown_text = web.get(
+    return web.get(
         _API_URL.format(term),
-        json=False,
-        expiration=web.Expiration.DAILY,
-        custom_http_errors={ _HTTP_NOT_FOUND_CODE: _NOT_FOUND_ERROR.format(term) })
-    return _format_markdown(markdown_text, term)
+        json = False,
+        expiration = web.Expiration.DAILY,
+        formatter = lambda x: _format_markdown(x, term),
+        custom_http_errors = { _HTTP_NOT_FOUND_CODE: _NOT_FOUND_ERROR.format(term) })
 
 def _get_help_terms():
     text = _get_text(_SIDEBAR_PAGE_NAME)

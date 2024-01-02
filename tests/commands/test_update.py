@@ -1,6 +1,6 @@
 import pytest, web, os, utils
 from pytest import MonkeyPatch
-from test_utilities.function_mock import FunctionMock
+from test_utilities import FunctionMock, WebGetMock
 from commands.update import _ASSET_NAME_FIELD, _ASSETS_FIELD, _FAILED_TO_FIND_DOWNLOAD_URL_ERROR, _UPDATER_EXE_NAME, ASSET_DOWNLOAD_URL_FIELD, DIRECTORY_FIELD, EXE_NAME, NOTES_FIELD, TAG_FIELD
 from core import ExpectedError
 from commands import update
@@ -29,7 +29,7 @@ _RELEASES_MISSING_ASSET = [
 def test_execute_given_a_download_url_is_not_in_release_should_raise(
     monkeypatch: MonkeyPatch, release: dict, missing_asset_name: str):
     
-    _ = FunctionMock(monkeypatch, web.get, release)
+    _ = WebGetMock(monkeypatch, release)
 
     with pytest.raises(ExpectedError) as error:
         update.execute(None)
@@ -48,7 +48,7 @@ def test_execute_given_a_release_is_found_should_download_and_execute_the_update
             { _ASSET_NAME_FIELD: EXE_NAME, ASSET_DOWNLOAD_URL_FIELD: EXE_URL },
         ]
     }
-    _ = FunctionMock(monkeypatch, web.get, RELEASE)
+    _ = WebGetMock(monkeypatch, RELEASE)
     os_path_join_mock = FunctionMock(monkeypatch, os.path.join, UPDATER_FILEPATH)
     web_download_mock = FunctionMock(monkeypatch, web.download)
     os_execl_mock = FunctionMock(monkeypatch, os.execl)

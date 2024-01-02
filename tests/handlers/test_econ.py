@@ -1,4 +1,4 @@
-import pytest, ggg, ninja, wiki
+import pytest, ggg, ninja
 from ninja import UniqueFilter
 from pytest import MonkeyPatch
 from handlers import econ

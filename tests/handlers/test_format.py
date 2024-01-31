@@ -1,9 +1,9 @@
 from handlers import format
-from core import HIDE, RULE_START, SHOW
+from core import HIDE, SHOW, RULE_START, RULE_SEPARATOR
 from test_utilities import create_filter
 
 def test_handle_given_lines_with_rules_should_remove_them():
-    RULE_TEXT = f"{RULE_START}rule .other_rule"
+    RULE_TEXT = f"{RULE_START}rule {RULE_SEPARATOR}other_rule"
     FILTER = create_filter(f"{SHOW} {RULE_TEXT}")
 
     lines = format.handle(FILTER, FILTER.blocks[0], None)

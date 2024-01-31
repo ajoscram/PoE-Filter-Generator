@@ -1,5 +1,4 @@
 import re
-
 from .expected_error import ExpectedError
 from .rule import Rule
 from .constants import BLOCK_STARTERS, COMMENT_START
@@ -12,7 +11,7 @@ _INDENTATION_REGEX = "\\s*"
 _OPERAND_REGEX = f"[^\\s{COMMENT_START}]*"
 _VALUES_REGEX = f"[^{COMMENT_START}]+"
 _COMMENT_REGEX = f"{COMMENT_START}.*"
-_OPERATOR_REGEX = "[<|>|=|!|<|>]=?\\d*"
+_OPERATOR_REGEX = "[<|>|=|!]=?\\d*"
 _LINE_REGEX = f"^({_INDENTATION_REGEX})({_OPERAND_REGEX})\\s*({_OPERATOR_REGEX})?\\s*({_VALUES_REGEX})?({_COMMENT_REGEX})?$"
 _SINGLE_VALUE_REGEX = '"[^"]*"|\\w+'
 

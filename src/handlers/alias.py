@@ -28,8 +28,9 @@ def handle(filter: Filter, block: Block, _):
     """Finds and replaces aliased text for a replacement.
     Text within `.alias` rules is excempt from replacement."""
     global _aliases
-    _aliases = _get_aliases_from_filter(filter) if _aliases == None else _aliases
-    return [ _get_aliased_line(raw_line, _aliases) for raw_line in block.get_raw_lines() ]
+    _aliases = _aliases or _get_aliases_from_filter(filter)
+    return [ _get_aliased_line(raw_line, _aliases)
+        for raw_line in block.get_raw_lines() ]
 
 def _get_aliases_from_filter(filter: Filter):
     rules = [ rule 

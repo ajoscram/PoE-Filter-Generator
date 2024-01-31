@@ -6,7 +6,10 @@ CLASS = "Class"
 BASE_TYPE = "BaseType"
 LINKED_SOCKETS = "LinkedSockets"
 REPLICA = "Replica"
-
+DROP_LEVEL = "DropLevel"
+ITEM_LEVEL = "ItemLevel"
+AREA_LEVEL = "AreaLevel"
+HAS_EXPLICIT_MOD = "HasExplicitMod"
 BLOCK_STARTERS = [ HIDE, SHOW, MINIMAL ]
 
 # Operators
@@ -16,6 +19,8 @@ LESS_EQUALS = "<="
 LESS = "<"
 CONTAINS = "="
 EQUALS = "=="
+NOT_CONTAINS = "!"
+NOT_EQUALS = "!="
 
 # Rules
 COMMENT_START = '#'

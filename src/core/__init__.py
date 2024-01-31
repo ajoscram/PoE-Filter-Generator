@@ -5,3 +5,4 @@ from .filter import Filter
 from .block import Block
 from .line import Line
 from .rule import Rule
+from .sieve import Sieve

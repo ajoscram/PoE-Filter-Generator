@@ -1,3 +1,6 @@
+# 1.4.2
+* Fixed a bug where getting text values from a line with `=` or empty operator yielded the opposite result of what was intended. 
+
 # 1.4.1
 * Added **Omens** and **Tattoos** to `.econ`.
 * Added a caching system to significantly improve performance for web requests.

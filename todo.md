@@ -1,6 +1,5 @@
 # Backlog
 * Add documentation for the `.game` handler.
-* Create a new release.
 * Replace `.econ` mnemonics for the block's classes using a sieve.
     Update .econ documentation.
 * Refactor places where the Sieve class can be used (like UniqueFilter)

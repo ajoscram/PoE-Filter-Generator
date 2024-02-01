@@ -32,17 +32,17 @@ def test_in_operator_given_None_should_return_expectedly(value: str, expected_re
 
     assert result == expected_result
 
-@pytest.mark.parametrize("operator, expected_result", [
-    (EQUALS, True),
-    (CONTAINS, True),
-    ("", True),
-    (NOT_EQUALS, False),
-    (NOT_CONTAINS, False),
+@pytest.mark.parametrize("operator, value, expected_result", [
+    (EQUALS, _STR_VALUE, True),
+    (CONTAINS, _STR_VALUE[:-1], True),
+    ("", _STR_VALUE[:-1], True),
+    (NOT_EQUALS, _STR_VALUE, False),
+    (NOT_CONTAINS, _STR_VALUE, False),
 ])
 def test_in_operator_given_string_value_and_a_valid_operator_should_return_expectedly(
-    operator: str, expected_result: bool):
+    operator: str, value: str, expected_result: bool):
     
-    sieve = create_sieve_for_text(f'{_STR_OPERAND} {operator} "{_STR_VALUE}"')
+    sieve = create_sieve_for_text(f'{_STR_OPERAND} {operator} "{value}"')
 
     result = _PATTERN in sieve
 

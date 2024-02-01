@@ -96,7 +96,7 @@ def _is_str_value_valid(value: str, line: Line):
         case constants.EQUALS:
             return value in line_values
         case constants.CONTAINS | "":
-            return any(value in line_value for line_value in line_values)
+            return any(line_value in value for line_value in line_values)
         case constants.NOT_CONTAINS | constants.NOT_EQUALS:
             return value not in line_values
         case _:

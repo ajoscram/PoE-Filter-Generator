@@ -1,4 +1,3 @@
-from .rule import Rule
 from .line import Line
 from .sieve import Sieve
 from .constants import SHOW, HIDE, CLASS

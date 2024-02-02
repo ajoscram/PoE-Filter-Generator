@@ -18,7 +18,6 @@ def get_mods(sieve: Sieve) -> set[str]:
     """Returns the names of mods that can roll on items that match the `sieve` received."""
     mods: dict[str] = web.get(_URL, expiration=Expiration.MONTHLY, formatter=_format_mods)
     (domains, tags) = base.get_domains_and_tags(sieve)
-    print(domains, tags)
     return {
         mod_info[NAME_FIELD]
         for mod_info in mods.values()

@@ -4,8 +4,6 @@ from .rule import Rule
 from .constants import BLOCK_STARTERS, COMMENT_START
 
 _MULTILINE_STRING_ERROR = "Multiline string"
-_BOOL_VALUE_ERROR = "Could not translate the value(s) in the line to either 'True' or 'False'. Make sure to provide exactly one of those values."
-_INT_VALUE_ERROR = "Could not translate the value(s) in the line to a digit. Make sure to provide exactly one numeric value."
 
 _INDENTATION_REGEX = "\\s*"
 _OPERAND_REGEX = f"[^\\s{COMMENT_START}]*"
@@ -35,24 +33,6 @@ class Line:
     def is_block_starter(self):
         """Returns whether or not this line should start a new Block."""
         return self.operand in BLOCK_STARTERS
-    
-    def get_value_as_bool(self):
-        """Returns the line's value as a boolean.
-        An error is returned if the line contains more than one value or the value cannot be parsed to a boolean."""
-        if len(self.values) == 1:
-            value = self.values[0].lower()
-            if value == "true":
-                return True
-            if value == "false":
-                return False
-        raise ExpectedError(_BOOL_VALUE_ERROR, self.number)
-    
-    def get_value_as_int(self):
-        """Returns the line's value as an integer.
-        An error is returned if the line contains more than one value or the value cannot be parsed to a integer."""
-        if len(self.values) == 1 and self.values[0].isdigit():
-            return int(self.values[0])
-        raise ExpectedError(_INT_VALUE_ERROR, self.number)
     
     def is_empty(self, exclude_comments: bool = False):
         """Returns `True` if the line contains no text other than whitespace.

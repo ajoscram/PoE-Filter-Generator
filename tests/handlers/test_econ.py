@@ -1,5 +1,4 @@
 import pytest, ggg, ninja
-from ninja import UniqueFilter
 from pytest import MonkeyPatch
 from handlers import econ
 from core import ExpectedError, CLASS, COMMENT_START, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA, RULE_START, BASE_TYPE as BASE_TYPES_OPERAND
@@ -92,48 +91,3 @@ def test_given_a_unique_rule_should_set_the_base_types_to_the_block(monkeypatch:
     assert ninja_mock.received(_LEAGUE_NAME, _LOWER_BOUND, _UPPER_BOUND)
     for base_type in _BASE_TYPES:
         assert f'"{base_type}"' in lines[0]
-
-def test_given_a_unique_rule_with_classes_should_filter_for_classes(monkeypatch: MonkeyPatch):
-    CLASSES = [ "class_1", "class_2" ]
-    FILTER = create_filter(
-    f"""{BASE_TYPES_OPERAND} {RULE_START}{ECON} {_UNIQUE_MNEMONIC} {_LOWER_BOUND}
-        {CLASS} == {' '.join(CLASSES)}""")
-    ninja_mock = FunctionMock(monkeypatch, ninja.get_unique_base_types, _BASE_TYPES)
-
-    _ = econ.handle(FILTER, FILTER.blocks[0], [])
-
-    unique_filter: UniqueFilter = ninja_mock.get_arg(UniqueFilter)
-    assert unique_filter.classes == CLASSES
-    
-@pytest.mark.parametrize("replica", [True, False])
-def test_given_a_unique_rule_with_replica_should_filter_for_replicas(monkeypatch: MonkeyPatch, replica: bool):
-    FILTER = create_filter(
-    f"""{BASE_TYPES_OPERAND} {RULE_START}{ECON} {_UNIQUE_MNEMONIC} {_LOWER_BOUND} {_UPPER_BOUND}
-        {REPLICA} == {replica}""")
-    ninja_mock = FunctionMock(monkeypatch, ninja.get_unique_base_types, _BASE_TYPES)
-
-    _ = econ.handle(FILTER, FILTER.blocks[0], [])
-
-    unique_filter: UniqueFilter = ninja_mock.get_arg(UniqueFilter)
-    assert unique_filter.is_replica == replica
-
-@pytest.mark.parametrize("operator, expected_links_range", [
-    (GREATER_EQUALS, (_SOCKET_LINKS, _MAX_LINKS)),
-    (GREATER, (_SOCKET_LINKS + 1, _MAX_LINKS)),
-    (LESS_EQUALS, (_MIN_LINKS, _SOCKET_LINKS)),
-    (LESS, (_MIN_LINKS, _SOCKET_LINKS - 1)),
-    ("", (_SOCKET_LINKS, _SOCKET_LINKS)),
-    (CONTAINS, (_SOCKET_LINKS, _SOCKET_LINKS)),
-    (EQUALS, (_SOCKET_LINKS, _SOCKET_LINKS)),
-])
-def test_given_a_unique_rule_with_links_should_filter_for_links(
-    monkeypatch: MonkeyPatch, operator: str, expected_links_range: (int, int)):
-    FILTER = create_filter(
-    f"""{BASE_TYPES_OPERAND} {RULE_START}{ECON} {_UNIQUE_MNEMONIC} {_LOWER_BOUND} {_UPPER_BOUND}
-        {LINKED_SOCKETS} {operator} {_SOCKET_LINKS}""")
-    ninja_mock = FunctionMock(monkeypatch, ninja.get_unique_base_types, _BASE_TYPES)
-
-    _ = econ.handle(FILTER, FILTER.blocks[0], [])
-
-    unique_filter: UniqueFilter = ninja_mock.get_arg(UniqueFilter)
-    assert unique_filter.links_range == expected_links_range

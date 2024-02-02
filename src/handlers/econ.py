@@ -48,19 +48,19 @@ class _Params:
 def handle(_, block: Block, options: list[str]):
     """Handles creation of economy adjusted filters.
     Options:
-    - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead
-    - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead
-    - if `rth` is passed then ruthless leagues will be queried"""
+    - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead.
+    - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead.
+    - if `rth` is passed then ruthless leagues will be queried."""
     rules = block.get_rules(NAME)
     if len(rules) > 0:
         league_name = _get_league_name(options)
-        base_types = []
+        base_types = set()
         for rule in rules:
             params = _get_params(rule, league_name)
-            base_types += _get_base_types(params, block)
+            base_types.update(_get_base_types(params, block))
 
         if len(base_types) > 0:
-            block.upsert(BASE_TYPE, [ f'"{base_type}"' for base_type in set(base_types) ])
+            block.upsert(BASE_TYPE, [ f'"{base_type}"' for base_type in base_types ])
         else:
             block.comment_out()
 
@@ -97,53 +97,6 @@ def _get_base_types(params: _Params, block: Block):
         return ninja.get_misc_base_types(params.league_name, misc_type, params.lower, params.upper)
     
     if params.mnemonic == _UNIQUE_MNEMONIC:
-        unique_filter = _get_unique_filter(block)
-        return ninja.get_unique_base_types(params.league_name, unique_filter, params.lower, params.upper)
+        return ninja.get_unique_base_types(params.league_name, block.get_sieve(), params.lower, params.upper)
 
     raise ExpectedError(_RULE_MNEMONIC_ERROR.format(params.mnemonic), params.line_number)
-
-def _get_unique_filter(block: Block):
-    unique_filter = ninja.UniqueFilter()
-
-    classes = block.get_classes()
-    if len(classes) > 0:
-        unique_filter.classes = classes
-    
-    replica_lines = block.find(operand=REPLICA)
-    if len(replica_lines) > 0:
-        unique_filter.is_replica = replica_lines[-1].get_value_as_bool()
-
-    if equals_links := _try_get_equals_links(block):
-        unique_filter.links_range = (equals_links, equals_links)
-    else:
-        unique_filter.links_range = (_get_min_links(block), _get_max_links(block))
-    
-    return unique_filter
-
-def _get_min_links(block: Block):
-    greater_than_or_equal_lines = block.find(operand=LINKED_SOCKETS, operator=GREATER_EQUALS)
-    values = [ line.get_value_as_int() for line in greater_than_or_equal_lines ]
-    
-    greater_than_lines = block.find(operand=LINKED_SOCKETS, operator=GREATER)
-    values += [ line.get_value_as_int() + 1 for line in greater_than_lines ]
-
-    return min(values) if len(values) > 0 else _MIN_LINKS
-
-def _get_max_links(block: Block):
-    less_than_or_equal_lines = block.find(operand=LINKED_SOCKETS, operator=LESS_EQUALS)
-    values = [ line.get_value_as_int() for line in less_than_or_equal_lines ]
-    
-    less_than_lines = block.find(operand=LINKED_SOCKETS, operator=LESS)
-    values += [ line.get_value_as_int() - 1 for line in less_than_lines ]
-
-    return max(values) if len(values) > 0 else _MAX_LINKS
-
-def _try_get_equals_links(block: Block):
-    empty_equals_lines = block.find(operand=LINKED_SOCKETS, operator="")
-    equals_lines = block.find(operand=LINKED_SOCKETS, operator=CONTAINS)
-    strict_equals_lines = block.find(operand=LINKED_SOCKETS, operator=EQUALS)
-    values = [
-        line.get_value_as_int()
-        for line in empty_equals_lines + equals_lines + strict_equals_lines ]
-    
-    return max(values) if len(values) > 0 else None

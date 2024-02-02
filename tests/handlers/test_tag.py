@@ -1,5 +1,4 @@
 import pytest
-
 from core import ExpectedError, HIDE, RULE_START, SHOW
 from handlers import tag
 from handlers.tag import _HANDLER, _RULE, _EMPTY_TAG_ERROR, _WILDCARD, NAME as TAG

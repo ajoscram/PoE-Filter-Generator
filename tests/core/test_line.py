@@ -1,6 +1,6 @@
 import pytest
 from core import ExpectedError, Line, CLASS, COMMENT_START, BLOCK_STARTERS, RULE_SEPARATOR, RULE_START
-from core.line import _BOOL_VALUE_ERROR, _INT_VALUE_ERROR, _MULTILINE_STRING_ERROR
+from core.line import _MULTILINE_STRING_ERROR
 
 _LINE_NUMBER = 1
 
@@ -41,46 +41,6 @@ def test_is_block_starter_given_an_operand_should_return_as_expected(operand: st
     is_block_starter = line.is_block_starter()
 
     assert is_block_starter == expected
-
-@pytest.mark.parametrize("value_str, expected", [ ("true", True), ("false", False) ])
-def test_get_value_as_bool_given_a_single_bool_value_should_return_the_bool(value_str: str, expected: bool):
-    TEXT = f"operand {value_str}"
-    line = Line(TEXT, _LINE_NUMBER)
-    
-    actual = line.get_value_as_bool()
-
-    assert actual == expected
-
-@pytest.mark.parametrize("values", [ "non_bool_value", "True False" ])
-def test_get_value_as_bool_given_incorrect_values_should_raise(values: str):
-    TEXT = "operand " + values
-    line = Line(TEXT, _LINE_NUMBER)
-    
-    with pytest.raises(ExpectedError) as error:
-        _ = line.get_value_as_bool()
-
-    assert error.value.message == _BOOL_VALUE_ERROR
-    assert error.value.line_number == _LINE_NUMBER
-
-def test_get_value_as_int_given_a_single_int_value_should_return_the_int():
-    EXPECTED_VALUE = 3
-    TEXT = f"operand > {EXPECTED_VALUE}"
-    line = Line(TEXT, _LINE_NUMBER)
-    
-    actual_value = line.get_value_as_int()
-
-    assert actual_value == EXPECTED_VALUE
-
-@pytest.mark.parametrize("values", [ "non_int_value", "2 3" ])
-def test_get_value_as_int_given_incorrect_values_should_raise(values: str):
-    TEXT = "operand == " + values
-    line = Line(TEXT, _LINE_NUMBER)
-    
-    with pytest.raises(ExpectedError) as error:
-        _ = line.get_value_as_int()
-
-    assert error.value.message == _INT_VALUE_ERROR
-    assert error.value.line_number == _LINE_NUMBER
 
 @pytest.mark.parametrize("exclude_comments, expected", [ (False, True), (True, False) ])
 def test_contains_given_a_string_should_return_as_expected(exclude_comments: bool, expected: bool):

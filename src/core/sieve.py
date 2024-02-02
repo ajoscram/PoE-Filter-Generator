@@ -33,7 +33,7 @@ class Sieve:
 
         for line in self._lines_by_operand[operand]:
             if value != None and line.values == []:
-                return True
+                continue
             if value == None and line.values != []:
                 return False
             if type(value) == bool and not _is_bool_value_valid(value, line):

@@ -12,11 +12,10 @@ class CurrencyType(Enum):
     FRAGMENT = "Fragment"
 
 def get_currency_base_types(league_name: str, type: CurrencyType, lower: float, upper: float = None):
-    """Returns all base type names given a currency `type` for the `league` specified."""
+    """Returns a set of all base type names given a currency `type` for the `league` specified."""
     url = _URL.format(league_name, type.value)
-    return [
+    return {
         record[_BASE_TYPE_FIELD]
         for record in common.get_records(url)
         if common.is_value_within_range(record[_VALUE_FIELD], lower, upper) and
-            record[_BASE_TYPE_FIELD] not in _INVALID_FRAGMENT_BASE_TYPES
-    ]
+            record[_BASE_TYPE_FIELD] not in _INVALID_FRAGMENT_BASE_TYPES }

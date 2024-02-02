@@ -138,7 +138,8 @@ def test_in_operator_given_invalid_int_values_should_raise(values: str):
 
 def test_in_operator_given_multiple_lines_with_the_same_operator_should_check_all_of_them():
     sieve = create_sieve_for_text(
-        f'''{_STR_OPERAND} {EQUALS} {_STR_VALUE}
-            {_STR_OPERAND} {EQUALS} "another value"''')
+    f'''{_STR_OPERAND} {EQUALS}
+        {_STR_OPERAND} {EQUALS} {_STR_VALUE}
+        {_STR_OPERAND} {EQUALS} "another value"''')
     
     assert _PATTERN not in sieve

@@ -47,21 +47,6 @@ def test_show_should_set_hide_to_show():
 
     assert block.lines[0].operand == SHOW
 
-def test_find_given_an_operand_should_return_lines_with_that_operand():
-    OPERAND = "operand"
-    block = _create_block(f"{OPERAND} {EQUALS} values", f"another_operand {GREATER_EQUALS} other_values")
-
-    lines_found = block.find(operand=OPERAND)
-
-    assert len(lines_found) == 1
-
-def test_find_given_an_operator_should_return_lines_with_that_operator():
-    block = _create_block(f"operand {EQUALS} values", f"another_operand {GREATER_EQUALS} other_values")
-
-    lines_found = block.find(operator=EQUALS)
-
-    assert len(lines_found) == 1
-
 def test_upsert_given_existing_operand_should_override_values():
     OPERAND = "operand"
     NEW_VALUES = [ "new_value", "another_new_value" ]
@@ -91,16 +76,6 @@ def test_get_rules_given_a_line_with_rules_should_return_rules_with_that_name():
     rules = block.get_rules(RULE_NAME)
 
     assert len(rules) == 2
-
-def test_get_classes_given_lines_with_class_operand():
-    CLASS_1 = "class1"
-    CLASS_2 = "class2"
-    block = _create_block(f'{CLASS} {EQUALS} "{CLASS_1}" "{CLASS_2}"')
-
-    classes = block.get_classes()
-
-    assert CLASS_1 in classes
-    assert CLASS_2 in classes
 
 def test_get_raw_lines_should_return_equivalent_raw_lines():
     block = _create_block(*_DEFAULT_BLOCK_LINES)

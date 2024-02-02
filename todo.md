@@ -1,8 +1,5 @@
 # Backlog
 * Add documentation for the `.game` handler.
-* Replace `.econ` mnemonics for the block's classes using a sieve.
-    Update .econ documentation.
-* Refactor places where the Sieve class can be used (like UniqueFilter)
 * Let the RePoE dev know about the following base types not currently being fetched:
     - All harbinger staff pieces
 

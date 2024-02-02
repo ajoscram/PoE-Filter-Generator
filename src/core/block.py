@@ -28,32 +28,25 @@ class Block:
         """Comments out every line in the block."""
         for line in self.lines:
             line.comment_out()
-    
-    def find(self, operand: str = None, operator: str = None) -> list[Line]:
-        """Finds all the lines that contain the queried criteria."""
-        return [ line
-            for line in self.lines
-            if operand == None or line.operand == operand
-            if operator == None or line.operator == operator ]
 
     def hide(self):
         """Attempts to hide a block by setting every 'Show' operand in it to 'Hide'."""
-        for line in self.find(operand=SHOW):
+        for line in self._find_lines(operand=SHOW):
             line.operand = HIDE
 
     def show(self):
         """Attempts to hide a block by setting every 'Hide' operand in it to 'Show'.
         This is the reverse function to hide."""
-        for line in self.find(operand=HIDE):
+        for line in self._find_lines(operand=HIDE):
             line.operand = SHOW
     
     def upsert(self, operand: str, values: list[str], operator: str = "=="):
         """Updates every line that contains the `operand` with the `values` listed.
         If a line with the `operand` was not found, then a new line with the
         `operand`, `operator` and `values`is appended to the block."""
-        lines = self.find(operand)
+        lines = self._find_lines(operand)
         if len(lines) == 0:
-            new_line = Line(f'{self.lines[-1].indentation}{operand} {operator}', self.lines[-1].number + 1)
+            new_line = Line(f"{self.lines[-1].indentation}{operand} {operator}", self.lines[-1].number + 1)
             self.lines.append(new_line)
             lines = [ new_line ]
 
@@ -64,11 +57,6 @@ class Block:
         """Gets all the rules in the block with name equals to rule_name."""
         return [ rule for line in self.lines for rule in line.get_rules(name_or_names) ]
     
-    def get_classes(self):
-        """Returns all values included in lines which have the `Class` operand."""
-        lines = self.find(operand=CLASS)
-        return [ value.replace('"', "") for line in lines for value in line.values ]
-    
     def get_raw_lines(self):
         """Gets all lines listed within this block as raw strings."""
         return [ str(line) for line in self.lines ]
@@ -78,6 +66,12 @@ class Block:
         Lines without operands are excluded from the it."""
         sieveable_lines = [ line for line in self.lines if line.operand != "" ]
         return Sieve(sieveable_lines)
-                    
+
+    def _find_lines(self, operand: str = None, operator: str = None) -> list[Line]:
+        return [ line
+            for line in self.lines
+            if operand == None or line.operand == operand
+            if operator == None or line.operator == operator ]
+
     def __str__(self):
         return '\n'.join(self.get_raw_lines())

@@ -1,6 +1,5 @@
 import ggg, ninja
-from core import ExpectedError, Block, Rule,\
-    BASE_TYPE, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA
+from core import ExpectedError, Block, Rule, BASE_TYPE
 
 NAME = "econ"
 
@@ -21,7 +20,6 @@ _MISC_MNEMONICS = {
     "res": ninja.MiscItemType.RESONATOR,
     "ess": ninja.MiscItemType.ESSENCE,
     "div": ninja.MiscItemType.DIVINATION_CARD,
-    "bea": ninja.MiscItemType.BEAST,
     "inv": ninja.MiscItemType.INVITATION,
     "via": ninja.MiscItemType.VIAL,
     "del": ninja.MiscItemType.DELIRIUM_ORB,
@@ -34,8 +32,6 @@ _RULE_MNEMONIC_ERROR = "The .econ rule expects a valid type mnemonic, got '{0}'.
 _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 _LOWER_BOUND_NAME = "lower"
 _UPPER_BOUND_NAME = "upper"
-_MIN_LINKS = 0
-_MAX_LINKS = 6
 
 class _Params:
     def __init__(self, mnemonic: str, league_name: str, line_number: int, lower: float, upper: float = None):

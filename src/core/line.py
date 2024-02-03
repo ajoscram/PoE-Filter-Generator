@@ -1,6 +1,6 @@
 import re
-from .expected_error import ExpectedError
 from .rule import Rule
+from .expected_error import ExpectedError
 from .constants import BLOCK_STARTERS, COMMENT_START
 
 _MULTILINE_STRING_ERROR = "Multiline string"

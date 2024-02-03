@@ -3,7 +3,7 @@ from pytest import MonkeyPatch
 from test_utilities import WebGetMock, create_sieve_for_pattern
 from core import ExpectedError, CLASS, BASE_TYPE, DROP_LEVEL, ITEM_LEVEL
 from repoe.constants import NAME_FIELD, DOMAIN_FIELD
-from repoe.base import _TAGS_FIELD, _DROP_LEVEL_FIELD, _BASE_NAME_NOT_FOUND_ERROR, _CLASS_FIELD, _RELEASE_STATE_FIELD, _RELEASED_RELEASE_STATE, _UNIQUE_ONLY_RELEASE_STATE
+from repoe.base import _TAGS_FIELD, _DROP_LEVEL_FIELD, _BASE_NAME_NOT_FOUND_ERROR, _CLASS_FIELD, _RELEASE_STATE_FIELD, _RELEASED_RELEASE_STATE, _UNIQUE_ONLY_RELEASE_STATE, _UNDEFINED_DOMAIN, _VALID_UNDEFINED_DOMAIN_CLASSES
 from repoe.mod import _WEIGHT_FIELD, _TAG_FIELD, _SPAWN_WEIGHTS_FIELD, _REQUIRED_LEVEL_FIELD, _VALID_GENERATION_TYPES, _GENERATION_TYPE_FIELD
 
 _MOD_NAME = "mod name"
@@ -27,9 +27,22 @@ def test_get_bases_given_a_sieve_should_return_bases_that_match_it(monkeypatch: 
     assert _BASE_NAME in result
 
 @pytest.mark.parametrize("release_state", [_RELEASED_RELEASE_STATE, _UNIQUE_ONLY_RELEASE_STATE])
-def test_get_class_for_base_should_return_its_class(monkeypatch: MonkeyPatch, release_state: str):
+def test_get_class_for_base_given_vaild_release_state_should_return_its_class(
+    monkeypatch: MonkeyPatch, release_state: str):
+    
     ITEM_CLASSES = _create_item_classes()
     BASE_TYPES = _create_bases(release_state=release_state)
+    _ = WebGetMock(monkeypatch, (x for x in [ BASE_TYPES, ITEM_CLASSES ]))
+    
+    result = repoe.get_class_for_base(_BASE_NAME)
+
+    assert result == _CLASS_NAME
+
+def test_get_class_for_base_given_undefined_domain_and_valid_class_should_return_its_class(
+    monkeypatch: MonkeyPatch):
+    
+    ITEM_CLASSES = _create_item_classes(id=_VALID_UNDEFINED_DOMAIN_CLASSES[0])
+    BASE_TYPES = _create_bases(domain=_UNDEFINED_DOMAIN, class_id=_VALID_UNDEFINED_DOMAIN_CLASSES[0])
     _ = WebGetMock(monkeypatch, (x for x in [ BASE_TYPES, ITEM_CLASSES ]))
     
     result = repoe.get_class_for_base(_BASE_NAME)

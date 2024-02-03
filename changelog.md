@@ -1,6 +1,8 @@
 # 1.4.2
 * Fixed a bug where getting text values from a line with `=` or empty operator yielded the opposite result of what was intended.
 * Fixed a bug where not all lines with the same condition in a block were accounted for if any of them had no values.
+* Fixed a bug where item classes could not be found for most `.econ` mnemonic `BaseType`s.
+* Removed `.econ` "support" for beasts, as it never actually worked properly.
 
 # 1.4.1
 * Added **Omens** and **Tattoos** to `.econ`.

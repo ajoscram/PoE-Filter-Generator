@@ -10,7 +10,7 @@ _LEAGUE_NAME = "league_name"
 _LOWER_BOUND = 0
 _UPPER_BOUND = 5
 _CURRENCY_TYPE = CurrencyType.BASIC
-_ITEM_TYPE = MiscItemType.BEAST
+_ITEM_TYPE = MiscItemType.ESSENCE
 _ITEM_CLASS = "item class"
 
 @pytest.fixture(autouse=True)

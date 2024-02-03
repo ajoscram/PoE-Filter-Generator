@@ -1,6 +1,6 @@
 from .line import Line
 from .sieve import Sieve
-from .constants import SHOW, HIDE, CLASS
+from .constants import SHOW, HIDE
 
 class Block:
     """A block is a collection of lines (strings) in a filter, which may include rules in them."""

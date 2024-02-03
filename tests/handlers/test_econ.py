@@ -1,15 +1,14 @@
 import pytest, ggg, ninja
 from pytest import MonkeyPatch
 from handlers import econ
-from core import ExpectedError, CLASS, COMMENT_START, CONTAINS, EQUALS, GREATER, GREATER_EQUALS, LESS, LESS_EQUALS, LINKED_SOCKETS, REPLICA, RULE_START, BASE_TYPE as BASE_TYPES_OPERAND
-from handlers.econ import _CURRENCY_MNEMONICS, _LOWER_BOUND_NAME, _MISC_MNEMONICS, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UNIQUE_MNEMONIC, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR, _MIN_LINKS, _MAX_LINKS
+from core import ExpectedError, COMMENT_START, EQUALS, REPLICA, RULE_START, BASE_TYPE as BASE_TYPES_OPERAND
+from handlers.econ import _CURRENCY_MNEMONICS, _LOWER_BOUND_NAME, _MISC_MNEMONICS, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UNIQUE_MNEMONIC, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR
 from test_utilities import FunctionMock, create_filter
 
 _LEAGUE_NAME = "league_name"
 _NON_INT = "non_int"
 _LOWER_BOUND = 1
 _UPPER_BOUND = 3
-_SOCKET_LINKS = 4
 _BASE_TYPES = [ "base_type_1", "base_type_2" ]
 
 @pytest.fixture(autouse=True)

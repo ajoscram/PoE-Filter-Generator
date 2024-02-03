@@ -20,7 +20,6 @@ class MiscItemType(Enum):
     RESONATOR = "Resonator"
     ESSENCE = "Essence"
     DIVINATION_CARD = "DivinationCard"
-    BEAST = "Beast"
     INVITATION = "Invitation"
     VIAL = "Vial"
     DELIRIUM_ORB = "DeliriumOrb"

@@ -24,3 +24,11 @@ def test_get_execution_dir_should_return_the_current_executable_directory(monkey
     assert abspath_mock.get_invocation_count() == 1
     assert CURR_DIR in exec_dir
     assert SUB_DIR in exec_dir
+
+def test_b64_encode_and_decode_should_be_symmetrical():
+    TEXT = "some text to encode with \\\"escaped characters\\\""
+
+    encoded_text = utils.b64_encode(TEXT)
+    decoded_text = utils.b64_decode(encoded_text)
+
+    assert decoded_text == TEXT

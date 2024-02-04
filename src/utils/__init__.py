@@ -1,1 +1,1 @@
-from .functions import get_execution_dir, get_random_str
+from .functions import get_execution_dir, get_random_str, b64_decode, b64_encode

@@ -24,31 +24,30 @@ def execute(_):
     """Downloads and executes the updater found on the latest release.
     The updater is a separate program whose entry point can be found on `src/update.py`."""
     console.write(_GETTING_RELEASE_MESSAGE)
-    release = web.get(_LATEST_RELEASE_URL)
-
+    release: dict[str] = web.get(_LATEST_RELEASE_URL)
+    
     curr_dir = utils.get_execution_dir()
-    updater_download_url = _get_download_url(_UPDATER_EXE_NAME, release)
+    updater_download_url = _get_download_url(release, _UPDATER_EXE_NAME)
     updater_params = _get_serialized_updater_params(release, curr_dir)
     updater_filepath = os.path.join(curr_dir, _UPDATER_EXE_NAME)
     
     console.write(_DOWNLOADING_UPDATER_MESSAGE)
     web.download(updater_download_url, curr_dir, _UPDATER_EXE_NAME)
-    
+
     console.write(_EXECUTING_UPDATER_MESSAGE, done=True)
     os.execl(updater_filepath, updater_filepath, updater_params)
 
-def _get_download_url(asset_name: str, release: dict):
+def _get_download_url(release: dict[str], asset_name: str):
     for asset in release[_ASSETS_FIELD]:
         if asset[_ASSET_NAME_FIELD] == asset_name:
             return asset[ASSET_DOWNLOAD_URL_FIELD]
     raise ExpectedError(_FAILED_TO_FIND_DOWNLOAD_URL_ERROR.format(asset_name))
 
-def _get_serialized_updater_params(release: dict, curr_dir: str):
+def _get_serialized_updater_params(release: dict[str], curr_dir: str):
     params = {
-        ASSET_DOWNLOAD_URL_FIELD: _get_download_url(EXE_NAME, release),
+        ASSET_DOWNLOAD_URL_FIELD: _get_download_url(release, EXE_NAME),
         NOTES_FIELD: _RELEASE_NOTES_PREFIX + release[NOTES_FIELD],
         TAG_FIELD: release[TAG_FIELD],
-        DIRECTORY_FIELD: curr_dir,
-    }
-    params_string = json.dumps(params).replace('"', '\\"')
+        DIRECTORY_FIELD: curr_dir }
+    params_string = utils.b64_encode(json.dumps(params))
     return f'"{params_string}"'

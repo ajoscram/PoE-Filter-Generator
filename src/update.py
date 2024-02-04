@@ -1,4 +1,4 @@
-import web, console, sys, json
+import web, console, sys, json, utils
 from core import ExpectedError
 from commands.update import ASSET_DOWNLOAD_URL_FIELD as EXE_DOWNLOAD_URL_FIELD, DIRECTORY_FIELD, EXE_NAME, TAG_FIELD, NOTES_FIELD
 
@@ -16,14 +16,11 @@ SUCCESSFUL_UPDATE_MESSAGE = "Successfully updated to version {0}."
 
 def main():
     try:
-        if len(sys.argv) != 2:
-            raise ExpectedError(_UNEXPECTED_DATA_ERROR)
-        params = json.loads(sys.argv[1])
-        
-        download_url = _get_param(EXE_DOWNLOAD_URL_FIELD, params)
-        exe_dir = _get_param(DIRECTORY_FIELD, params)
-        tag = _get_param(TAG_FIELD, params)
-        notes = _get_param(NOTES_FIELD, params)
+        params = _load_params(sys.argv)
+        download_url = _get_param(params, EXE_DOWNLOAD_URL_FIELD)
+        exe_dir = _get_param(params, DIRECTORY_FIELD)
+        tag = _get_param(params, TAG_FIELD)
+        notes = _get_param(params, NOTES_FIELD)
 
         console.write(DOWNLOADING_EXE_MESSAGE)
         web.download(download_url, exe_dir, EXE_NAME)
@@ -37,10 +34,19 @@ def main():
     except Exception as error:
         console.err(error)
 
-def _get_param(param_name: str, params: dict):
+def _get_param(params: dict[str], param_name: str):
     if not param_name in params:
         raise ExpectedError(_UNEXPECTED_DATA_ERROR)
     return params[param_name]
+
+def _load_params(args: list[str]) -> dict[str]:
+    if len(args) != 2:
+        raise ExpectedError(_UNEXPECTED_DATA_ERROR)
+    try:
+        params_text = utils.b64_decode(args[1])    
+        return json.loads(params_text)
+    except json.JSONDecodeError:
+        raise ExpectedError(_UNEXPECTED_DATA_ERROR)
 
 if __name__ == "__main__":
     main()

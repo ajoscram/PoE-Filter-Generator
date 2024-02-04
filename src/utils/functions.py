@@ -1,4 +1,4 @@
-import random, string, sys, os
+import random, string, sys, os, base64
 
 _GENERATION_CHARSET = string.ascii_letters + string.digits
 
@@ -15,3 +15,11 @@ def get_execution_dir(*subdirs_to_append: str):
     execution_path = sys.executable if is_exe else sys.argv[0]
     execution_dir = os.path.abspath(os.path.dirname(execution_path))
     return os.path.join(execution_dir, *subdirs_to_append)
+
+def b64_encode(text: str):
+    """Encodes a UTF-8 string into its Base-64 representation."""
+    return base64.b64encode(text.encode()).decode()
+
+def b64_decode(text: str):
+    """Decodes a Base-64 string into its UTF-8 representation."""
+    return base64.b64decode(text.encode()).decode()

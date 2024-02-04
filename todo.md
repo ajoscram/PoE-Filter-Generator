@@ -4,6 +4,7 @@
     - Maven invitations except quests
 
 # Ideas
+* Add E2E testing that actually goes to the internet and does things.
 * Update how `ExpectedError`s work:
     - Provide a possible solution alongside the error if possible (maybe?).
     - Define a color scheme for the text in the program and use those rules across all strings shown to the user.

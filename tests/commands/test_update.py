@@ -59,7 +59,7 @@ def test_execute_given_a_release_is_found_should_download_and_execute_the_update
     assert web_download_mock.received(UPDATER_URL, _EXE_DIR, _UPDATER_EXE_NAME)
     assert os_execl_mock.received(UPDATER_FILEPATH, UPDATER_FILEPATH)
     
-    updater_params_string = os_execl_mock.get_arg(str, n = 2)
+    updater_params_string = utils.b64_decode(os_execl_mock.get_arg(str, n=2))
     assert ASSET_DOWNLOAD_URL_FIELD in updater_params_string
     assert EXE_URL in updater_params_string
     assert NOTES_FIELD in updater_params_string

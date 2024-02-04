@@ -3,6 +3,7 @@ from .cache_entry import CacheEntry, Expiration
 
 _DIR = utils.get_execution_dir("cache")
 _ENTRIES_FILEPATH = os.path.join(_DIR, "_entries.json")
+_FILE_ENCODING = "utf-8"
 
 _entries: dict[str, CacheEntry] = None
 
@@ -66,12 +67,12 @@ def _save_entries(entries: dict[str, CacheEntry]):
     _save_file(_ENTRIES_FILEPATH, raw_entries)
 
 def _save_file(filepath: str, data, is_json: bool = True):
-    with open(filepath, "w") as file:
+    with open(filepath, "w", encoding=_FILE_ENCODING) as file:
         if is_json:
             json.dump(data, file, indent=4)
         else:
             file.write(data)
 
 def _load_file(filepath: str, is_json: bool = True):
-    with open(filepath, "r") as file:
+    with open(filepath, "r", encoding=_FILE_ENCODING) as file:
         return json.load(file) if is_json else file.read()

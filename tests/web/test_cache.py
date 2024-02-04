@@ -4,7 +4,7 @@ from web import cache, Expiration
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock, FileMock
 from web.cache_entry import _EXPIRATION_DATE_FIELD, _EXPIRATION_FORMAT, _URL_FIELD, _IS_JSON_FIELD, _FILENAME_FIELD
-from web.cache import _ENTRIES_FILEPATH, _DIR
+from web.cache import _ENTRIES_FILEPATH, _DIR, _FILE_ENCODING
 
 _JSON_DATA = { "some": "data" }
 _TEXT_DATA = "some text"
@@ -83,6 +83,7 @@ def test_add_given_text_data_should_save_it_with_its_entry(monkeypatch: MonkeyPa
     cache.add(_URL, Expiration.DAILY, False, _TEXT_DATA)
 
     assert json_dump_mock.get_invocation_count() == 1
+    assert file_mock.received(encoding=_FILE_ENCODING)
     assert file_mock.got_written(_TEXT_DATA)
 
 

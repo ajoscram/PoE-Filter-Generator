@@ -1,5 +1,6 @@
 # 1.4.3
 * Fixed a bug where the updater could not handle double quotes (`"`) in the release notes text.
+* Fixed a bug where the cache couldn't have emojis written to it.
 
 # 1.4.2
 * Fixed a bug where getting text values from a line with `=` or empty operator yielded the opposite result of what was intended.

@@ -1,1 +1,3 @@
-cat changelog.md | head -n 1 | sed s/^#[[:space:]]*//
+source scripts/utils.sh
+
+cat changelog.md | line $HEADER_PATTERN | sed s/$HEADER_PATTERN//

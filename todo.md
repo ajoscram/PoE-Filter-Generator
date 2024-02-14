@@ -1,9 +1,4 @@
 # Backlog
-
-CI changes:
-* Actually raise an error code when the PFG or the updater fail, instead of exiting cleanly. 
-* Update release workflow so it uses ncipollo/release-action@v1 instead of the outdated actions.
-
 * Let the RePoE dev know about the following base types not currently being fetched:
     - All harbinger staff pieces
     - Maven invitations except quests

@@ -1,1 +1,3 @@
-cat changelog.md | sed '0,/^#[[:space:]]/b; /^#[[:space:]]/Q' | tail -n +2
+source scripts/utils.sh
+
+cat changelog.md | extract $HEADER_PATTERN $HEADER_PATTERN | trim

@@ -24,48 +24,17 @@ jobs:
       shell: bash
       run: scripts/build.sh include-updater
 
-    - name: Get release version
-      id: version
-      shell: bash
-      run: echo "VERSION=$(scripts/version.sh)" >> $GITHUB_OUTPUT
-    
-    - name: Get release notes
-      id: notes
+    - name: Get release metadata
+      id: metadata
       shell: bash
       run: |
-        DELIMITER=$(openssl rand -hex 8)
-        echo "NOTES<<$DELIMITER" >> $GITHUB_OUTPUT
-        scripts/notes.sh >> $GITHUB_OUTPUT
-        echo "$DELIMITER" >> $GITHUB_OUTPUT
+        echo "VERSION=$(scripts/version.sh)" >> $GITHUB_OUTPUT
+        scripts/notes.sh > notes.md
 
     - name: Create release
-      id: release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with: 
-        tag_name: ${{ steps.version.outputs.VERSION }}
-        release_name: ${{ steps.version.outputs.VERSION }} PoE Filter Generator Update
-        body: ${{ steps.notes.outputs.NOTES }}
-        prerelease: false
-        draft: false
-
-    - name: Attach pfg.exe to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: ncipollo/release-action@v1
       with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_content_type: application/octet-stream
-        asset_path: build/pfg.exe
-        asset_name: pfg.exe
-    
-    - name: Attach updater.exe to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_content_type: application/octet-stream
-        asset_path: build/updater.exe
-        asset_name: updater.exe
+        name: ${{ steps.metadata.outputs.VERSION }} PoE Filter Generator Update
+        tag: ${{ steps.metadata.outputs.VERSION }}
+        bodyFile: "notes.md"
+        artifacts: "build/*.exe"

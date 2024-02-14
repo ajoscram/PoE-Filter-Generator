@@ -1,14 +1,14 @@
-if [ "$1" == "rep" ]
+if [ "$1" == "report" ]
 then
-    COVERAGE_FOLDER=htmlcov
-    COVERAGE_FILE=$COVERAGE_FOLDER/index.html
-    if [ ! -d $COVERAGE_FOLDER ]
+    coverage_folder=htmlcov
+    coverage_file=$coverage_folder/index.html
+    if [ ! -d $coverage_folder ]
     then
-        mkdir $COVERAGE_FOLDER
-        touch $COVERAGE_FILE
-        echo "<h1>Refresh this web page to see the coverage report!</h1>" > $COVERAGE_FILE
+        mkdir $coverage_folder
+        touch $coverage_file
+        echo "<h1>Refresh this web page to see the coverage report!</h1>" > $coverage_file
     fi
-    start $COVERAGE_FILE # Windows only
+    start $coverage_file # Windows only
 fi
 
 # Requires node and nodemon

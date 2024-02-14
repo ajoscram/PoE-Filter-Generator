@@ -1,3 +1,7 @@
+# 1.4.4
+* `.econ` now always overrides the `BaseType` rules in the block, even if no applicable base types are found. This case always comments out the block regardless.
+* Fixed a bug where the `pfg.exe` and `update.exe` executables would appear to exit successfully when an error occurred, as opposed to exiting with an appropriate error code.  
+
 # 1.4.3
 * Fixed a bug where the updater could not handle double quotes (`"`) in the release notes text.
 * Fixed a bug where the cache couldn't have emojis written to it.

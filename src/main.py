@@ -1,5 +1,5 @@
 import sys, console
-from core import ExpectedError, COMMAND_START
+from core import ExpectedError, COMMAND_START, ERROR_EXIT_CODE
 from commands import DEFAULT_COMMAND_NAME, COMMANDS
 
 _NO_ARGS_ERROR = "No arguments were provided to PFG."
@@ -25,6 +25,7 @@ def main():
 
     except Exception as error:
         console.err(error)
+        sys.exit(ERROR_EXIT_CODE)
 
 if __name__ == "__main__":
     main()

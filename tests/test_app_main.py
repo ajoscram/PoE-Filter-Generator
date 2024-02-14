@@ -1,7 +1,7 @@
-import sys, main, pytest, console, os
+import sys, main, pytest, console
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock
-from core import ExpectedError, COMMAND_START
+from core import ExpectedError, COMMAND_START, ERROR_EXIT_CODE
 from commands import DEFAULT_COMMAND_NAME
 from main import _COMMAND_NOT_FOUND_ERROR, _NO_ARGS_ERROR
 
@@ -24,6 +24,10 @@ def command_mock(monkeypatch: MonkeyPatch):
 def console_err_mock(monkeypatch: MonkeyPatch):
     return FunctionMock(monkeypatch, console.err)
 
+@pytest.fixture()
+def sys_exit_mock(monkeypatch: MonkeyPatch):
+    return FunctionMock(monkeypatch, sys.exit)
+
 def test_main_given_a_command_name_should_execute_the_command(
     monkeypatch: MonkeyPatch, command_mock: _CommandMock):
     
@@ -43,8 +47,8 @@ def test_main_given_no_command_name_should_use_default_instead(monkeypatch: Monk
 
     assert command_mock.args_received == ARGS
 
-def test_main_given_unknown_command_should_call_console_err(
-    monkeypatch: MonkeyPatch, console_err_mock: FunctionMock):
+def test_main_given_unknown_command_should_print_error_and_exit(
+    monkeypatch: MonkeyPatch, console_err_mock: FunctionMock, sys_exit_mock: FunctionMock):
     
     UNKNOWN_COMMAND = f"{COMMAND_START}unknown_command"
     _mock_argv(monkeypatch, [ UNKNOWN_COMMAND ])
@@ -53,9 +57,10 @@ def test_main_given_unknown_command_should_call_console_err(
 
     error_received: ExpectedError = console_err_mock.get_arg(ExpectedError)
     assert error_received.message == _COMMAND_NOT_FOUND_ERROR.format(UNKNOWN_COMMAND)
+    assert sys_exit_mock.received(ERROR_EXIT_CODE)
 
-def test_main_given_no_args_were_passed_should_call_console_err(
-    monkeypatch: MonkeyPatch, console_err_mock: FunctionMock):
+def test_main_given_no_args_were_passed_should_print_error_and_exit(
+    monkeypatch: MonkeyPatch, console_err_mock: FunctionMock, sys_exit_mock: FunctionMock):
 
     _mock_argv(monkeypatch, [])
 
@@ -63,9 +68,10 @@ def test_main_given_no_args_were_passed_should_call_console_err(
 
     error_received: ExpectedError = console_err_mock.get_arg(ExpectedError)
     assert error_received.message == _NO_ARGS_ERROR
+    assert sys_exit_mock.received(ERROR_EXIT_CODE)
 
-def test_main_given_an_exception_is_raised_should_call_console_err(
-    monkeypatch: MonkeyPatch, command_mock: _CommandMock, console_err_mock: FunctionMock):
+def test_main_given_an_exception_is_raised_should_print_error_and_exit(
+    monkeypatch: MonkeyPatch, command_mock: _CommandMock, console_err_mock: FunctionMock, sys_exit_mock: FunctionMock):
     
     command_mock.exception = Exception("message")
     _mock_argv(monkeypatch, command_mock=command_mock)
@@ -74,6 +80,7 @@ def test_main_given_an_exception_is_raised_should_call_console_err(
 
     exception_received: Exception = console_err_mock.get_arg(Exception)
     assert exception_received == command_mock.exception
+    assert sys_exit_mock.received(ERROR_EXIT_CODE)
 
 def _mock_argv(monkeypatch: MonkeyPatch, args: list[str] = [], command_mock: _CommandMock = None):
     if command_mock != None:

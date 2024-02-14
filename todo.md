@@ -1,9 +1,15 @@
 # Backlog
+
+CI changes:
+* Actually raise an error code when the PFG or the updater fail, instead of exiting cleanly. 
+* Update release workflow so it uses ncipollo/release-action@v1 instead of the outdated actions.
+
 * Let the RePoE dev know about the following base types not currently being fetched:
     - All harbinger staff pieces
     - Maven invitations except quests
 
 # Ideas
+* Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
 * Add E2E testing that actually goes to the internet and does things.
 * Update how `ExpectedError`s work:
     - Provide a possible solution alongside the error if possible (maybe?).

@@ -55,9 +55,8 @@ def handle(_, block: Block, options: list[str]):
             params = _get_params(rule, league_name)
             base_types.update(_get_base_types(params, block))
 
-        if len(base_types) > 0:
-            block.upsert(BASE_TYPE, [ f'"{base_type}"' for base_type in base_types ])
-        else:
+        block.upsert(BASE_TYPE, [ f'"{base_type}"' for base_type in base_types ])
+        if len(base_types) == 0:
             block.comment_out()
 
     return block.get_raw_lines()

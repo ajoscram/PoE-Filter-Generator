@@ -11,4 +11,5 @@ then
     start $COVERAGE_FILE # Windows only
 fi
 
-nodemon --exec "bash scripts/test.sh $@ || exit 1" --ext .py # Requires node and nodemon installed
+# Requires node and nodemon
+nodemon --exec "bash scripts/test.sh $@ || exit 1" --ext .py

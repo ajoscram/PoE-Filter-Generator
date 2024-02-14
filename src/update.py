@@ -1,5 +1,5 @@
 import web, console, sys, json, utils
-from core import ExpectedError
+from core import ExpectedError, ERROR_EXIT_CODE
 from commands.update import ASSET_DOWNLOAD_URL_FIELD as EXE_DOWNLOAD_URL_FIELD, DIRECTORY_FIELD, EXE_NAME, TAG_FIELD, NOTES_FIELD
 
 _UNEXPECTED_DATA_ERROR = """The update process failed because the updater received unexpected data.
@@ -10,9 +10,9 @@ https://github.com/ajoscram/PoE-Filter-Generator/releases/latest
 
 Sorry for the hassle!"""
 
-DOWNLOADING_EXE_MESSAGE = "Downloading the latest version's executable. This might take a while..."
-DELETING_CACHE_MESSAGE = "Deleting the previous version's cache..."
-SUCCESSFUL_UPDATE_MESSAGE = "Successfully updated to version {0}."
+_DOWNLOADING_EXE_MESSAGE = "Downloading the latest version's executable. This might take a while..."
+_DELETING_CACHE_MESSAGE = "Deleting the previous version's cache..."
+_SUCCESSFUL_UPDATE_MESSAGE = "Successfully updated to version {0}."
 
 def main():
     try:
@@ -22,17 +22,18 @@ def main():
         tag = _get_param(params, TAG_FIELD)
         notes = _get_param(params, NOTES_FIELD)
 
-        console.write(DOWNLOADING_EXE_MESSAGE)
+        console.write(_DOWNLOADING_EXE_MESSAGE)
         web.download(download_url, exe_dir, EXE_NAME)
 
-        console.write(DELETING_CACHE_MESSAGE)
+        console.write(_DELETING_CACHE_MESSAGE)
         web.clear_cache()
         
-        console.write(SUCCESSFUL_UPDATE_MESSAGE.format(tag), done=True)
+        console.write(_SUCCESSFUL_UPDATE_MESSAGE.format(tag), done=True)
         console.write(notes, markdown=True)
     
     except Exception as error:
         console.err(error)
+        sys.exit(ERROR_EXIT_CODE)
 
 def _get_param(params: dict[str], param_name: str):
     if not param_name in params:

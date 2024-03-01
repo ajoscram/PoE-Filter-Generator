@@ -1,6 +1,6 @@
 python -m pip install --upgrade pip
-[ "$1" != "skip-build-tools" ] && pip install pyinstaller
-pip install requests
-pip install rich
-pip install pytest
-pip install pytest-cov
+[ "$1" != "skip-build-tools" ] && pip install -U pyinstaller
+pip install -U requests
+pip install -U rich
+pip install -U pytest
+pip install -U pytest-cov

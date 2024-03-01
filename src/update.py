@@ -14,9 +14,9 @@ _DOWNLOADING_EXE_MESSAGE = "Downloading the latest version's executable. This mi
 _DELETING_CACHE_MESSAGE = "Deleting the previous version's cache..."
 _SUCCESSFUL_UPDATE_MESSAGE = "Successfully updated to version {0}."
 
-def main():
+def main(args: list[str]):
     try:
-        params = _load_params(sys.argv)
+        params = _load_params(args)
         download_url = _get_param(params, EXE_DOWNLOAD_URL_FIELD)
         exe_dir = _get_param(params, DIRECTORY_FIELD)
         tag = _get_param(params, TAG_FIELD)
@@ -41,7 +41,7 @@ def _get_param(params: dict[str], param_name: str):
     return params[param_name]
 
 def _load_params(args: list[str]) -> dict[str]:
-    if len(args) != 2:
+    if len(args) != 1:
         raise ExpectedError(_UNEXPECTED_DATA_ERROR)
     try:
         params_text = utils.b64_decode(args[1])    
@@ -50,4 +50,4 @@ def _load_params(args: list[str]) -> dict[str]:
         raise ExpectedError(_UNEXPECTED_DATA_ERROR)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

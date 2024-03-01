@@ -5,11 +5,10 @@ from commands import DEFAULT_COMMAND_NAME, COMMANDS
 _NO_ARGS_ERROR = "No arguments were provided to PFG."
 _COMMAND_NOT_FOUND_ERROR = "Command '{0}' was not found."
 
-def main():
+def main(args: list[str]):
     try:
         console.write() # write a newline for aesthetics
 
-        args = sys.argv[1:]
         if len(args) == 0:
             raise ExpectedError(_NO_ARGS_ERROR)
 
@@ -28,4 +27,4 @@ def main():
         sys.exit(ERROR_EXIT_CODE)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

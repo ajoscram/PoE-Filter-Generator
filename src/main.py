@@ -1,4 +1,4 @@
-import sys, console
+import sys, console, multiprocessing
 from core import ExpectedError, COMMAND_START, ERROR_EXIT_CODE
 from commands import DEFAULT_COMMAND_NAME, COMMANDS
 
@@ -27,4 +27,5 @@ def main(args: list[str]):
         sys.exit(ERROR_EXIT_CODE)
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support() # enables multiprocessing in executables
     main(sys.argv[1:])

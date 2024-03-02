@@ -11,5 +11,4 @@ then
     start $coverage_file # Windows only
 fi
 
-# Requires node and nodemon
-nodemon --exec "bash scripts/test.sh $@ || exit 1" --ext .py
+python tools/pymon.py "bash scripts/test.sh $@" "src\**\*.py" "tests\**\*.py"

@@ -33,7 +33,7 @@ def execute(args: list[str]):
     subdirectories of the filter passed are changed."""
     directory = _get_dir_to_watch(args)
     console.write(_WATCHING_FILES_MESSAGE.format(directory))
-    watcher.watch(directory, _FILTER_GLOB, _GenerateAction(args))
+    watcher.watch(directory, [ _FILTER_GLOB ], _GenerateAction(args))
 
 def _get_dir_to_watch(args: list[str]):
     if len(args) < 3:

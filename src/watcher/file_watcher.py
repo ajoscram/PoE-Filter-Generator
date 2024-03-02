@@ -2,13 +2,13 @@ import glob, os
 
 class FileWatcher:
     """Class that can notice changes in files within a directory."""
-    def __init__(self, directory: str, glob: str):
+    def __init__(self, directory: str, globs: list[str]):
         """
         * `directory`: The directory to watch. Subdirectories are watched as well.
-        * `glob`: A path glob pattern to match.
+        * `globs`: A list of path glob patterns to match.
         """
         self.directory = directory
-        self.glob = glob
+        self.globs = globs
         self.snapshot: dict[str, float] = None
 
     def notices_change(self):
@@ -24,6 +24,7 @@ class FileWatcher:
         return False
 
     def _get_snapshot(self):
-        filepaths = glob.glob(self.glob, root_dir=self.directory, recursive=True, include_hidden=True)
-        filepaths = [ os.path.join(self.directory, filepath) for filepath in filepaths ]
+        filepaths = [ os.path.join(self.directory, filepath)
+            for pattern in self.globs
+            for filepath in glob.iglob(pattern, root_dir=self.directory, recursive=True, include_hidden=True) ]
         return { filepath: os.stat(filepath).st_mtime for filepath in filepaths }

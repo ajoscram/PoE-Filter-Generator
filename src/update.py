@@ -44,7 +44,7 @@ def _load_params(args: list[str]) -> dict[str]:
     if len(args) != 1:
         raise ExpectedError(_UNEXPECTED_DATA_ERROR)
     try:
-        params_text = utils.b64_decode(args[1])    
+        params_text = utils.b64_decode(args[0])    
         return json.loads(params_text)
     except json.JSONDecodeError:
         raise ExpectedError(_UNEXPECTED_DATA_ERROR)

@@ -17,13 +17,13 @@ _OUTPUT_SUBDIRECTORY_OF_INPUT_ERROR = """The output filter's directory is either
 \tInput filter's directory: [green]{0}[/]
 \tOutput filter's directory: [green]{1}[/]"""
 
-class _GenerateAction(watcher.Action):
+class _GenerateCallable:
     def __init__(self, args: list[str]):
-        self.args = args
+        self._args = args
     
     def __call__(self):
         try:
-            generate.execute(self.args)
+            generate.execute(self._args)
         except Exception as error:
             console.err(error)
             sys.exit(ERROR_EXIT_CODE)
@@ -33,7 +33,7 @@ def execute(args: list[str]):
     subdirectories of the filter passed are changed."""
     directory = _get_dir_to_watch(args)
     console.write(_WATCHING_FILES_MESSAGE.format(directory))
-    watcher.watch(directory, [ _FILTER_GLOB ], _GenerateAction(args))
+    watcher.watch(directory, [ _FILTER_GLOB ], _GenerateCallable(args))
 
 def _get_dir_to_watch(args: list[str]):
     if len(args) < 3:
@@ -41,9 +41,10 @@ def _get_dir_to_watch(args: list[str]):
     
     if not os.path.isfile(args[0]):
         raise ExpectedError(_INPUT_FILEPATH_ERROR.format(args[0]))
+    
     input_dir = os.path.dirname(os.path.abspath(args[0]))
-
     output_dir = os.path.dirname(os.path.abspath(args[1]))
+
     if output_dir.startswith(input_dir):
         raise ExpectedError(_OUTPUT_SUBDIRECTORY_OF_INPUT_ERROR.format(input_dir, output_dir))
     

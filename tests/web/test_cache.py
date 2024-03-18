@@ -2,7 +2,7 @@ import pytest, os, json, shutil
 from datetime import datetime
 from web import cache, Expiration
 from pytest import MonkeyPatch
-from test_utilities import FunctionMock, FileMock
+from test_utilities import FunctionMock, OpenMock
 from web.cache_entry import _EXPIRATION_DATE_FIELD, _EXPIRATION_FORMAT, _URL_FIELD, _IS_JSON_FIELD, _FILENAME_FIELD
 from web.cache import _ENTRIES_FILEPATH, _DIR, _FILE_ENCODING
 
@@ -15,8 +15,8 @@ def setup():
     cache._entries = None
 
 @pytest.fixture(autouse=True)
-def file_mock(monkeypatch: MonkeyPatch):
-    return FileMock(monkeypatch)
+def open_mock(monkeypatch: MonkeyPatch):
+    return OpenMock(monkeypatch)
 
 def test_try_get_given_url_not_in_entries_should_return_none(monkeypatch: MonkeyPatch):
     _ = FunctionMock(monkeypatch, json.load, [ ])
@@ -56,12 +56,12 @@ def test_try_get_given_entry_is_valid_should_return_the_data(monkeypatch: Monkey
     assert data == _JSON_DATA
 
 def test_try_get_given_valid_entry_is_not_json_should_return_it_as_text(
-    monkeypatch: MonkeyPatch, file_mock: FileMock):
+    monkeypatch: MonkeyPatch, open_mock: OpenMock):
     
     ENTRY = _create_entry(is_json=False)
     _ = FunctionMock(monkeypatch, os.path.isfile, True)
     _ = FunctionMock(monkeypatch, json.load, [ ENTRY ])
-    file_mock.lines = [ _TEXT_DATA ]
+    open_mock.file.lines = [ _TEXT_DATA ]
 
     data = cache.try_get(ENTRY[_URL_FIELD])
 
@@ -76,15 +76,15 @@ def test_add_given_json_data_should_save_it_with_its_entry(monkeypatch: MonkeyPa
     assert json_dump_mock.get_invocation_count() == 2
     assert json_dump_mock.received(_JSON_DATA)
 
-def test_add_given_text_data_should_save_it_with_its_entry(monkeypatch: MonkeyPatch, file_mock: FileMock):
+def test_add_given_text_data_should_save_it_with_its_entry(monkeypatch: MonkeyPatch, open_mock: OpenMock):
     _ = FunctionMock(monkeypatch, os.makedirs)
     json_dump_mock = FunctionMock(monkeypatch, json.dump)
     
     cache.add(_URL, Expiration.DAILY, False, _TEXT_DATA)
 
     assert json_dump_mock.get_invocation_count() == 1
-    assert file_mock.received(encoding=_FILE_ENCODING)
-    assert file_mock.got_written(_TEXT_DATA)
+    assert open_mock.received(encoding=_FILE_ENCODING)
+    assert open_mock.file.got_written(_TEXT_DATA)
 
 
 @pytest.mark.parametrize("cache_exists", [ True, False ])

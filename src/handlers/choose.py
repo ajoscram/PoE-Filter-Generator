@@ -3,7 +3,7 @@ from core import Block, Line, ExpectedError, Rule
 
 NAME = "choose"
 
-_MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR = "Only 1 .choose rule is allowed per block, got {0}."
+_MULTIPLE_RULES_IN_THE_SAME_BLOCK_ERROR = "Only 1 .choose rule is allowed per block, got {0}."
 _RULE_PARAMETER_COUNT_ERROR = "The .choose rule expects exactly 2 parameters in its description, got {0}."
 _SET_SIZE_TYPE_ERROR = "The .choose rule expects a number of lines to choose from as the first parameter, got '{0}' instead."
 _SET_SIZE_TOO_LARGE_ERROR = "The number of lines to choose from ({0}) exceeds to total number of lines left in the block ({1})."
@@ -21,8 +21,9 @@ def handle(_, block: Block, __):
     rules = block.get_rules(NAME)
     if len(rules) == 0:
         return block.get_raw_lines()
+    
     if len(rules) > 1:
-        raise ExpectedError(_MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR.format(len(rules)), block.line_number)
+        raise ExpectedError(_MULTIPLE_RULES_IN_THE_SAME_BLOCK_ERROR.format(len(rules)), block.line_number)
     params = _get_params(rules[0], block)
 
     prefix_lines = block.lines[:params.start_index]

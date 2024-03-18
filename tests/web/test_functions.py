@@ -1,5 +1,5 @@
 import pytest, web, requests, os
-from test_utilities import FunctionMock, FileMock
+from test_utilities import FunctionMock, OpenMock
 from pytest import MonkeyPatch
 from requests import ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError
 from web.functions import _HEADERS, _HTTP_ERROR as _HTTP_ERROR_TEXT, _CONNECTION_ERROR, _TEMP_DOWNLOAD_PREFIX, _UNEXISTENT_DIRECTORY_ERROR
@@ -107,16 +107,16 @@ def test_download_should_download_the_resource_in_the_url_and_replace_the_previo
     os_path_join_mock = FunctionMock(monkeypatch, os.path.join, FILEPATH)
     os_remove_mock = FunctionMock(monkeypatch, os.remove)
     os_rename_mock = FunctionMock(monkeypatch, os.rename)
-    file_mock = FileMock(monkeypatch)
+    open_mock = OpenMock(monkeypatch)
 
     web.download(_URL, _DIRECTORY, _FILENAME)
 
     assert os_path_isdir_mock.received(_DIRECTORY)
     assert os_path_join_mock.received(_DIRECTORY, _TEMP_DOWNLOAD_PREFIX + _FILENAME)
     assert request_get_mock.received(_URL, stream=True)
-    assert file_mock.opened_with(FILEPATH, 'wb')
+    assert open_mock.received(FILEPATH, 'wb')
     for value in filter(lambda x: x != None, _MOCK_RESPONSE.content):
-        assert file_mock.got_written(value)
+        assert open_mock.file.got_written(value)
     assert os_path_join_mock.received(_DIRECTORY, _FILENAME)
     assert os_path_isfile_mock.received(FILEPATH)
     assert os_remove_mock.received(FILEPATH)

@@ -24,7 +24,8 @@ class FileWatcher:
         return False
 
     def _get_snapshot(self):
-        filepaths = [ os.path.join(self.directory, filepath)
+        filepaths = [
+            os.path.join(self.directory, filepath)
             for pattern in self.globs
             for filepath in glob.iglob(pattern, root_dir=self.directory, recursive=True, include_hidden=True) ]
         return { filepath: os.stat(filepath).st_mtime for filepath in filepaths }

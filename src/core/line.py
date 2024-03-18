@@ -63,7 +63,7 @@ class Line:
     
     def _set_parts(self, text: str):
         parts = re.search(_LINE_REGEX, text).groups()
-        self.indentation:str = parts[0] or ""
+        self.indentation: str = parts[0] or ""
         self.operand: str = parts[1] or ""
         self.operator: str = parts[2] or ""
         self.values: list[str] = re.findall(_SINGLE_VALUE_REGEX, parts[3] or "")

@@ -2,17 +2,17 @@ import builtins, pytest, os
 from pytest import MonkeyPatch
 from core.filter import _FILE_EXISTS_ERROR, _FILE_NOT_FOUND_ERROR, _PERMISSION_ERROR
 from core import Filter, ExpectedError, Block
-from test_utilities import FunctionMock, FileMock
+from test_utilities import FunctionMock, OpenMock
 
 _FILEPATH = "filepath"
 _LINES: list[str] = [ "line 1", "line 2" ]
 
 def test_load_given_a_valid_filepath_should_return_a_filter(monkeypatch: MonkeyPatch):
-    file_mock = FileMock(monkeypatch, _LINES)
+    open_mock = OpenMock(monkeypatch, _LINES)
 
     filter = Filter.load(_FILEPATH)
 
-    assert file_mock.opened_with(_FILEPATH, "r")
+    assert open_mock.received(_FILEPATH, "r")
     assert filter.filepath == _FILEPATH
     assert [ str(line) for line in filter.blocks[0].lines ] == _LINES
 
@@ -31,7 +31,7 @@ def test_load_given_file_is_not_found_should_raise(
 def test_save_should_save_the_lines_in_the_filter(monkeypatch: MonkeyPatch):
     DIRECTORY = "directory"
     FILTER = Filter(_FILEPATH, Block.extract(_LINES))
-    file_mock = FileMock(monkeypatch, _LINES)
+    open_mock = OpenMock(monkeypatch, _LINES)
     dirname_mock = FunctionMock(monkeypatch, os.path.dirname, DIRECTORY)
     makedirs_mock = FunctionMock(monkeypatch, os.makedirs)
 
@@ -39,8 +39,8 @@ def test_save_should_save_the_lines_in_the_filter(monkeypatch: MonkeyPatch):
 
     assert dirname_mock.received(_FILEPATH)
     assert makedirs_mock.received(DIRECTORY, exist_ok=True)
-    assert file_mock.opened_with(_FILEPATH, "w")
-    assert file_mock.got_written(str(FILTER.blocks[0]))
+    assert open_mock.received(_FILEPATH, "w")
+    assert open_mock.file.got_written(str(FILTER.blocks[0]))
 
 _WRITE_FILE_EXCEPTIONS = [ (FileExistsError, _FILE_EXISTS_ERROR), (PermissionError, _PERMISSION_ERROR) ]
 @pytest.mark.parametrize("exception_to_raise, error_message", _WRITE_FILE_EXCEPTIONS)

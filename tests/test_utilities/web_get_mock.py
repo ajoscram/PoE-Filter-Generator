@@ -12,6 +12,6 @@ class WebGetMock(FunctionMock):
         If `formatter` is passed when `web.get` is called, it is applied to the `result` before returning."""
         super().__init__(monkeypatch, web.get, result)
     
-    def _mock_function(self, *args, **kwargs):
-        result = super()._mock_function(*args, **kwargs)
+    def __call__(self, *args, **kwargs):
+        result = super().__call__(*args, **kwargs)
         return kwargs[_FORMATTER](result) if _FORMATTER in kwargs else result

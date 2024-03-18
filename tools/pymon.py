@@ -7,7 +7,7 @@ sys.path.append('./src')
 
 import os, multiprocessing, subprocess, watcher, console
 
-class CLIAction(watcher.Action):
+class _CLIAction:
     def __init__(self, command: str):
         self.command = command
     
@@ -33,7 +33,7 @@ def main(args: list[str]):
         f"Watching directory: [green]{directory}[/]",
         f"\nFiltering files by: [green]{ "[/], [green]".join(globs) }[/]",
         f"\nExecuting: [blue]{command}[/]")
-    watcher.watch(directory, globs, CLIAction(command))
+    watcher.watch(directory, globs, _CLIAction(command))
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()

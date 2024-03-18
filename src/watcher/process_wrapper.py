@@ -1,13 +1,6 @@
 from enum import Enum
-from abc import ABC, abstractmethod
+from typing import Callable
 from multiprocessing import Process
-
-class Action(ABC):
-    """Abstract class that represents an action that can be carried out by the watcher.
-    Children must implement the `__call__` method."""
-    @abstractmethod
-    def __call__(self, *args, **kwargs):
-        pass
 
 class ProcessState(Enum):
     """Represents the current state of a process being executed within `ProcessWrapper`."""
@@ -17,31 +10,31 @@ class ProcessState(Enum):
     FINISHED_UNSUCCESSFULLY = 3
 
 class ProcessWrapper():
-    """Manages a `multiprocessing.Process` instance that executes an `Action`."""
+    """Manages a `multiprocessing.Process` instance that executes a `Callable`."""
     
-    def __init__(self, action: Action):
-        self.action = action
-        self.process: Process = None
+    def __init__(self, callable: Callable):
+        self._callable = callable
+        self._process: Process = None
 
     def start(self):
         """Instantiates and starts a new process."""
-        self.process = Process(target=self.action)
-        self.process.start()
+        self._process = Process(target=self._callable)
+        self._process.start()
     
     def stop(self):
         """Stops the current wrapped process being executed."""
-        if self.process == None:
+        if self._process == None:
             return
-        self.process.terminate()
-        self.process.close()
-        self.process = None
+        self._process.terminate()
+        self._process.close()
+        self._process = None
     
     def get_state(self) -> ProcessState:
         """Returns the `ProcessState` of the wrapped process."""
-        if self.process == None:
+        if self._process == None:
             return ProcessState.NOT_RUNNING
 
-        match self.process.exitcode:
+        match self._process.exitcode:
             case None:
                 return ProcessState.RUNNING
             case 0:

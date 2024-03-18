@@ -1,6 +1,8 @@
-import builtins, inspect, importlib, pathlib, os, sys, traceback, subprocess, random, shutil
+import inspect, pathlib, importlib, builtins, os, sys, random, traceback, subprocess, shutil, time, glob, multiprocessing
+from types import ModuleType
 from typing import Callable
 from pytest import MonkeyPatch
+from .callable_mock import CallableMock
 
 _PATH_FUNCTION_PREFIX = "_path_"
 _KNOWN_MODULES = {
@@ -15,112 +17,32 @@ _KNOWN_MODULES = {
     "random": random,
     "traceback": traceback,
     "subprocess": subprocess,
-    "shutil": shutil
+    "shutil": shutil,
+    "time": time,
+    "glob": glob,
+    #"multiprocessing": multiprocessing
 }
 
-class _Invocation:
-    def __init__(self, *args, **kwargs):
-        self.args_received = list(args)
-        self.kwargs_received = kwargs
-
-class FunctionMock:
+class FunctionMock(CallableMock):
     """This class monkeypatches a function and collects information on how it is used."""
 
     def __init__(self, monkeypatch: MonkeyPatch, function_to_mock: Callable, result = None, target = None):
-        """The `result` parameter represents the function resolution.
-        It behaves differently depending on the type of the value passed:
-        * `Exception`s are raised.
-        * `Generator`s and `GeneratorFunction`s yield expectedly.
-        * `function`s are invoked with the parameters received passed to them when the mock is invoked.
-        * Anything else is returned from the function as a value.
-        
-        The `target` parameter allows direct setting of the mock target.
-        If not provided, the module's package is looked for instead.
-        
-        The `name` parameter provides an override for the function name in case of aliases.
-        If not provided, the `__name__` of the function will be used instead."""
-        self.result = result
-        self._invocations: list[_Invocation] = []
+        """The `target` parameter allows direct setting of the mock target.
+        If not provided, the module's package is looked for instead."""
         target = target or _get_target_module(function_to_mock)
-        self._function_name = function_to_mock.__name__.removeprefix(_PATH_FUNCTION_PREFIX) \
-            if target == os.path else function_to_mock.__name__
-        monkeypatch.setattr(target, self._function_name, self._mock_function)
-    
-    def received(self, *args, **kwargs):
-        """Returns `True` if all `args` and `kwargs` were received during execution.
-        If any of them were not, an `AssertionError` is raised instead."""
-        return self._check_args_were_received(*args) and self._check_kwargs_were_received(**kwargs)
-    
-    def get_arg(self, type: type, n: int = 0):
-        """Gets the `n`th argument received during execution that has the `type` passed in.
-        Raises a `ValueError` if none are found."""
-        args_received = self._get_args_received()
-        args_received += [ value for _, value in self._get_kwargs_received() ]
-        args_received = [ arg for arg in args_received if isinstance(arg, type) ]
+        function_name = _get_name_to_mock(function_to_mock, target)
+        super().__init__(function_name, result)
+        monkeypatch.setattr(target, function_name, self)
 
-        if len(args_received) > 0 and n < len(args_received):
-            return args_received[n]
-        
-        raise ValueError(
-            f"Could not find {n}th argument of type '{type.__name__}' passed to '{self._function_name}'")
-    
-    def get_invocation_count(self):
-        """Returns the number of times the function got invoked."""
-        return len(self._invocations)
+def _get_name_to_mock(callable: Callable, target: ModuleType):
+    return callable.__name__.removeprefix(_PATH_FUNCTION_PREFIX) \
+            if target == os.path else callable.__name__
 
-    def _mock_function(self, *args, **kwargs):
-        self._invocations += [ _Invocation(*args, **kwargs) ]
-        if inspect.isgeneratorfunction(self.result):
-            self.result = self.result(*args, **kwargs)
-        if inspect.isgenerator(self.result):
-            return next(self.result)
-        if _is_exception(self.result):
-            raise self.result
-        if callable(self.result):
-            return self.result(*args, **kwargs)
-        return self.result
-    
-    def _get_args_received(self):
-        return [ arg
-            for invocation in self._invocations
-            for arg in invocation.args_received ]
-    
-    def _get_kwargs_received(self):
-        return [ key_value_pair
-            for invocation in self._invocations
-            for key_value_pair in invocation.kwargs_received.items() ]
-
-    def _check_args_were_received(self, *args_to_check):
-        args_received = self._get_args_received()
-
-        for arg_to_check in args_to_check:
-            if arg_to_check not in args_received:
-                raise AssertionError(
-                    f"Arg '{arg_to_check}' was not received on '{self._function_name}': {args_received}")
-
-        return True
-
-    def _check_kwargs_were_received(self, **kwargs_to_check):
-        kwargs_received = self._get_kwargs_received()
-        keys_received = [ key for key, _ in kwargs_received ]
-
-        for key_to_check, value_to_check in kwargs_to_check.items():
-            if key_to_check not in keys_received:
-                raise AssertionError(
-                    f"A kwarg named '{key_to_check}' was not received on '{self._function_name}': {keys_received}")    
-            
-            values_received = [ value for key, value in kwargs_received if key == key_to_check ]
-            if value_to_check not in values_received:
-                raise AssertionError(
-                    f"Kwarg '{key_to_check}'='{value_to_check}' was not received on '{self._function_name}': {kwargs_received}")
-        
-        return True
-
-def _get_target_module(function_to_mock: Callable):
-    if module := _try_get_known_module(function_to_mock):
+def _get_target_module(obj):
+    if module := _try_get_known_module(obj):
         return module
     try:
-        module = inspect.getmodule(function_to_mock)
+        module = inspect.getmodule(obj)
         module_path = inspect.getabsfile(module)
         package_name = pathlib.Path(module_path).parts[-2]
         return importlib.import_module(package_name)
@@ -128,16 +50,13 @@ def _get_target_module(function_to_mock: Callable):
         raise ModuleNotFoundError(
             f"Could not import '{module.__name__}'. Add it to _KNOWN_MODULES pointing the correct module.")
 
-def _try_get_known_module(function_to_mock: Callable):
-    if function_to_mock.__module__ not in _KNOWN_MODULES:
+def _try_get_known_module(obj):
+    if obj.__module__ not in _KNOWN_MODULES:
         return None
     
-    module = _KNOWN_MODULES[function_to_mock.__module__]
-    if module == os and function_to_mock.__name__.startswith(_PATH_FUNCTION_PREFIX):
+    module = _KNOWN_MODULES[obj.__module__]
+    obj_name: str = obj.__name__
+    if module == os and obj_name.startswith(_PATH_FUNCTION_PREFIX):
         return os.path
 
     return module
-
-def _is_exception(value):
-    is_subclass = inspect.isclass(value) and issubclass(value, Exception)
-    return is_subclass or isinstance(value, Exception)

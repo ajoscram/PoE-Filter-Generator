@@ -1,6 +1,7 @@
 import time, console
+from typing import Callable
 from .file_watcher import FileWatcher
-from .process_wrapper import ProcessWrapper, ProcessState, Action
+from .process_wrapper import ProcessWrapper, ProcessState
 
 _SECONDS_TO_WAIT = 0.20
 
@@ -15,13 +16,13 @@ _WAITING_FOR_CHANGES_SUFFIX = " Waiting for changes..."
 _FINISHED_SUCESSFULLY_MESSAGE = "Finished successfully!" + _WAITING_FOR_CHANGES_SUFFIX
 _FINISHED_UNSUCESSFULLY_MESSAGE = "Finished unsuccessfully." + _WAITING_FOR_CHANGES_SUFFIX
 
-def watch(directory: str, globs: list[str], action: Action):
+def watch(directory: str, globs: list[str], callable: Callable):
     """
     Runs an infinite loop until the user raises a `KeyboardInterrupt`.
     If a file that matches any `globs` within the `directory` is changed,
     the `action` is executed.
     """
-    process = ProcessWrapper(action)
+    process = ProcessWrapper(callable)
     watcher = FileWatcher(directory, globs)
     
     try:

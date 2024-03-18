@@ -2,18 +2,21 @@ import builtins
 from pytest import MonkeyPatch
 from .function_mock import FunctionMock
 
-class FileMock(FunctionMock):
+class OpenMock(FunctionMock):
     """This class monkeypatches the built-in `open` function with this object and mocks common file operations."""
 
     def __init__(self, monkeypatch: MonkeyPatch, line_or_lines: str | list[str] = []):
         """`line_or_lines` corresponds to the lines returned when the file is read."""
-        super().__init__(monkeypatch, builtins.open, self)
+        self.file = FileMock(line_or_lines)
+        super().__init__(monkeypatch, builtins.open, self.file)
+
+class FileMock:
+    """This class represents a file object opened with the `open` function."""
+
+    def __init__(self, line_or_lines: str | list[str] = []):
+        """`line_or_lines` corresponds to the lines returned when the file is read."""
         self.lines = [ line_or_lines ] if isinstance(line_or_lines, str) else line_or_lines
         self._written_values = []
-
-    def opened_with(self, filepath: str, mode: str):
-        """Validates the `open` built-in function was called with the `filepath` and `mode` returned."""
-        return self.received(filepath, mode)
     
     def got_written(self, value):
         """Returns `True` if `value` got written to the file mock. `False` otherwise."""

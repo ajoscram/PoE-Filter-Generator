@@ -1,6 +1,6 @@
 import pytest, math
 from core import ExpectedError, Block, COMMENT_START, RULE_SEPARATOR, RULE_START, SHOW
-from handlers.choose import _MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR,_RULE_PARAMETER_COUNT_ERROR, _SET_SIZE_TOO_LARGE_ERROR, _SET_SIZE_TYPE_ERROR, _SUBSET_SIZE_TOO_LARGE_ERROR, _SUBSET_SIZE_TYPE_ERROR, NAME as CHOOSE
+from handlers.choose import _MULTIPLE_RULES_IN_THE_SAME_BLOCK_ERROR,_RULE_PARAMETER_COUNT_ERROR, _SET_SIZE_TOO_LARGE_ERROR, _SET_SIZE_TYPE_ERROR, _SUBSET_SIZE_TOO_LARGE_ERROR, _SUBSET_SIZE_TYPE_ERROR, NAME as CHOOSE
 from handlers import choose
 from test_utilities import create_filter
 
@@ -18,7 +18,7 @@ def test_handle_given_more_than_one_choose_rule_in_block_should_raise():
     with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
 
-    assert error.value.message == _MULTIPLE_COMBINE_RULES_IN_THE_SAME_BLOCK_ERROR.format(len(RULES))
+    assert error.value.message == _MULTIPLE_RULES_IN_THE_SAME_BLOCK_ERROR.format(len(RULES))
     assert error.value.line_number == FILTER.blocks[0].lines[0].number
 
 def test_handle_given_not_two_params_should_raise():

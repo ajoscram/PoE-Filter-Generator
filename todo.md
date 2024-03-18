@@ -1,7 +1,4 @@
 # Backlog
-* Add a new command: `:watch`, that runs the generator whenever changes to `.filter` files in the same directory / subdirectories as the input are found
-    test
-
 * Let the RePoE dev know about the following base types not currently being fetched:
     - All harbinger staff pieces
     - Maven invitations except quests

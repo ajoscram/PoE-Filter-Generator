@@ -1,3 +1,6 @@
+# 1.4.5
+* Added the `:watch` command, which allows automatic execution of the `:generate` command when `.filter` files are changed. More information can be found on the [`:watch` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:watch).
+
 # 1.4.4
 * `.econ` now always overrides the `BaseType` rules in the block, even if no applicable base types are found. This case always comments out the block regardless.
 * Fixed a bug where the `pfg.exe` and `update.exe` executables would appear to exit successfully when an error occurred, as opposed to exiting with an appropriate error code.  
@@ -25,7 +28,7 @@
 
 # 1.4.0
 * Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).
-* Added the `:generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did previously. More information can be found on the [`:generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:generate).
+* Added the `:generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did. More information can be found on the [`:generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:generate).
 * Added the `:help` command, which provides information for a term found within the PFG wiki (commands, handlers, blocks, rules, etc). More information can be found on the [`:help` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:help).
 * Added the `:path` command, which adds the tool's current path to the user's Windows PATH environment variable. More information can be found on the [`:path` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:path).
 * Added the `:update` command, which updates the tool to the most recent version available. More information can be found on the [`:update` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:update).

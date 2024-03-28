@@ -1,3 +1,6 @@
+# 1.4.6
+* Fixed a bug where the program would crash if a league name could not be resolved from GGGs list of leagues. This is often the case when asking for temp league economic values between leagues.
+
 # 1.4.5
 * Added the `:watch` command, which allows automatic execution of the `:generate` command when `.filter` files are changed. More information can be found on the [`:watch` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:watch).
 

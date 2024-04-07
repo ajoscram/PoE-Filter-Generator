@@ -30,7 +30,7 @@ def get_league_name(standard: bool = False, hardcore: bool = False, ruthless: bo
     * `ruthless`: `True` for ruthless, `False` for non-ruthless."""
     index = _get_league_index(standard, hardcore, ruthless)
     leagues = web.get(_LEAGUES_URL, expiration=Expiration.DAILY)
-    if index.value not in leagues:
+    if index.value >= len(leagues):
         error_message = _get_error_message(standard, hardcore, ruthless)
         raise ExpectedError(error_message)
     return leagues[index.value][_LEAGUE_ID_FIELD]

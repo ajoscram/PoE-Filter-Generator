@@ -1,7 +1,12 @@
 # Backlog
 * Let the RePoE dev know about the following base types not currently being fetched:
     - All harbinger staff pieces
-    - Maven invitations except quests
+    - Allflame embers
+
+* Add support for gems in `.econ`
+* Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
+* Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
+* Add a new command `:publish` to upload filters to GGG with
 
 # Ideas
 * Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
@@ -9,7 +14,6 @@
 * Update how `ExpectedError`s work:
     - Provide a possible solution alongside the error if possible (maybe?).
     - Define a color scheme for the text in the program and use those rules across all strings shown to the user.
-* Add a new command `:publish` to upload filters to GGG with
 * Use levenshtein distances to improve `:help`'s searching of the correct page.
     If the user types something slightly different than any existing page, then the closest page within a distance threshold is used instead.
 * Add a mechanism to emit warnings and return no block on econ if base_types is empty OR add the `.block` rule to split the commented out block from the previous block.

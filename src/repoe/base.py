@@ -48,8 +48,8 @@ def get_class_for_base(base_name: str) -> str:
     # left untested because this should be removed eventually
     if "Piece" in base_name:
         return "Pieces"
-    if "Maven's Invitation" in base_name:
-        return "Misc Map Items"
+    if "Allflame Ember" in base_name:
+        return "Embers of the Allflame"
 
     bases = _get_bases()
     if base_name not in bases:

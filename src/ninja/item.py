@@ -25,6 +25,7 @@ class MiscItemType(Enum):
     DELIRIUM_ORB = "DeliriumOrb"
     TATTOO = "Tattoo"
     OMEN = "Omen"
+    ALLFLAME_EMBER = "AllflameEmber"
 
 def get_misc_base_types(league_name: str, type: MiscItemType, lower: float, upper: float = None):
     """Returns a set of all base type names given a miscellaneous `type` for the `league` specified."""

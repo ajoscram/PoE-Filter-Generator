@@ -25,6 +25,7 @@ _MISC_MNEMONICS = {
     "del": ninja.MiscItemType.DELIRIUM_ORB,
     "tat": ninja.MiscItemType.TATTOO,
     "omn": ninja.MiscItemType.OMEN,
+    "mbr": ninja.MiscItemType.ALLFLAME_EMBER
 }
 
 _RULE_PARAMETER_COUNT_ERROR = "The .econ rule expects 2 or 3 paramaters in its description, got {0}."

@@ -18,14 +18,13 @@ _LEAGUES = [
 def test_get_league_name_given_league_flags_should_return_the_correct_league(
     monkeypatch: MonkeyPatch, standard: bool, hardcore: bool, ruthless: bool, league_index: _LeagueIndex):
     
-    LEAGUE_NAME = "league name"
-    QUERY_RESULT = { league_index.value : { _LEAGUE_ID_FIELD : LEAGUE_NAME } }
-    get_mock = WebGetMock(monkeypatch, QUERY_RESULT)
+    LEAGUES = _get_leagues_up_to_index(league_index)
+    get_mock = WebGetMock(monkeypatch, LEAGUES)
 
     league_name = ggg.get_league_name(standard, hardcore, ruthless)
 
     assert get_mock.received(_LEAGUES_URL, expiration=web.Expiration.DAILY)
-    assert league_name == LEAGUE_NAME
+    assert league_name == LEAGUES[league_index.value][_LEAGUE_ID_FIELD]
 
 _NAME_NOT_FOUND_LEAGUES = [
     (False, False, False, _TEMP),
@@ -44,3 +43,6 @@ def test_get_league_name_given_league_name_could_not_be_found_should_raise(
         _ = ggg.get_league_name(standard, hardcore, ruthless)
     
     assert error.value.message == _LEAGUE_NOT_FOUND_ERROR.format(error_part)
+
+def _get_leagues_up_to_index(index: _LeagueIndex):
+    return [ {} ] * index.value + [ { _LEAGUE_ID_FIELD : "league name" }  ]

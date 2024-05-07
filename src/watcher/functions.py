@@ -20,7 +20,7 @@ def watch(directory: str, globs: list[str], callable: Callable):
     """
     Runs an infinite loop until the user raises a `KeyboardInterrupt`.
     If a file that matches any `globs` within the `directory` is changed,
-    the `action` is executed.
+    the `callable` is executed.
     """
     process = ProcessWrapper(callable)
     watcher = FileWatcher(directory, globs)

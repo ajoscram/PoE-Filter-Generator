@@ -1,11 +1,16 @@
 # Backlog
+* Refactor `.econ` and the `ninja` module, so that it is easier to add sieves to any item type
+* Add item level support for Allflames
+* Add support for gems and memories in `.econ`
+* Update `.econ` documentation
+
+* Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
+* Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
+
 * Let the RePoE dev know about the following base types not currently being fetched:
     - All harbinger staff pieces
     - Allflame embers
 
-* Add support for gems in `.econ`
-* Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
-* Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
 * Add a new command `:publish` to upload filters to GGG with
 
 # Ideas

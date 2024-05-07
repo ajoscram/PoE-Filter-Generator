@@ -1,3 +1,5 @@
+# 1.4.7
+
 # 1.4.6
 * Fixed a bug where the program would crash if a league name could not be resolved from GGGs list of leagues. This is often the case when asking for temp league economic values between leagues.
 * Added `.econ` support for **Allflame Embers**. Note that even though Filled Coffins were added to poe.ninja, they cannot be discriminated filter-wise.

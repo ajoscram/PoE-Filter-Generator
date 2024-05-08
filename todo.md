@@ -1,5 +1,5 @@
 # Backlog
-* Add support for gems and memories in `.econ`
+* Add support for gems in `.econ`
 * Update `.econ` documentation
 
 * Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy

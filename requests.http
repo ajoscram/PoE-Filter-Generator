@@ -4,7 +4,7 @@ User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generato
 
 ### PoE Ninja queries
 @league = Necropolis
-@item_type = AllflameEmber
+@item_type = SkillGem
 @currency_type = Currency
 
 #### Currency or Frags

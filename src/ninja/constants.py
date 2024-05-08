@@ -18,6 +18,7 @@ class QueryType(Enum):
     """Represents the item types that can be queried via `poe.ninja`."""
     CURRENCY = "Currency"
     FRAGMENT = "Fragment"
+    MEMORY = "Memory"
     OIL = "Oil"
     INCUBATOR = "Incubator"
     SCARAB = "Scarab"

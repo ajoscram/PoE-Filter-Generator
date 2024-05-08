@@ -1,6 +1,4 @@
 # Backlog
-* Refactor `.econ` and the `ninja` module, so that it is easier to add sieves to any item type
-* Add item level support for Allflames
 * Add support for gems and memories in `.econ`
 * Update `.econ` documentation
 

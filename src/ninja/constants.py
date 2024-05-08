@@ -2,7 +2,6 @@ from enum import Enum
 
 RECORD_LINES_FIELD = "lines"
 ITEM_CLASS_FIELD = "itemClass"
-BASE_TYPE_FIELD = "baseType"
 LINKS_FIELD = "links"
 
 CURRENCY_URL = "https://poe.ninja/api/data/currencyoverview?league={0}&type={1}"
@@ -13,6 +12,7 @@ ITEM_URL = "https://poe.ninja/api/data/itemoverview?league={0}&type={1}"
 ITEM_BASE_TYPE_FIELD = "baseType"
 ITEM_VALUE_FIELD = "chaosValue"
 ITEM_NAME_FIELD = "name"
+ITEM_LEVEL_REQUIRED_FIELD = "levelRequired"
 
 class QueryType(Enum):
     """Represents the item types that can be queried via `poe.ninja`."""

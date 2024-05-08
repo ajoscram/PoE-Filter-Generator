@@ -1,4 +1,5 @@
 # 1.4.7
+* Added item level support for **Allflame Embers**. In other words, `ItemLevel` constraints in the block where a `.econ mbr` rule is declared are taken into consideration when selecting the `BaseType`s for the block. 
 
 # 1.4.6
 * Fixed a bug where the program would crash if a league name could not be resolved from GGGs list of leagues. This is often the case when asking for temp league economic values between leagues.

@@ -46,10 +46,10 @@ def _format_records(records_info: dict[str]):
     return [ _get_formatted_record(record) for record in records ]
 
 def _get_formatted_record(record: dict[str]):
-    if BASE_TYPE_FIELD in record:
-        
-        new_item_class = repoe.get_class_for_base(record[BASE_TYPE_FIELD])
-        record[ITEM_CLASS_FIELD] = new_item_class
+    if ITEM_BASE_TYPE_FIELD in record:
+
+        record[ITEM_CLASS_FIELD] = \
+            repoe.get_class_for_base(record[ITEM_BASE_TYPE_FIELD])
         
         if LINKS_FIELD not in record:
             record[LINKS_FIELD] = 0

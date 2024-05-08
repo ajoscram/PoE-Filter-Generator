@@ -3,8 +3,8 @@ GET https://api.pathofexile.com/leagues?type=main&realm=pc
 User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/
 
 ### PoE Ninja queries
-@league = Affliction
-@item_type = UniqueWeapon
+@league = Necropolis
+@item_type = AllflameEmber
 @currency_type = Currency
 
 #### Currency or Frags

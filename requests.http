@@ -4,7 +4,7 @@ User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generato
 
 ### PoE Ninja queries
 @league = Necropolis
-@item_type = SkillGem
+@item_type = Memory
 @currency_type = Currency
 
 #### Currency or Frags
@@ -41,3 +41,8 @@ GET https://www.poewiki.net/w/api.php?action=cargoquery&format=json&tables={{tab
 
 #### PHP Queries
 GET https://www.poewiki.net/index.php?title=Special:CargoExport&format=json&tables={{tables}}&fields={{fields}}&where={{where}}&order+by={{order_by}}&join+on={{join_on}}&limit={{limit}}
+
+#### PFG Docs
+@page = :help
+
+GET https://raw.githubusercontent.com/wiki/ajoscram/PoE-Filter-Generator/{{page}}.md

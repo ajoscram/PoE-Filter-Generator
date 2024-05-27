@@ -16,7 +16,7 @@ def sys_exit_mock(monkeypatch: MonkeyPatch):
 def test_main_given_params_should_download_the_latest_update(monkeypatch: MonkeyPatch):
     PARAMS = { EXE_DOWNLOAD_URL_FIELD: "1", DIRECTORY_FIELD: "2", TAG_FIELD: "3", NOTES_FIELD: "4" }
     web_download_mock = FunctionMock(monkeypatch, web.download)
-    web_clear_cache_mock = FunctionMock(monkeypatch, web.clear_cache)
+    web_clear_cache_mock = FunctionMock(monkeypatch, web.clear_cache, target=web)
     params = _get_encoded_params(PARAMS)
 
     update.main(params)

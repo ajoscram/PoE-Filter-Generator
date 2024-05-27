@@ -25,10 +25,7 @@ def test_execute_given_a_term_should_write_as_markdown(
     assert TERM in text_written
     assert web_get_mock.result in text_written
     assert console_write_mock.received(markdown=True)
-    assert web_get_mock.received(
-        _API_URL.format(TERM),
-        json=False,
-        expiration=web.Expiration.DAILY)
+    assert web_get_mock.received(_API_URL.format(TERM), web.Expiration.DAILY)
 
 def test_execute_given_no_parameters_should_default_to_the_usage_page_and_sidebar(web_get_mock: WebGetMock):
     help.execute([])

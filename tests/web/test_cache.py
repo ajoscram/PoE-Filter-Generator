@@ -1,10 +1,11 @@
-import pytest, os, json, shutil
+import pytest, os, json, shutil, utils
 from datetime import datetime
 from web import cache, Expiration
 from pytest import MonkeyPatch
+from core import FILE_ENCODING
 from test_utilities import FunctionMock, OpenMock
-from web.cache_entry import _EXPIRATION_DATE_FIELD, _EXPIRATION_FORMAT, _URL_FIELD, _IS_JSON_FIELD, _FILENAME_FIELD
-from web.cache import _ENTRIES_FILEPATH, _DIR, _FILE_ENCODING
+from web.cache.file_cache import _ENTRIES_FILENAME
+from web.cache.file_entry import _EXPIRATION_DATE_FIELD, _EXPIRATION_FORMAT, _URL_FIELD, _IS_JSON_FIELD, _FILENAME_FIELD
 
 _JSON_DATA = { "some": "data" }
 _TEXT_DATA = "some text"
@@ -12,13 +13,21 @@ _URL = "https://www.site.com/"
 
 @pytest.fixture(autouse=True)
 def setup():
-    cache._entries = None
+    cache.functions._file_cache = None
+    cache.functions._memory_cache = None
 
 @pytest.fixture(autouse=True)
 def open_mock(monkeypatch: MonkeyPatch):
     return OpenMock(monkeypatch)
 
-def test_try_get_given_url_not_in_entries_should_return_none(monkeypatch: MonkeyPatch):
+def test_try_get_given_data_cached_in_memory_should_return_it():
+    cache.functions._memory_cache = { _URL: _JSON_DATA }
+
+    data = cache.try_get(_URL)
+
+    assert data == _JSON_DATA
+
+def test_try_get_given_url_not_in_cache_should_return_none(monkeypatch: MonkeyPatch):
     _ = FunctionMock(monkeypatch, json.load, [ ])
     _ = FunctionMock(monkeypatch, os.path.isfile, True)
 
@@ -29,7 +38,7 @@ def test_try_get_given_url_not_in_entries_should_return_none(monkeypatch: Monkey
 def test_try_get_given_entry_file_cannot_be_found_should_return_none(monkeypatch: MonkeyPatch):
     ENTRY = _create_entry()
     _ = FunctionMock(monkeypatch, json.load, [ ENTRY ])
-    _ = FunctionMock(monkeypatch, os.path.isfile, lambda x: x == _ENTRIES_FILEPATH)
+    _ = FunctionMock(monkeypatch, os.path.isfile, lambda x: _ENTRIES_FILENAME in x)
 
     data = cache.try_get(ENTRY[_URL_FIELD])
 
@@ -71,8 +80,9 @@ def test_add_given_json_data_should_save_it_with_its_entry(monkeypatch: MonkeyPa
     _ = FunctionMock(monkeypatch, os.makedirs)
     json_dump_mock = FunctionMock(monkeypatch, json.dump)
     
-    cache.add(_URL, Expiration.DAILY, True, _JSON_DATA)
+    cache.add(_URL, Expiration.DAILY, _JSON_DATA)
 
+    assert cache.functions._memory_cache[_URL] == _JSON_DATA
     assert json_dump_mock.get_invocation_count() == 2
     assert json_dump_mock.received(_JSON_DATA)
 
@@ -80,22 +90,25 @@ def test_add_given_text_data_should_save_it_with_its_entry(monkeypatch: MonkeyPa
     _ = FunctionMock(monkeypatch, os.makedirs)
     json_dump_mock = FunctionMock(monkeypatch, json.dump)
     
-    cache.add(_URL, Expiration.DAILY, False, _TEXT_DATA)
+    cache.add(_URL, Expiration.DAILY, _TEXT_DATA)
 
+    assert cache.functions._memory_cache[_URL] == _TEXT_DATA
     assert json_dump_mock.get_invocation_count() == 1
-    assert open_mock.received(encoding=_FILE_ENCODING)
+    assert open_mock.received(encoding=FILE_ENCODING)
     assert open_mock.file.got_written(_TEXT_DATA)
 
 
 @pytest.mark.parametrize("cache_exists", [ True, False ])
 def test_clear_cache_should_delete_the_cache_folder_and_return_if_it_did(monkeypatch: MonkeyPatch, cache_exists: bool):
+    DIR = "execution_directory"
+    _ = FunctionMock(monkeypatch, utils.get_execution_dir, DIR)
     path_isdir_mock = FunctionMock(monkeypatch, os.path.isdir, cache_exists)
     shutil_rmtree_mock = FunctionMock(monkeypatch, shutil.rmtree)
 
     result = cache.clear_cache()
 
     assert result == cache_exists
-    assert path_isdir_mock.received(_DIR)
+    assert path_isdir_mock.received(DIR)
     assert shutil_rmtree_mock.get_invocation_count() == (1 if cache_exists else 0)
 
 

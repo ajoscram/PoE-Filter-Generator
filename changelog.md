@@ -1,6 +1,9 @@
 # 1.4.7
+* Added `.econ` support for **Memories** and **Gems**. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
 * Added item level support for **Allflame Embers** on `.econ`.
-* Added `.econ` support for **Memories**.
+* Fixed an encoding bug that caused non-ASCII characters to be written incorrectly on filters.
+* Base type identification for `.game` and `.econ` should now be considerably more accurate.
+* Caching performance was improved considerably.
 
 # 1.4.6
 * Fixed a bug where the program would crash if a league name could not be resolved from GGGs list of leagues. This is often the case when asking for temp league economic values between leagues.

@@ -1,17 +1,20 @@
 # Backlog
-* Add support for gems in `.econ`
 * Update `.econ` documentation
-
 * Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
 * Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
+* Update `.include` documentation
+* Review regex handling in `.include`
 
 * Let the RePoE dev know about the following base types not currently being fetched:
+    https://github.com/lvlvllvlvllvlvl/RePoE
     - All harbinger staff pieces
     - Allflame embers
-
-* Add a new command `:publish` to upload filters to GGG with
+    - Transfigured gems
 
 # Ideas
+* Make the `FileCache.clear` method smarter by deleting the files listed in entries instead of the whole directory.
+* Add a new command `:publish` to upload filters to GGG with
+* Upserting lines into a block should insert before all blank lines at the end of the block
 * Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
 * Add E2E testing that actually goes to the internet and does things.
 * Update how `ExpectedError`s work:

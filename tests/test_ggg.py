@@ -23,7 +23,7 @@ def test_get_league_name_given_league_flags_should_return_the_correct_league(
 
     league_name = ggg.get_league_name(standard, hardcore, ruthless)
 
-    assert get_mock.received(_LEAGUES_URL, expiration=web.Expiration.DAILY)
+    assert get_mock.received(_LEAGUES_URL, web.Expiration.DAILY)
     assert league_name == LEAGUES[league_index.value][_LEAGUE_ID_FIELD]
 
 _NAME_NOT_FOUND_LEAGUES = [
@@ -37,7 +37,7 @@ _NAME_NOT_FOUND_LEAGUES = [
 def test_get_league_name_given_league_name_could_not_be_found_should_raise(
         monkeypatch: MonkeyPatch, standard: bool, hardcore: bool, ruthless: bool, error_part: str):
     
-    get_mock = WebGetMock(monkeypatch, [])
+    _ = WebGetMock(monkeypatch, [])
 
     with pytest.raises(ExpectedError) as error:
         _ = ggg.get_league_name(standard, hardcore, ruthless)

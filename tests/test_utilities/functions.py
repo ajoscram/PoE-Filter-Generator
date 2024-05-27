@@ -15,6 +15,6 @@ def create_sieve_for_text(text: str):
 
 def create_sieve_for_pattern(pattern: dict[str, str], operator: str = "=="):
     raw_lines = [
-        f'{operand} {operator} {value}'
+        f"{operand} {operator} {value}"
         for operand, value in pattern.items() ]
     return create_sieve_for_text("\n".join(raw_lines))

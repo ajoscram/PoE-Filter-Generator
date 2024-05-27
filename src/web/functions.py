@@ -1,13 +1,15 @@
 import os, requests
 from typing import Callable
-from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
+from requests import ReadTimeout, ConnectTimeout, HTTPError, Response, Timeout, ConnectionError
 from core import ExpectedError
 from io import BufferedWriter
 from . import cache, Expiration
 
-_HEADERS = { "User-Agent": "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/" }
 _DOWNLOAD_CHUNK_SIZE = 1024 * 8 # eight megabytes
 _TEMP_DOWNLOAD_PREFIX = "temp_"
+_CONTENT_TYPE_HEADER = "Content-Type"
+_JSON_CONTENT_TYPE = "application/json"
+_HEADERS = { "User-Agent": "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/" }
 
 _HTTP_ERROR = """An HTTP error occurred while requesting data from this URL:
 
@@ -25,14 +27,14 @@ One of the following things is likely happening here:
 - The server where data is being requested from is currently down."""
 _UNEXISTENT_DIRECTORY_ERROR = "'{0}' does not correspond to an existing directory on this computer."
 
-def get(url: str,
-    json: bool = True,
+def get(
+    url: str,
     expiration: Expiration = Expiration.IMMEDIATE,
-    formatter: Callable = lambda data: data,
+    formatter: Callable[[str | dict | list], str | dict | list] = lambda data: data,
     custom_http_errors: dict[int, str] = {}):
     """Performs a `get` request on the `url` passed in.
-    - If successful and `json=True`, an object obtained from the request is returned representing the JSON.
-    - If successful and `json=False`, the request's body is returned as a `str`.
+    - If successful and the request contained a JSON, either a `dict` or `list` is returned.
+    - If successful in any other case, the request's body is returned as a `str`.
     - `expiration` determines the amount of time before deleting the data received from the cache.
     - `formatter` applies a transformation function to the data received before caching and returning.
     - If it fails with an HTTP error and its code is a key in the `custom_http_errors` dictionary,
@@ -40,9 +42,9 @@ def get(url: str,
     data = cache.try_get(url)
     if data == None:
         response = _get_response(url, custom_http_errors)
-        data = response.json() if json else response.text
+        data = response.json() if _is_json(response) else response.text
         data = formatter(data)
-        cache.add(url, expiration, json, data)
+        cache.add(url, expiration, data)
     return data
 
 def download(url: str, directory: str, filename: str, custom_http_errors: dict[int, str] = {}):
@@ -83,3 +85,6 @@ def _try_write_chunk(file_writer: BufferedWriter, chunk):
     file_writer.write(chunk)
     file_writer.flush()
     os.fsync(file_writer.fileno())
+
+def _is_json(response: Response):
+    return _JSON_CONTENT_TYPE in response.headers.get(_CONTENT_TYPE_HEADER)

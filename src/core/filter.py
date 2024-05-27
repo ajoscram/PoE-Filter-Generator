@@ -1,6 +1,7 @@
 import os
 from .expected_error import ExpectedError
 from .block import Block
+from .constants import FILE_ENCODING
 
 _FILE_EXISTS_ERROR = "The file path corresponds to an already existing file"
 _FILE_NOT_FOUND_ERROR = "The input file was not found"
@@ -31,7 +32,7 @@ class Filter:
     
     def _write_filter(self, text: str):
         try:
-            with open(self.filepath, "w") as file:
+            with open(self.filepath, "w", encoding=FILE_ENCODING) as file:
                 file.write(text)
         except FileExistsError:
             raise ExpectedError(_FILE_EXISTS_ERROR, filepath=self.filepath)
@@ -40,7 +41,7 @@ class Filter:
 
 def _get_blocks(filepath: str):
     try:
-        with open(filepath, "r") as file:
+        with open(filepath, "r", encoding=FILE_ENCODING) as file:
             raw_lines = file.readlines()
             return Block.extract(raw_lines)
     except FileNotFoundError:

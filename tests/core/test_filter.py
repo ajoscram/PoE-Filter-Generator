@@ -1,7 +1,7 @@
 import builtins, pytest, os
 from pytest import MonkeyPatch
 from core.filter import _FILE_EXISTS_ERROR, _FILE_NOT_FOUND_ERROR, _PERMISSION_ERROR
-from core import Filter, ExpectedError, Block
+from core import Filter, ExpectedError, Block, FILE_ENCODING
 from test_utilities import FunctionMock, OpenMock
 
 _FILEPATH = "filepath"
@@ -12,7 +12,7 @@ def test_load_given_a_valid_filepath_should_return_a_filter(monkeypatch: MonkeyP
 
     filter = Filter.load(_FILEPATH)
 
-    assert open_mock.received(_FILEPATH, "r")
+    assert open_mock.received(_FILEPATH, "r", encoding=FILE_ENCODING)
     assert filter.filepath == _FILEPATH
     assert [ str(line) for line in filter.blocks[0].lines ] == _LINES
 
@@ -39,7 +39,7 @@ def test_save_should_save_the_lines_in_the_filter(monkeypatch: MonkeyPatch):
 
     assert dirname_mock.received(_FILEPATH)
     assert makedirs_mock.received(DIRECTORY, exist_ok=True)
-    assert open_mock.received(_FILEPATH, "w")
+    assert open_mock.received(_FILEPATH, "w", encoding=FILE_ENCODING)
     assert open_mock.file.got_written(str(FILTER.blocks[0]))
 
 _WRITE_FILE_EXCEPTIONS = [ (FileExistsError, _FILE_EXISTS_ERROR), (PermissionError, _PERMISSION_ERROR) ]

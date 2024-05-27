@@ -33,8 +33,7 @@ def _get_search_term(args: list[str]):
 def _get_text(term: str):
     return web.get(
         _API_URL.format(term),
-        json = False,
-        expiration = web.Expiration.DAILY,
+        web.Expiration.DAILY,
         formatter = lambda x: _format_markdown(x, term),
         custom_http_errors = { _HTTP_NOT_FOUND_CODE: _NOT_FOUND_ERROR.format(term) })
 

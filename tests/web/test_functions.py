@@ -2,16 +2,17 @@ import pytest, web, requests, os
 from test_utilities import FunctionMock, OpenMock
 from pytest import MonkeyPatch
 from requests import ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError
-from web.functions import _HEADERS, _HTTP_ERROR as _HTTP_ERROR_TEXT, _CONNECTION_ERROR, _TEMP_DOWNLOAD_PREFIX, _UNEXISTENT_DIRECTORY_ERROR
+from web.functions import _JSON_CONTENT_TYPE, _CONTENT_TYPE_HEADER, _HEADERS, _HTTP_ERROR as _HTTP_ERROR_TEXT, _CONNECTION_ERROR, _TEMP_DOWNLOAD_PREFIX, _UNEXISTENT_DIRECTORY_ERROR
 from core import ExpectedError
 from web import cache
 
 class _MockHttpResponse:
-    def __init__(self):
+    def __init__(self, content_type: str = _JSON_CONTENT_TYPE):
         self.json_response = { "some": "json" }
         self.text = str(self.json_response)
         self.status_code = 1
         self.content = [ "1", "2", None, "3" ] # None here emulates faulty chunks of data
+        self.headers = { _CONTENT_TYPE_HEADER: content_type }
     
     def raise_for_status(self):
         pass
@@ -47,10 +48,13 @@ def test_get_given_a_url_and_headers_should_get_the_json(request_get_mock: Funct
     assert request_get_mock.received(_URL, headers=_HEADERS)
     assert response == _MOCK_RESPONSE.json_response
 
-def test_get_given_json_flag_is_false_should_return_the_text_instead():
-    response = web.get(_URL, json=False)
+def test_get_given_text_content_type_should_return_the_text_instead(request_get_mock: FunctionMock):
+    text_response = _MockHttpResponse("application/text")
+    request_get_mock.result = text_response
+    
+    response = web.get(_URL)
 
-    assert response == _MOCK_RESPONSE.text
+    assert response == text_response.text
 
 def test_get_given_value_is_cached_should_return_the_cached_value(
     cache_try_get_mock: FunctionMock, request_get_mock: FunctionMock):

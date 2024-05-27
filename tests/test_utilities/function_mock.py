@@ -20,7 +20,7 @@ _KNOWN_MODULES = {
     "shutil": shutil,
     "time": time,
     "glob": glob,
-    #"multiprocessing": multiprocessing
+    "multiprocessing": multiprocessing
 }
 
 class FunctionMock(CallableMock):

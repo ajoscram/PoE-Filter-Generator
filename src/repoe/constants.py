@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import StrEnum
 
 ROYALE_PATTERN = r".*Royale\d*"
 
-class Field(Enum):
+class Field(StrEnum):
     ID = "id"
     NAME = "name"
     TAGS = "tags"

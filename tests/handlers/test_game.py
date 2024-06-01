@@ -1,5 +1,5 @@
 import pytest, repoe
-from core import ExpectedError, RULE_START, EQUALS, HAS_EXPLICIT_MOD, BASE_TYPE
+from core import ExpectedError, Operand, Operator, RULE_START
 from handlers import game
 from test_utilities import create_filter, FunctionMock
 from handlers.game import NAME, _MOD_PARAM, _BASE_PARAM, _INVALID_PARAM_ERROR
@@ -13,7 +13,7 @@ def test_handle_given_mod_param_should_upsert_on_HasExplicitMod(monkeypatch: Mon
     lines = game.handle(filter, filter.blocks[0], None)
 
     assert len(lines) == 2
-    assert lines[1] == f'{HAS_EXPLICIT_MOD} {EQUALS} "{MOD}"'
+    assert lines[1] == f'{Operand.HAS_EXPLICIT_MOD} {Operator.EQUALS} "{MOD}"'
 
 def test_handle_given_base_param_should_upsert_on_BaseType(monkeypatch: MonkeyPatch):
     BASE_TYPE_NAME = "some base"
@@ -23,7 +23,7 @@ def test_handle_given_base_param_should_upsert_on_BaseType(monkeypatch: MonkeyPa
     lines = game.handle(filter, filter.blocks[0], None)
 
     assert len(lines) == 2
-    assert lines[1] == f'{BASE_TYPE} {EQUALS} "{BASE_TYPE_NAME}"'
+    assert lines[1] == f'{Operand.BASE_TYPE} {Operator.EQUALS} "{BASE_TYPE_NAME}"'
 
 def test_handle_given_unknown_param_should_raise():
     UNKNOWN_PARAM = "unknown_param"

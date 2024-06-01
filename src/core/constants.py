@@ -1,29 +1,34 @@
+from enum import StrEnum
+
 # Operands
-HIDE = "Hide"
-SHOW = "Show"
-MINIMAL = "Minimal"
-CLASS = "Class"
-BASE_TYPE = "BaseType"
-LINKED_SOCKETS = "LinkedSockets"
-REPLICA = "Replica"
-DROP_LEVEL = "DropLevel"
-ITEM_LEVEL = "ItemLevel"
-AREA_LEVEL = "AreaLevel"
-CORRUPTED = "Corrupted"
-QUALITY = "Quality"
-GEM_LEVEL = "GemLevel"
-HAS_EXPLICIT_MOD = "HasExplicitMod"
-BLOCK_STARTERS = [ HIDE, SHOW, MINIMAL ]
+class Operand(StrEnum):
+    HIDE = "Hide"
+    SHOW = "Show"
+    MINIMAL = "Minimal"
+    CLASS = "Class"
+    BASE_TYPE = "BaseType"
+    LINKED_SOCKETS = "LinkedSockets"
+    REPLICA = "Replica"
+    DROP_LEVEL = "DropLevel"
+    ITEM_LEVEL = "ItemLevel"
+    AREA_LEVEL = "AreaLevel"
+    CORRUPTED = "Corrupted"
+    QUALITY = "Quality"
+    GEM_LEVEL = "GemLevel"
+    HAS_EXPLICIT_MOD = "HasExplicitMod"
+
+BLOCK_STARTERS = [ Operand.HIDE, Operand.SHOW, Operand.MINIMAL ]
 
 # Operators
-GREATER_EQUALS = ">="
-GREATER = ">"
-LESS_EQUALS = "<="
-LESS = "<"
-CONTAINS = "="
-EQUALS = "=="
-NOT_CONTAINS = "!"
-NOT_EQUALS = "!="
+class Operator(StrEnum):
+    GREATER_EQUALS = ">="
+    GREATER = ">"
+    LESS_EQUALS = "<="
+    LESS = "<"
+    CONTAINS = "="
+    EQUALS = "=="
+    NOT_CONTAINS = "!"
+    NOT_EQUALS = "!="
 
 # Rules
 COMMENT_START = '#'

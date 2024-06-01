@@ -1,6 +1,6 @@
 from .line import Line
 from .sieve import Sieve
-from .constants import SHOW, HIDE
+from .constants import Operand, Operator
 
 class Block:
     """A block is a collection of lines (strings) in a filter, which may include rules in them."""
@@ -31,16 +31,16 @@ class Block:
 
     def hide(self):
         """Attempts to hide a block by setting every 'Show' operand in it to 'Hide'."""
-        for line in self._find_lines(operand=SHOW):
-            line.operand = HIDE
+        for line in self._find_lines(operand=Operand.SHOW):
+            line.operand = Operand.HIDE
 
     def show(self):
         """Attempts to hide a block by setting every 'Hide' operand in it to 'Show'.
         This is the reverse function to hide."""
-        for line in self._find_lines(operand=HIDE):
-            line.operand = SHOW
+        for line in self._find_lines(operand=Operand.HIDE):
+            line.operand = Operand.SHOW
     
-    def upsert(self, operand: str, values: list[str], operator: str = "=="):
+    def upsert(self, operand: Operand, values: list[str], operator: str = "=="):
         """Updates every line that contains the `operand` with the `values` listed.
         If a line with the `operand` was not found, then a new line with the
         `operand`, `operator` and `values`is appended to the block."""
@@ -67,7 +67,7 @@ class Block:
         sieveable_lines = [ line for line in self.lines if line.operand != "" ]
         return Sieve(sieveable_lines)
 
-    def _find_lines(self, operand: str = None, operator: str = None) -> list[Line]:
+    def _find_lines(self, operand: Operand = None, operator: Operator = None) -> list[Line]:
         return [ line
             for line in self.lines
             if operand == None or line.operand == operand

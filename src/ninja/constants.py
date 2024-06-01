@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import StrEnum
 
-class Field(Enum):
+class Field(StrEnum):
     LINES = "lines"
     LINKS = "links"
     CLASS = "itemClass"
@@ -18,7 +18,7 @@ class Field(Enum):
     ITEM_BASE_TYPE = "baseType"
     ITEM_VALUE_FIELD = "chaosValue"
 
-class QueryType(Enum):
+class QueryType(StrEnum):
     """Represents the item types that can be queried via `poe.ninja`."""
     CURRENCY = "Currency"
     FRAGMENT = "Fragment"

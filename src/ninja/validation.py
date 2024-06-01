@@ -1,5 +1,5 @@
 from typing import Callable
-from core import Sieve, REPLICA, LINKED_SOCKETS, CLASS, ITEM_LEVEL, CORRUPTED, QUALITY, GEM_LEVEL
+from core import Sieve, Operand
 from .value_range import ValueRange
 from .constants import *
 
@@ -21,30 +21,30 @@ def get_validator(type: QueryType) -> Callable[[dict[str], ValueRange, Sieve], b
             return _is_item_valid
 
 def _is_currency_valid(record: dict[str], range: ValueRange, _):
-    return record[Field.CURRENCY_VALUE.value] in range
+    return record[Field.CURRENCY_VALUE] in range
 
 def _is_unique_valid(record: dict[str], range: ValueRange, sieve: Sieve):
-    unique_name: str = record[Field.NAME.value]
-    is_replica = unique_name.startswith(f"{REPLICA} ") and unique_name not in _REPLICA_ITEM_NAME_EXCEPTIONS
+    unique_name: str = record[Field.NAME]
+    is_replica = unique_name.startswith(f"{Operand.REPLICA} ") and unique_name not in _REPLICA_ITEM_NAME_EXCEPTIONS
     pattern = {
-        CLASS: record[Field.CLASS.value],
-        REPLICA: is_replica,
-        LINKED_SOCKETS: record[Field.LINKS.value] \
-            if Field.LINKS.value in record else 0 }
+        Operand.CLASS: record[Field.CLASS],
+        Operand.REPLICA: is_replica,
+        Operand.LINKED_SOCKETS: record[Field.LINKS] \
+            if Field.LINKS in record else 0 }
     return pattern in sieve and _is_item_valid(record, range, sieve)
 
 def _is_gem_valid(record: dict[str], range: ValueRange, sieve: Sieve):
     pattern = {
-        GEM_LEVEL: record[Field.GEM_LEVEL.value],
-        QUALITY: record[Field.GEM_QUALITY.value] \
-            if Field.GEM_QUALITY.value in record else 0,
-        CORRUPTED: record[Field.CORRUPTED.value] \
-            if Field.CORRUPTED.value in record else False }
+        Operand.GEM_LEVEL: record[Field.GEM_LEVEL],
+        Operand.QUALITY: record[Field.GEM_QUALITY] \
+            if Field.GEM_QUALITY in record else 0,
+        Operand.CORRUPTED: record[Field.CORRUPTED] \
+            if Field.CORRUPTED in record else False }
     return pattern in sieve and _is_item_valid(record, range, sieve)
 
 def _is_allflame_ember_valid(record: dict[str], range: ValueRange, sieve: Sieve):
-    pattern = { ITEM_LEVEL: record[Field.LEVEL_REQUIRED.value] }
+    pattern = { Operand.ITEM_LEVEL: record[Field.LEVEL_REQUIRED] }
     return pattern in sieve and _is_item_valid(record, range, sieve)
 
 def _is_item_valid(record: dict[str], range: ValueRange, _):
-    return record[Field.ITEM_VALUE_FIELD.value] in range
+    return record[Field.ITEM_VALUE_FIELD] in range

@@ -1,5 +1,5 @@
 import web
-from enum import Enum
+from enum import IntEnum
 from web import Expiration
 from core import ExpectedError
 
@@ -13,7 +13,7 @@ _STANDARD = "standard"
 _RUTHLESS = "ruthless"
 _TEMP = "temp"
 
-class _LeagueIndex(Enum):
+class _LeagueIndex(IntEnum):
     STANDARD = 0
     HARDCORE_STANDARD = 1
     RUTHLESS_STANDARD = 4
@@ -30,10 +30,10 @@ def get_league_name(standard: bool = False, hardcore: bool = False, ruthless: bo
     * `ruthless`: `True` for ruthless, `False` for non-ruthless."""
     index = _get_league_index(standard, hardcore, ruthless)
     leagues = web.get(_LEAGUES_URL, Expiration.DAILY)
-    if index.value >= len(leagues):
+    if index >= len(leagues):
         error_message = _get_error_message(standard, hardcore, ruthless)
         raise ExpectedError(error_message)
-    return leagues[index.value][_LEAGUE_ID_FIELD]
+    return leagues[index][_LEAGUE_ID_FIELD]
 
 def _get_league_index(standard: bool, hardcore: bool, ruthless: bool):
     if standard and not hardcore and not ruthless:

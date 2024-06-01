@@ -1,6 +1,6 @@
 import pytest
 from pytest import MonkeyPatch
-from core import ITEM_LEVEL, EQUALS
+from core import Operand, Operator
 from repoe import base, mod
 from repoe.constants import Field
 from repoe.mod import _VALID_GENERATION_TYPES
@@ -57,19 +57,19 @@ def _create_mods(
     weight: int = 1):
     return {
         "mod/id": {
-            Field.NAME.value: name,
-            Field.DOMAIN.value: domain,
-            Field.GENERATION_TYPE.value: generation_type,
-            Field.REQUIRED_LEVEL.value: required_level,
-            Field.SPAWN_WEIGHTS.value: [
+            Field.NAME: name,
+            Field.DOMAIN: domain,
+            Field.GENERATION_TYPE: generation_type,
+            Field.REQUIRED_LEVEL: required_level,
+            Field.SPAWN_WEIGHTS: [
                 {
-                    Field.TAG.value: tag,
-                    Field.WEIGHT.value: weight
+                    Field.TAG: tag,
+                    Field.WEIGHT: weight
                 }
             ]
         }
     }
 
 def _create_sieve():
-    text = f"{ITEM_LEVEL} {EQUALS} {_LEVEL}"
+    text = f"{Operand.ITEM_LEVEL} {Operator.EQUALS} {_LEVEL}"
     return create_sieve_for_text(text)

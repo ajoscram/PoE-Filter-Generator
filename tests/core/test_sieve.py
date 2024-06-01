@@ -1,5 +1,5 @@
 import pytest
-from core import ExpectedError, SHOW, EQUALS, CONTAINS, LESS, LESS_EQUALS, GREATER, GREATER_EQUALS, NOT_EQUALS, NOT_CONTAINS
+from core import ExpectedError, Operator, Operand
 from core.sieve import _BOOL_OPERATOR_ERROR, _INT_OPERATOR_ERROR, _INT_VALUE_ERROR, _STR_OPERATOR_ERROR, _BOOL_VALUE_ERROR
 from test_utilities import create_sieve_for_text
 
@@ -15,29 +15,29 @@ _BOOL_VALUE = True
 _PATTERN = { _STR_OPERAND: _STR_VALUE, _INT_OPERAND: _INT_VALUE, _BOOL_OPERAND: _BOOL_VALUE }
 
 def test_in_operator_given_empty_pattern_should_return_true():
-    sieve = create_sieve_for_text(f'{_STR_OPERAND} {EQUALS} "some value"')
+    sieve = create_sieve_for_text(f'{_STR_OPERAND} {Operator.EQUALS} "some value"')
 
     assert {} in sieve
 
 def test_in_operator_given_no_values_should_return_true():
-    sieve = create_sieve_for_text(f'{_STR_OPERAND} {EQUALS}')
+    sieve = create_sieve_for_text(f'{_STR_OPERAND} {Operator.EQUALS}')
 
     assert { _STR_OPERAND: "any_value" } in sieve
 
 @pytest.mark.parametrize("value, expected_result", [ ("", True), ("value", False) ])
 def test_in_operator_given_None_should_return_expectedly(value: str, expected_result: bool):
-    sieve = create_sieve_for_text(f'{SHOW} {value}')
+    sieve = create_sieve_for_text(f'{Operand.SHOW} {value}')
 
-    result = { SHOW: None } in sieve
+    result = { Operand.SHOW: None } in sieve
 
     assert result == expected_result
 
 @pytest.mark.parametrize("operator, value, expected_result", [
-    (EQUALS, _STR_VALUE, True),
-    (CONTAINS, _STR_VALUE[:-1], True),
+    (Operator.EQUALS, _STR_VALUE, True),
+    (Operator.CONTAINS, _STR_VALUE[:-1], True),
     ("", _STR_VALUE[:-1], True),
-    (NOT_EQUALS, _STR_VALUE, False),
-    (NOT_CONTAINS, _STR_VALUE, False),
+    (Operator.NOT_EQUALS, _STR_VALUE, False),
+    (Operator.NOT_CONTAINS, _STR_VALUE, False),
 ])
 def test_in_operator_given_string_value_and_a_valid_operator_should_return_expectedly(
     operator: str, value: str, expected_result: bool):
@@ -49,7 +49,7 @@ def test_in_operator_given_string_value_and_a_valid_operator_should_return_expec
     assert result == expected_result
 
 def test_in_operator_given_invalid_str_operator_should_raise():
-    INVALID_OPERATOR = GREATER_EQUALS
+    INVALID_OPERATOR = Operator.GREATER_EQUALS
     sieve = create_sieve_for_text(f'{_STR_OPERAND} {INVALID_OPERATOR} {_STR_VALUE}')
 
     with pytest.raises(ExpectedError) as error:
@@ -59,11 +59,11 @@ def test_in_operator_given_invalid_str_operator_should_raise():
     assert error.value.line_number == 0
 
 @pytest.mark.parametrize("filter_value, operator, expected_result", [
-    (True, EQUALS, True),
-    (False, CONTAINS, False),
+    (True, Operator.EQUALS, True),
+    (False, Operator.CONTAINS, False),
     (True, "", True),
-    (False, NOT_EQUALS, True),
-    (True, NOT_CONTAINS, False),
+    (False, Operator.NOT_EQUALS, True),
+    (True, Operator.NOT_CONTAINS, False),
 ])
 def test_in_operator_given_bool_should_return_expectedly(filter_value: bool, operator: str, expected_result: bool):
     sieve = create_sieve_for_text(f'{_BOOL_OPERAND} {operator} {filter_value}')
@@ -74,7 +74,7 @@ def test_in_operator_given_bool_should_return_expectedly(filter_value: bool, ope
 
 def test_in_operator_given_non_bool_value_should_raise():
     INVALID_VALUE = "NotBool"
-    sieve = create_sieve_for_text(f'{_BOOL_OPERAND} {EQUALS} {INVALID_VALUE}')
+    sieve = create_sieve_for_text(f'{_BOOL_OPERAND} {Operator.EQUALS} {INVALID_VALUE}')
 
     with pytest.raises(ExpectedError) as error:
         _PATTERN in sieve
@@ -83,7 +83,7 @@ def test_in_operator_given_non_bool_value_should_raise():
     assert error.value.line_number == 0
 
 def test_in_operator_given_invalid_bool_operator_should_raise():
-    INVALID_OPERATOR = GREATER
+    INVALID_OPERATOR = Operator.GREATER
     sieve = create_sieve_for_text(f'{_BOOL_OPERAND} {INVALID_OPERATOR} {True}')
 
     with pytest.raises(ExpectedError) as error:
@@ -93,15 +93,15 @@ def test_in_operator_given_invalid_bool_operator_should_raise():
     assert error.value.line_number == 0
 
 @pytest.mark.parametrize("filter_value, operator", [
-    (_INT_VALUE - 1, GREATER_EQUALS),
-    (_INT_VALUE - 1, GREATER),
-    (_INT_VALUE + 1, LESS_EQUALS),
-    (_INT_VALUE + 1, LESS),
-    (_INT_VALUE, EQUALS),
-    (_INT_VALUE, CONTAINS),
+    (_INT_VALUE - 1, Operator.GREATER_EQUALS),
+    (_INT_VALUE - 1, Operator.GREATER),
+    (_INT_VALUE + 1, Operator.LESS_EQUALS),
+    (_INT_VALUE + 1, Operator.LESS),
+    (_INT_VALUE, Operator.EQUALS),
+    (_INT_VALUE, Operator.CONTAINS),
     (_INT_VALUE, ""),
-    (_INT_VALUE + 1, NOT_EQUALS),
-    (_INT_VALUE + 1, NOT_CONTAINS),
+    (_INT_VALUE + 1, Operator.NOT_EQUALS),
+    (_INT_VALUE + 1, Operator.NOT_CONTAINS),
 ])
 def test_in_operator_given_int_value_and_a_valid_operator_should_return_expectedly(
     filter_value: int, operator: str):
@@ -111,13 +111,13 @@ def test_in_operator_given_int_value_and_a_valid_operator_should_return_expected
     assert _PATTERN in sieve
 
 def test_in_operator_given_int_value_doesnt_apply_should_return_false():
-    sieve = create_sieve_for_text(f'{_INT_OPERAND} {GREATER} {_INT_VALUE}')
+    sieve = create_sieve_for_text(f'{_INT_OPERAND} {Operator.GREATER} {_INT_VALUE}')
 
     assert _PATTERN not in sieve
 
 def test_in_operator_given_invalid_int_operator_should_raise():
     INVALID_OPERATOR = "invalid_operator"
-    sieve = create_sieve_for_text(f'{_INT_OPERAND} {LESS} {_INT_VALUE}')
+    sieve = create_sieve_for_text(f'{_INT_OPERAND} {Operator.LESS} {_INT_VALUE}')
     sieve._lines_by_operand[_INT_OPERAND][0].operator = INVALID_OPERATOR
 
     with pytest.raises(ExpectedError) as error:
@@ -128,7 +128,7 @@ def test_in_operator_given_invalid_int_operator_should_raise():
 
 @pytest.mark.parametrize("values", [ "0 2",  "not_int"])
 def test_in_operator_given_invalid_int_values_should_raise(values: str):
-    sieve = create_sieve_for_text(f'{_INT_OPERAND} {EQUALS} {values}')
+    sieve = create_sieve_for_text(f'{_INT_OPERAND} {Operator.EQUALS} {values}')
 
     with pytest.raises(ExpectedError) as error:
         _PATTERN in sieve
@@ -138,8 +138,8 @@ def test_in_operator_given_invalid_int_values_should_raise(values: str):
 
 def test_in_operator_given_multiple_lines_with_the_same_operator_should_check_all_of_them():
     sieve = create_sieve_for_text(
-    f'''{_STR_OPERAND} {EQUALS}
-        {_STR_OPERAND} {EQUALS} {_STR_VALUE}
-        {_STR_OPERAND} {EQUALS} "another value"''')
+    f'''{_STR_OPERAND} {Operator.EQUALS}
+        {_STR_OPERAND} {Operator.EQUALS} {_STR_VALUE}
+        {_STR_OPERAND} {Operator.EQUALS} "another value"''')
     
     assert _PATTERN not in sieve

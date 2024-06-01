@@ -1,5 +1,5 @@
 import pytest
-from core import ExpectedError, Line, CLASS, COMMENT_START, BLOCK_STARTERS, RULE_SEPARATOR, RULE_START
+from core import ExpectedError, Line, Operand, COMMENT_START, BLOCK_STARTERS, RULE_SEPARATOR, RULE_START
 from core.line import _MULTILINE_STRING_ERROR
 
 _LINE_NUMBER = 1
@@ -14,12 +14,12 @@ def test_constructor_given_text_has_linebreak_should_raise():
     assert error.value.line_number == _LINE_NUMBER
 
 _LINE_PARTS = [
-    ("    ", CLASS, "", "", ""),
-    ("    ", CLASS, "", "\"\"", ""),
-    ("    ", CLASS, "==", "", ""),
-    ("    ", CLASS, "==", '"Body Armours"', ""),
-    ("    ", CLASS, "==2", '"Body Armours"', ""),
-    ("    ", CLASS, "==", '"Body Armours"', f"{COMMENT_START}this is a comment"),
+    ("    ", Operand.CLASS, "", "", ""),
+    ("    ", Operand.CLASS, "", "\"\"", ""),
+    ("    ", Operand.CLASS, "==", "", ""),
+    ("    ", Operand.CLASS, "==", '"Body Armours"', ""),
+    ("    ", Operand.CLASS, "==2", '"Body Armours"', ""),
+    ("    ", Operand.CLASS, "==", '"Body Armours"', f"{COMMENT_START}this is a comment"),
 ]
 @pytest.mark.parametrize("indent, operand, operator, value, comment", _LINE_PARTS)
 def test_constructor_given_a_valid_line_text_should_parse_it_into_its_parts(

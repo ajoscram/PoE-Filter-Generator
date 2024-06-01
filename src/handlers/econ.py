@@ -1,5 +1,5 @@
 import ggg, ninja
-from core import ExpectedError, Block, Rule, Sieve, BASE_TYPE, HAS_EXPLICIT_MOD
+from core import ExpectedError, Block, Rule, Sieve, Operand
 from ninja import QueryType, ValueRange, UNIQUE_QUERY_TYPES
 
 NAME = "econ"
@@ -75,10 +75,10 @@ def _get_values_by_operand(rules: list[Rule], league_name: str, sieve: Sieve):
 
             if query_type == QueryType.MEMORY:
                 explicit_mods = ninja.get_mods(query_type, params.league_name, sieve, params.value_range)
-                _upsert_to_dictionary(values_by_operand, HAS_EXPLICIT_MOD, explicit_mods)
+                _upsert_to_dictionary(values_by_operand, Operand.HAS_EXPLICIT_MOD, explicit_mods)
                     
             base_types = ninja.get_bases(query_type, params.league_name, sieve, params.value_range)
-            _upsert_to_dictionary(values_by_operand, BASE_TYPE, base_types)
+            _upsert_to_dictionary(values_by_operand, Operand.BASE_TYPE, base_types)
 
     return values_by_operand
 

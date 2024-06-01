@@ -4,7 +4,7 @@ from repoe import class_, base, base_validation, gem
 from repoe.constants import *
 from repoe.base_validation import _ReleaseState
 from repoe.base import _BASE_NAME_NOT_FOUND_ERROR
-from core import ExpectedError, CLASS, BASE_TYPE, DROP_LEVEL, ITEM_LEVEL, EQUALS
+from core import ExpectedError, Operand, Operator
 from test_utilities import create_sieve_for_text, WebGetMock, FunctionMock
 
 _BASE_NAME = "base_name"
@@ -82,25 +82,25 @@ def _create_bases(
     name: str = _BASE_NAME,
     class_id: str = _CLASS_ID,
     domain: str = _DOMAIN_NAME,
-    release_state: str = _ReleaseState.RELEASED.value,
+    release_state: str = _ReleaseState.RELEASED,
     drop_level: int = _LEVEL,
     tag: str = _TAG):
     return {
         "base/type/id": {
-            Field.NAME.value: name,
-            Field.DOMAIN.value: domain,
-            Field.CLASS.value: class_id,
-            Field.RELEASE_STATE.value: release_state,
-            Field.DROP_LEVEL.value: drop_level,
-            Field.TAGS.value: [ tag ]
+            Field.NAME: name,
+            Field.DOMAIN: domain,
+            Field.CLASS: class_id,
+            Field.RELEASE_STATE: release_state,
+            Field.DROP_LEVEL: drop_level,
+            Field.TAGS: [ tag ]
         }
     }
 
 def _create_sieve(base_types: dict[dict[str]], filter_class_name: str):
     base_type = list(base_types.values())[0]
     text = f"""
-        {CLASS} {EQUALS} "{filter_class_name}"
-        {BASE_TYPE} {EQUALS} "{base_type[Field.NAME.value]}"
-        {DROP_LEVEL} {EQUALS} {base_type[Field.DROP_LEVEL.value]}
-        {ITEM_LEVEL} {EQUALS} {base_type[Field.DROP_LEVEL.value]}"""
+        {Operand.CLASS} {Operator.EQUALS} "{filter_class_name}"
+        {Operand.BASE_TYPE} {Operator.EQUALS} "{base_type[Field.NAME]}"
+        {Operand.DROP_LEVEL} {Operator.EQUALS} {base_type[Field.DROP_LEVEL]}
+        {Operand.ITEM_LEVEL} {Operator.EQUALS} {base_type[Field.DROP_LEVEL]}"""
     return create_sieve_for_text(text)

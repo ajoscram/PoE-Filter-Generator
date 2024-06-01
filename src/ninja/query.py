@@ -19,9 +19,9 @@ def get_bases(
     records = _get_records(query_type, league_name, sieve, value_range)
     match query_type:
         case QueryType.FRAGMENT | QueryType.CURRENCY:
-            return { record[Field.CURRENCY_BASE_TYPE.value] for record in records }
+            return { record[Field.CURRENCY_BASE_TYPE] for record in records }
         case _:
-            return { record[Field.ITEM_BASE_TYPE.value] for record in records }
+            return { record[Field.ITEM_BASE_TYPE] for record in records }
 
 def get_mods(
     query_type: QueryType,
@@ -33,7 +33,7 @@ def get_mods(
     records = _get_records(query_type, league_name, sieve, value_range)
     match query_type:
         case QueryType.MEMORY:
-            return { record[Field.NAME.value].split(_MEMORY_SPLITTER, 1)[1] for record in records }
+            return { record[Field.NAME].split(_MEMORY_SPLITTER, 1)[1] for record in records }
         case _:
             raise ValueError(_UNKNOWN_GET_MODS_QUERY_TYPE.format(query_type))
 
@@ -47,16 +47,16 @@ def _get_records(query_type: QueryType, league_name: str, sieve: Sieve, value_ra
 def _get_url(query_type: QueryType, league_name: str):
     match query_type:
         case QueryType.FRAGMENT | QueryType.CURRENCY:
-            return _CURRENCY_URL.format(league_name, query_type.value)
+            return _CURRENCY_URL.format(league_name, query_type)
         case _:
-            return _ITEM_URL.format(league_name, query_type.value)
+            return _ITEM_URL.format(league_name, query_type)
 
 def _format_records(records_info: dict[str]):
-    records = records_info[Field.LINES.value]
+    records = records_info[Field.LINES]
     return [ _get_formatted_record(record) for record in records ]
 
 def _get_formatted_record(record: dict[str]):
-    if Field.ITEM_BASE_TYPE.value in record:
-        base = record[Field.ITEM_BASE_TYPE.value]
-        record[Field.CLASS.value] = repoe.get_class_for_base(base)
+    if Field.ITEM_BASE_TYPE in record:
+        base = record[Field.ITEM_BASE_TYPE]
+        record[Field.CLASS] = repoe.get_class_for_base(base)
     return record

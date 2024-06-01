@@ -1,8 +1,4 @@
 # Backlog
-* Clean up string Enums:
-    Use StrEnum to avoid `.value` everywhere
-    https://docs.python.org/3/library/enum.html#enum.StrEnum
-
 * Implement Relics on repoe and ninja. Add them to .econ
 
 * Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy

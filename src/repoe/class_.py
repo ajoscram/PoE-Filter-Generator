@@ -7,7 +7,7 @@ _URL = "https://lvlvllvlvllvlvl.github.io/RePoE/item_classes.min.json"
 def get_filter_item_class(class_name: str):
     """Returns the item filter equivalent class name for `class_name`."""
     classes = _get_classes()
-    return classes[class_name][Field.NAME.value]
+    return classes[class_name][Field.NAME]
 
 def _get_classes():
     return web.get(_URL, Expiration.MONTHLY, formatter=_format_item_class_info)
@@ -19,5 +19,4 @@ def _format_item_class_info(classes_json: dict):
         if _is_item_class_info_valid(item_class_info) }
 
 def _is_item_class_info_valid(class_info: dict):
-    return Field.NAME.value in class_info \
-        and class_info[Field.NAME.value] not in [ "", None ]
+    return class_info.get(Field.NAME) not in [ "", None ]

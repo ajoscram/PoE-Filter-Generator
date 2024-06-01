@@ -1,7 +1,7 @@
-from core import Block, SHOW, HIDE, CLASS, RULE_START, RULE_SEPARATOR, COMMENT_START, EQUALS, BASE_TYPE, GREATER_EQUALS
+from core import Block, Operand, Operator, RULE_START, RULE_SEPARATOR, COMMENT_START
 
 _LINE_NUMBER = 1
-_DEFAULT_BLOCK_LINES = [ SHOW, f"{CLASS} {EQUALS} \"Currency\"", f"{BASE_TYPE} {EQUALS} \"Jeweller's Orb\"" ]
+_DEFAULT_BLOCK_LINES = [ Operand.SHOW, f"{Operand.CLASS} {Operator.EQUALS} \"Currency\"", f"{Operand.BASE_TYPE} {Operator.EQUALS} \"Jeweller's Orb\"" ]
 
 def test_constructor_given_a_line_number_should_instantiate_correctly():
     block = Block(_LINE_NUMBER)
@@ -17,7 +17,7 @@ def test_extract_given_no_lines_are_passed_should_return_no_blocks():
     assert len(blocks) == 0
 
 def test_extract_given_lines_that_represent_two_blocks_and_a_line_number_should_return_two_blocks():
-    ANOTHER_BLOCK = [ HIDE, f"{CLASS} {EQUALS} \"Currency\"" ]
+    ANOTHER_BLOCK = [ Operand.HIDE, f"{Operand.CLASS} {Operator.EQUALS} \"Currency\"" ]
 
     blocks = Block.extract(_DEFAULT_BLOCK_LINES + ANOTHER_BLOCK)
 
@@ -34,23 +34,23 @@ def test_comment_out_should_comment_out_lines_in_the_block():
         assert uncommented_text_line in commented_out_line.comment
 
 def test_hide_should_set_show_to_hide():
-    block = _create_block(SHOW)
+    block = _create_block(Operand.SHOW)
 
     block.hide()
 
-    assert block.lines[0].operand == HIDE
+    assert block.lines[0].operand == Operand.HIDE
 
 def test_show_should_set_hide_to_show():
-    block = _create_block(HIDE)
+    block = _create_block(Operand.HIDE)
 
     block.show()
 
-    assert block.lines[0].operand == SHOW
+    assert block.lines[0].operand == Operand.SHOW
 
 def test_upsert_given_existing_operand_should_override_values():
     OPERAND = "operand"
     NEW_VALUES = [ "new_value", "another_new_value" ]
-    block = _create_block(f'{OPERAND} {EQUALS} old_value')
+    block = _create_block(f'{OPERAND} {Operator.EQUALS} old_value')
 
     block.upsert(OPERAND, NEW_VALUES)
 
@@ -62,11 +62,11 @@ def test_upsert_given_new_operand_should_append_new_line():
     VALUES = [ "first_value", "second_value" ]
     block = _create_block(*_DEFAULT_BLOCK_LINES)
 
-    block.upsert(OPERAND, VALUES, GREATER_EQUALS)
+    block.upsert(OPERAND, VALUES, Operator.GREATER_EQUALS)
 
     assert len(block.lines) == len(_DEFAULT_BLOCK_LINES) + 1
     assert block.lines[-1].operand == OPERAND
-    assert block.lines[-1].operator == GREATER_EQUALS
+    assert block.lines[-1].operator == Operator.GREATER_EQUALS
     assert block.lines[-1].values == VALUES
 
 def test_get_rules_given_a_line_with_rules_should_return_rules_with_that_name():
@@ -90,9 +90,9 @@ def test_get_sieve_should_return_a_sieve_that_validates_the_lines_in_the_block()
 
     sieve = block.get_sieve()
 
-    assert { SHOW: None } in sieve
-    assert { CLASS: "Currency" } in sieve
-    assert { CLASS: "Something else" } not in sieve
+    assert { Operand.SHOW: None } in sieve
+    assert { Operand.CLASS: "Currency" } in sieve
+    assert { Operand.CLASS: "Something else" } not in sieve
 
 def test_str_overload_should_contain_the_raw_lines():
     block = _create_block(*_DEFAULT_BLOCK_LINES)

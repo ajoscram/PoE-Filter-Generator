@@ -23,7 +23,7 @@ def is_base_gem_mock(monkeypatch: MonkeyPatch):
     ("Gems/item", { }, True),
     ("Gems/GemRoyale1", { }, False),
     ("Gems/item", { "release_state": _ReleaseState.UNRELEASED }, False),
-    ("Gems/item", { "release_state": _ReleaseState.UNRELEASED, "name": _BaseTypeName.BLADE_TRAP.value }, True),
+    ("Gems/item", { "release_state": _ReleaseState.UNRELEASED, "name": _BaseTypeName.BLADE_TRAP }, True),
     ("Amulets/Talismans/item", { }, True),
     ("Amulets/Talismans/Talisman1_1_2", { }, False),
     ("AtlasUpgrades/ItemPrimordial1", { }, True),
@@ -33,7 +33,7 @@ def is_base_gem_mock(monkeypatch: MonkeyPatch):
     ("MapFragments/Maven/ItemAtlas1", { }, True),
     ("MapFragments/Maven/item", { }, False),
     ("Weapons/item", { }, True),
-    ("Weapons/item", { "name": _BaseTypeName.ENERGY_BLADE.value }, False),
+    ("Weapons/item", { "name": _BaseTypeName.ENERGY_BLADE }, False),
     ("Quivers/item", { }, True),
     ("Quivers/Quiver1", { }, False),
     ("category/item", { }, True),
@@ -61,4 +61,4 @@ def test_validate_given_unrecognized_base_id_structure_should_raise():
 def _create_info(
     name: str = _BASE_NAME,
     release_state: _ReleaseState = _ReleaseState.RELEASED):
-    return { Field.NAME.value: name, Field.RELEASE_STATE.value: release_state.value }
+    return { Field.NAME: name, Field.RELEASE_STATE: release_state }

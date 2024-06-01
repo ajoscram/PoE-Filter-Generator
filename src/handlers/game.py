@@ -1,5 +1,5 @@
 import repoe
-from core import Block, Sieve, ExpectedError, HAS_EXPLICIT_MOD, BASE_TYPE
+from core import Block, Sieve, ExpectedError, Operand
 
 NAME = "game"
 
@@ -23,9 +23,9 @@ def handle(_, block: Block, __):
 
 def _get_operand_and_values(param: str, sieve: Sieve, line_number: int):
     if param == _MOD_PARAM:
-        return (HAS_EXPLICIT_MOD, repoe.get_mods(sieve))
+        return (Operand.HAS_EXPLICIT_MOD, repoe.get_mods(sieve))
     
     if param == _BASE_PARAM:
-        return (BASE_TYPE, repoe.get_bases(sieve))
+        return (Operand.BASE_TYPE, repoe.get_bases(sieve))
     
     raise ExpectedError(_INVALID_PARAM_ERROR.format(param), line_number)

@@ -6,7 +6,7 @@ from ninja.constants import *
 from ninja.query import _MEMORY_SPLITTER, _UNKNOWN_GET_MODS_QUERY_TYPE
 from test_utilities import FunctionMock, WebGetMock, create_sieve_for_text, create_sieve_for_pattern
 from ninja.validation import _REPLICA_ITEM_NAME_EXCEPTIONS
-from core import REPLICA, LINKED_SOCKETS, CLASS, ITEM_LEVEL, CORRUPTED, GEM_LEVEL, QUALITY
+from core import Operand
 
 _LEAGUE_NAME = "league_name"
 _VALUE = 5
@@ -27,30 +27,30 @@ class _Response:
     gem_quality: int = None
     
     def __call__(self, url: str, expiration, formatter):
-        base_type_field = Field.CURRENCY_BASE_TYPE.value if "currency" in url else Field.ITEM_BASE_TYPE.value
-        value_field = Field.CURRENCY_VALUE.value if "currency" in url else Field.ITEM_VALUE_FIELD.value
+        base_type_field = Field.CURRENCY_BASE_TYPE if "currency" in url else Field.ITEM_BASE_TYPE
+        value_field = Field.CURRENCY_VALUE if "currency" in url else Field.ITEM_VALUE_FIELD
         record = {
             value_field: self.value or _VALUE,
             base_type_field: self.base_type or _BASE_TYPE,
-            Field.NAME.value: self.name or _BASE_TYPE,
+            Field.NAME: self.name or _BASE_TYPE,
         }
 
         if self.links != None:
-            record[Field.LINKS.value] = self.links
+            record[Field.LINKS] = self.links
         
         if self.level_required != None:
-            record[Field.LEVEL_REQUIRED.value] = self.level_required
+            record[Field.LEVEL_REQUIRED] = self.level_required
         
         if self.corrupted != None:
-            record[Field.CORRUPTED.value] = self.corrupted
+            record[Field.CORRUPTED] = self.corrupted
 
         if self.gem_level != None:
-            record[Field.GEM_LEVEL.value] = self.gem_level
+            record[Field.GEM_LEVEL] = self.gem_level
         
         if self.gem_quality != None:
-            record[Field.GEM_QUALITY.value] = self.gem_quality
+            record[Field.GEM_QUALITY] = self.gem_quality
         
-        return { Field.LINES.value: [ record ] }
+        return { Field.LINES: [ record ] }
 
 @pytest.fixture(autouse=True)
 def get_class_for_base_mock(monkeypatch: MonkeyPatch):
@@ -82,7 +82,7 @@ def test_get_bases_given_allflame_ember_should_return_depending_on_sieve(
     web_get_mock: WebGetMock, item_level: int):
     
     SIEVE_ITEM_LEVEL = 3
-    SIEVE = create_sieve_for_pattern({ ITEM_LEVEL: SIEVE_ITEM_LEVEL })
+    SIEVE = create_sieve_for_pattern({ Operand.ITEM_LEVEL: SIEVE_ITEM_LEVEL })
     web_get_mock.result = _Response(level_required=item_level)
 
     base_types = ninja.get_bases(QueryType.ALLFLAME_EMBER, _LEAGUE_NAME, SIEVE, _RANGE)
@@ -93,8 +93,8 @@ def test_get_bases_given_allflame_ember_should_return_depending_on_sieve(
 def test_get_bases_given_replica_unique_base_should_return_depending_on_sieve(
     web_get_mock: WebGetMock, replica: bool):
     
-    NAME = f"{REPLICA} {_BASE_TYPE}"
-    SIEVE = create_sieve_for_pattern({ REPLICA: replica })
+    NAME = f"{Operand.REPLICA} {_BASE_TYPE}"
+    SIEVE = create_sieve_for_pattern({ Operand.REPLICA: replica })
     web_get_mock.result = _Response(name=NAME)
     
     base_types = ninja.get_bases(QueryType.UNIQUE_ARMOUR, _LEAGUE_NAME, SIEVE, _RANGE)
@@ -105,7 +105,7 @@ def test_get_bases_given_replica_unique_base_should_return_depending_on_sieve(
 def test_get_bases_given_replica_unique_name_exceptions_should_return_depending_on_sieve(
     web_get_mock: WebGetMock, replica: bool):
 
-    SIEVE = create_sieve_for_pattern({ REPLICA: replica })
+    SIEVE = create_sieve_for_pattern({ Operand.REPLICA: replica })
     web_get_mock.result = _Response(name=_REPLICA_ITEM_NAME_EXCEPTIONS[0])
 
     base_types = ninja.get_bases(QueryType.UNIQUE_ACCESSORY, _LEAGUE_NAME, SIEVE, _RANGE)
@@ -117,7 +117,7 @@ def test_get_bases_given_unique_with_links_should_return_depending_on_sieve(
     web_get_mock: WebGetMock, links: int):
     
     SIEVE_LINKS = 3
-    SIEVE = create_sieve_for_pattern({ LINKED_SOCKETS: SIEVE_LINKS })
+    SIEVE = create_sieve_for_pattern({ Operand.LINKED_SOCKETS: SIEVE_LINKS })
     web_get_mock.result = _Response(links=links)
 
     base_types = ninja.get_bases(QueryType.UNIQUE_WEAPON, _LEAGUE_NAME, SIEVE, _RANGE)
@@ -126,7 +126,7 @@ def test_get_bases_given_unique_with_links_should_return_depending_on_sieve(
 
 @pytest.mark.parametrize("class_", [ _ITEM_CLASS, "another class" ])
 def test_get_bases_given_unique_with_class_should_return_depending_on_sieve(class_: str):
-    SIEVE = create_sieve_for_pattern({ CLASS: f'"{class_}"' })
+    SIEVE = create_sieve_for_pattern({ Operand.CLASS: f'"{class_}"' })
 
     base_types = ninja.get_bases(QueryType.UNIQUE_JEWEL, _LEAGUE_NAME, SIEVE, _RANGE)
 
@@ -134,7 +134,7 @@ def test_get_bases_given_unique_with_class_should_return_depending_on_sieve(clas
 
 @pytest.mark.parametrize("gem_level", [ _VALUE, _VALUE + 1 ])
 def test_get_bases_given_gem_with_level_should_return_depending_on_sieve(web_get_mock: WebGetMock, gem_level: bool):
-    SIEVE = create_sieve_for_pattern({ GEM_LEVEL: gem_level })
+    SIEVE = create_sieve_for_pattern({ Operand.GEM_LEVEL: gem_level })
     web_get_mock.result = _Response(gem_level=_VALUE)
 
     base_types = ninja.get_bases(QueryType.GEM, _LEAGUE_NAME, SIEVE, _RANGE)
@@ -143,7 +143,7 @@ def test_get_bases_given_gem_with_level_should_return_depending_on_sieve(web_get
 
 @pytest.mark.parametrize("gem_quality", [ _VALUE, _VALUE + 1 ])
 def test_get_bases_given_gem_with_level_should_return_depending_on_sieve(web_get_mock: WebGetMock, gem_quality: bool):
-    SIEVE = create_sieve_for_pattern({ QUALITY: gem_quality })
+    SIEVE = create_sieve_for_pattern({ Operand.QUALITY: gem_quality })
     web_get_mock.result = _Response(gem_level=1, gem_quality=_VALUE)
 
     base_types = ninja.get_bases(QueryType.GEM, _LEAGUE_NAME, SIEVE, _RANGE)
@@ -152,7 +152,7 @@ def test_get_bases_given_gem_with_level_should_return_depending_on_sieve(web_get
 
 @pytest.mark.parametrize("corrupted", [ True, False ])
 def test_get_bases_given_corrupted_gem_should_return_depending_on_sieve(web_get_mock: WebGetMock, corrupted: bool):
-    SIEVE = create_sieve_for_pattern({ CORRUPTED: True })
+    SIEVE = create_sieve_for_pattern({ Operand.CORRUPTED: True })
     web_get_mock.result = _Response(gem_level=1, corrupted=corrupted)
 
     base_types = ninja.get_bases(QueryType.GEM, _LEAGUE_NAME, SIEVE, _RANGE)

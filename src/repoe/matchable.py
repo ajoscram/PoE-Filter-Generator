@@ -1,5 +1,4 @@
 import re
-from enum import Enum
 
 class Matchable:
     """Wraps a string to match with regular expressions on a `match` control structure or with `==`.
@@ -9,14 +8,12 @@ class Matchable:
         self.string = string
         self.match: re.Match = None
 
-    def __ne__(self, value: str | Enum) -> bool:
+    def __ne__(self, value: str) -> bool:
         return not self.__eq__(value)
 
-    def __eq__(self, other: str | Enum):
+    def __eq__(self, other: str):
         """Returns `True` if `other` is a matching regular expression string or `Enum` containing one.
         `False` otherwise."""
-        if isinstance(other, Enum):
-            other = other.value
         self.match = re.match(other, self.string, re.IGNORECASE)
         return self.match is not None
 

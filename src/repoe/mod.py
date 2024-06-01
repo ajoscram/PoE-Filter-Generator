@@ -1,7 +1,7 @@
 import web
 from . import base
 from web import Expiration
-from core import Sieve, ITEM_LEVEL
+from core import Sieve, Operand
 from .constants import Field
 
 _URL = "https://lvlvllvlvllvlvl.github.io/RePoE/mods.min.json"
@@ -12,7 +12,7 @@ def get_mods(sieve: Sieve) -> set[str]:
     mods: dict[str] = web.get(_URL, Expiration.MONTHLY, formatter=_format_mods)
     (domains, tags) = base.get_domains_and_tags(sieve)
     return {
-        mod_info[Field.NAME.value]
+        mod_info[Field.NAME]
         for mod_info in mods.values()
         if _is_mod_info_valid_to_return(mod_info, domains, tags, sieve) }
 
@@ -23,18 +23,18 @@ def _format_mods(mods_json: dict[str]):
         if _is_mod_info_valid_to_format(mod_info) }
 
 def _is_mod_info_valid_to_format(mod_info: dict[str]):
-    return mod_info[Field.NAME.value] != "" and \
-        mod_info[Field.GENERATION_TYPE.value] in _VALID_GENERATION_TYPES
+    return mod_info[Field.NAME] != "" and \
+        mod_info[Field.GENERATION_TYPE] in _VALID_GENERATION_TYPES
 
 def _is_mod_info_valid_to_return(mod_info: dict[str], domains: set[str], tags: set[str], sieve: Sieve):
-    if mod_info[Field.DOMAIN.value] not in domains:
+    if mod_info[Field.DOMAIN] not in domains:
         return False
 
-    if { ITEM_LEVEL: mod_info[Field.REQUIRED_LEVEL.value] } not in sieve:
+    if { Operand.ITEM_LEVEL: mod_info[Field.REQUIRED_LEVEL] } not in sieve:
         return False
 
-    for weight in mod_info[Field.SPAWN_WEIGHTS.value]:
-        if weight[Field.WEIGHT.value] > 0 and weight[Field.TAG.value] in tags:
+    for weight in mod_info[Field.SPAWN_WEIGHTS]:
+        if weight[Field.WEIGHT] > 0 and weight[Field.TAG] in tags:
             return True
 
     return False

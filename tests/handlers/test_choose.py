@@ -1,15 +1,15 @@
 import pytest, math
-from core import ExpectedError, Block, COMMENT_START, RULE_SEPARATOR, RULE_START, SHOW
+from core import ExpectedError, Block, Operand, COMMENT_START, RULE_SEPARATOR, RULE_START
 from handlers.choose import _MULTIPLE_RULES_IN_THE_SAME_BLOCK_ERROR,_RULE_PARAMETER_COUNT_ERROR, _SET_SIZE_TOO_LARGE_ERROR, _SET_SIZE_TYPE_ERROR, _SUBSET_SIZE_TOO_LARGE_ERROR, _SUBSET_SIZE_TYPE_ERROR, NAME as CHOOSE
 from handlers import choose
 from test_utilities import create_filter
 
 def test_handle_given_no_choose_rules_should_return_the_lines_as_is():
-    FILTER = create_filter(SHOW)
+    FILTER = create_filter(Operand.SHOW)
 
     lines = choose.handle(FILTER, FILTER.blocks[0], None)
 
-    assert lines[0] == SHOW
+    assert lines[0] == Operand.SHOW
 
 def test_handle_given_more_than_one_choose_rule_in_block_should_raise():
     RULES = [ f"{RULE_SEPARATOR} {CHOOSE}", f"{RULE_SEPARATOR} {CHOOSE}" ]
@@ -23,7 +23,7 @@ def test_handle_given_more_than_one_choose_rule_in_block_should_raise():
 
 def test_handle_given_not_two_params_should_raise():
     PARAMS = [ "1", "2", "3" ]
-    FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {' '.join(PARAMS)}")
+    FILTER = create_filter(f"{Operand.SHOW} {RULE_START}{CHOOSE} {' '.join(PARAMS)}")
 
     with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
@@ -37,7 +37,7 @@ def test_handle_given_not_two_params_should_raise():
     ("1", "non_digit", _SUBSET_SIZE_TYPE_ERROR)
 ])
 def test_handle_given_params_are_non_digit_(param_1: str, param_2: str, error_message: str):
-    FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {param_1} {param_2}")
+    FILTER = create_filter(f"{Operand.SHOW} {RULE_START}{CHOOSE} {param_1} {param_2}")
 
     with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
@@ -48,7 +48,7 @@ def test_handle_given_params_are_non_digit_(param_1: str, param_2: str, error_me
 def test_handle_given_subset_is_larger_than_set_should_raise():
     SET_SIZE = 0
     SUBSET_SIZE = SET_SIZE + 1
-    FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SUBSET_SIZE}")
+    FILTER = create_filter(f"{Operand.SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SUBSET_SIZE}")
 
     with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
@@ -58,7 +58,7 @@ def test_handle_given_subset_is_larger_than_set_should_raise():
 
 def test_handle_given_set_larger_than_number_of_lines_available_should_raise():
     SET_SIZE = 2
-    FILTER = create_filter(f"{SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SET_SIZE - 1}")
+    FILTER = create_filter(f"{Operand.SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SET_SIZE - 1}")
 
     with pytest.raises(ExpectedError) as error:
         _ = choose.handle(FILTER, FILTER.blocks[0], None)
@@ -69,7 +69,7 @@ def test_handle_given_set_larger_than_number_of_lines_available_should_raise():
 def test_handle_given_combinable_lines_should_return_the_combinations():
     SET_SIZE = 3
     SUBSET_SIZE = SET_SIZE - 1
-    FIRST_LINE = f"{SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SUBSET_SIZE}"
+    FIRST_LINE = f"{Operand.SHOW} {RULE_START}{CHOOSE} {SET_SIZE} {SUBSET_SIZE}"
     LINES_TO_COMBINE =  [ FIRST_LINE ] + [ f"\t{number}" for number in range(SET_SIZE) ]
     FILTER = create_filter("\n".join(LINES_TO_COMBINE))
 

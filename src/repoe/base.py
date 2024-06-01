@@ -1,6 +1,6 @@
 import web
 from typing import Callable
-from core import ExpectedError, Sieve, CLASS, BASE_TYPE, DROP_LEVEL
+from core import ExpectedError, Sieve, Operand
 from web import Expiration
 from . import base_validation, class_, gem
 from .constants import Field
@@ -14,7 +14,7 @@ _BASE_NAME_NOT_FOUND_ERROR = """The base item name '{0}' could not be identified
 def get_bases(sieve: Sieve) -> set[str]:
     """Returns the set of base type names that match the `sieve` received."""
     bases = _get_sieved_bases(sieve, _get_pattern_for_bases)
-    return { base_info[Field.NAME.value] for base_info in bases.values() }
+    return { base_info[Field.NAME] for base_info in bases.values() }
 
 def get_class_for_base(base_name: str) -> str:
     """Returns the item class name associated to the `base_name` received."""
@@ -28,7 +28,7 @@ def get_class_for_base(base_name: str) -> str:
 
     bases = _get_bases()
     base_name = _get_searchable_base_name(base_name, bases)                                                        
-    return bases[base_name][Field.FILTER_ITEM_CLASS.value]
+    return bases[base_name][Field.FILTER_ITEM_CLASS]
 
 def get_domains_and_tags(sieve: Sieve) -> tuple[set[str], set[str]]:
     """Returns a tuple that contains a set of domain and tag names for base items
@@ -37,8 +37,8 @@ def get_domains_and_tags(sieve: Sieve) -> tuple[set[str], set[str]]:
     domains = set()
     bases = _get_sieved_bases(sieve, _get_pattern_for_tags)
     for base_info in bases.values():
-        domains.add(base_info[Field.DOMAIN.value])
-        tags.update(base_info[Field.TAGS.value])
+        domains.add(base_info[Field.DOMAIN])
+        tags.update(base_info[Field.TAGS])
     return (domains, tags)
 
 def _get_bases() -> dict[str]:
@@ -46,13 +46,13 @@ def _get_bases() -> dict[str]:
 
 def _format_bases_info(bases_json: dict[str, dict]):
     return {
-        base_info[Field.NAME.value]: _get_formatted_base_info(base_info)
+        base_info[Field.NAME]: _get_formatted_base_info(base_info)
         for base_id, base_info in bases_json.items()
         if base_validation.validate(base_id, base_info) }
 
 def _get_formatted_base_info(base_info: dict[str]):
-    filter_item_class = class_.get_filter_item_class(base_info[Field.CLASS.value])
-    base_info[Field.FILTER_ITEM_CLASS.value] = filter_item_class
+    filter_item_class = class_.get_filter_item_class(base_info[Field.CLASS])
+    base_info[Field.FILTER_ITEM_CLASS] = filter_item_class
     return base_info
 
 def _get_sieved_bases(sieve: Sieve, pattern_generator: Callable[[dict[str]], dict[str]]):
@@ -63,14 +63,14 @@ def _get_sieved_bases(sieve: Sieve, pattern_generator: Callable[[dict[str]], dic
 
 def _get_pattern_for_tags(base_info: dict[str]):
     return {
-        CLASS: base_info[Field.FILTER_ITEM_CLASS.value],
-        DROP_LEVEL: base_info[Field.DROP_LEVEL.value],
-        BASE_TYPE: base_info[Field.NAME.value] }
+        Operand.CLASS: base_info[Field.FILTER_ITEM_CLASS],
+        Operand.DROP_LEVEL: base_info[Field.DROP_LEVEL],
+        Operand.BASE_TYPE: base_info[Field.NAME] }
 
 def _get_pattern_for_bases(base_info: dict[str]):
     return {
-        CLASS: base_info[Field.FILTER_ITEM_CLASS.value],
-        DROP_LEVEL: base_info[Field.DROP_LEVEL.value] }
+        Operand.CLASS: base_info[Field.FILTER_ITEM_CLASS],
+        Operand.DROP_LEVEL: base_info[Field.DROP_LEVEL] }
 
 def _get_searchable_base_name(name: str, bases: dict[str]):
     if name in bases:

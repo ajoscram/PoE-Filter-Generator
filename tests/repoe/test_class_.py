@@ -19,4 +19,4 @@ def test_get_filter_item_class_given_class_name_should_return_filter_class_name(
     assert filter_class_name == _FILTER_CLASS_NAME
 
 def _create_classes(class_name: str = _CLASS_NAME, filter_class_name: str = _FILTER_CLASS_NAME):
-    return { class_name: { Field.NAME.value: filter_class_name } }
+    return { class_name: { Field.NAME: filter_class_name } }

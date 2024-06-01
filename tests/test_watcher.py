@@ -3,7 +3,7 @@ from watcher.functions import _EXITING_MESSAGE
 from test_utilities import FunctionMock
 from multiprocessing import Process
 from pytest import MonkeyPatch
-from enum import Enum
+from enum import IntEnum
 
 _DIRECTORY = "directory"
 _GLOB_PATTERNS = [ "file_pattern.txt" ]
@@ -11,7 +11,7 @@ _GLOB_PATTERNS = [ "file_pattern.txt" ]
 class _StopLoopException(Exception):
     pass
 
-class _LoopEvent(Enum):
+class _LoopEvent(IntEnum):
     NONE = 0
     CHANGE = 1
     STOP = 2
@@ -29,7 +29,7 @@ class _OSStatMock:
                 raise _StopLoopException()
             if event == _LoopEvent.INTERRUPT:
                 raise KeyboardInterrupt()
-            stat += event.value
+            stat += event
             yield _OSStatMock(stat)
 
 class _ProcessMock:

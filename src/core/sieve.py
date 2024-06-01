@@ -1,4 +1,4 @@
-from . import constants
+from .constants import Operator
 from .expected_error import ExpectedError
 from .line import Line
 
@@ -51,9 +51,9 @@ def _is_bool_value_valid(value: bool, line: Line):
         raise ExpectedError(error_message, line.number)
     
     match line.operator:
-        case constants.EQUALS | constants.CONTAINS | "":
+        case Operator.EQUALS | Operator.CONTAINS | "":
             return value == line_value
-        case constants.NOT_CONTAINS | constants.NOT_EQUALS:
+        case Operator.NOT_CONTAINS | Operator.NOT_EQUALS:
            return value != line_value
         case _:
             raise ExpectedError(_BOOL_OPERATOR_ERROR.format(line.operator), line.number)
@@ -74,17 +74,17 @@ def _is_int_value_valid(value: int, line: Line):
     
     line_value = int(line.values[0])
     match line.operator:
-        case constants.GREATER_EQUALS:
+        case Operator.GREATER_EQUALS:
             return value >= line_value
-        case constants.GREATER:
+        case Operator.GREATER:
             return value > line_value
-        case constants.LESS_EQUALS:
+        case Operator.LESS_EQUALS:
             return value <= line_value
-        case constants.LESS:
+        case Operator.LESS:
             return value < line_value
-        case constants.CONTAINS | constants.EQUALS | "":
+        case Operator.CONTAINS | Operator.EQUALS | "":
             return value == line_value
-        case constants.NOT_CONTAINS | constants.NOT_EQUALS:
+        case Operator.NOT_CONTAINS | Operator.NOT_EQUALS:
             return value != line_value
         case _:
             raise ExpectedError(_INT_OPERATOR_ERROR.format(line.operator), line.number)
@@ -93,11 +93,11 @@ def _is_str_value_valid(value: str, line: Line):
     value = value.lower()
     line_values = [ value.replace('"', "").lower() for value in line.values ]
     match line.operator:
-        case constants.EQUALS:
+        case Operator.EQUALS:
             return value in line_values
-        case constants.CONTAINS | "":
+        case Operator.CONTAINS | "":
             return any(line_value in value for line_value in line_values)
-        case constants.NOT_CONTAINS | constants.NOT_EQUALS:
+        case Operator.NOT_CONTAINS | Operator.NOT_EQUALS:
             return value not in line_values
         case _:
             raise ExpectedError(_STR_OPERATOR_ERROR.format(line.operator), line.number)

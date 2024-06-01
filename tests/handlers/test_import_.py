@@ -1,6 +1,6 @@
 import os, pytest
 from pytest import MonkeyPatch
-from core import ExpectedError, Filter, RULE_START, SHOW
+from core import ExpectedError, Filter, Operand, RULE_START
 from handlers import import_
 from handlers.import_ import _BLOCK_NAME, _BLOCK_NAME_ERROR_TEXT, _BLOCK_NOT_FOUND_ERROR, _CIRCULAR_REFERENCE_ERROR, _EMPTY_PARAMETER_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _FILTER_EXTENSION, _INCORRECT_RULE_FORMAT_ERROR, _LINE_PATTERN_NOT_FOUND_ERROR, _LINE_PATTERN_ERROR_TEXT, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, _SPLITTER, NAME as IMPORT
 from test_utilities import create_filter, FunctionMock
@@ -43,9 +43,9 @@ def test_handle_given_a_blockname_or_rule_pattern_should_import_the_appropriate_
     monkeypatch: MonkeyPatch, import_description: str):
     
     filter = create_filter(
-    f"""{SHOW} {RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
+    f"""{Operand.SHOW} {RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
             {_TARGET_BLOCK_CONTENTS}
-        {SHOW} {RULE_START}{IMPORT} {import_description}""")
+        {Operand.SHOW} {RULE_START}{IMPORT} {import_description}""")
     _ = FunctionMock(monkeypatch, Filter.load, filter, Filter)
     
     lines = import_.handle(filter, filter.blocks[1], None)
@@ -79,8 +79,8 @@ def test_handle_given_blockname_doesnt_exist_should_raise(monkeypatch: MonkeyPat
 def test_handle_given_line_pattern_doesnt_exist_should_raise(monkeypatch: MonkeyPatch):
     UNEXISTENT_LINE_PATTERN = "unexistent line pattern"
     filter = create_filter(
-    f"""{SHOW} {RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
-        {SHOW} {RULE_START}{IMPORT} {_SPLITTER} {_TARGET_BLOCK_NAME} {_SPLITTER} {UNEXISTENT_LINE_PATTERN}""")
+    f"""{Operand.SHOW} {RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
+        {Operand.SHOW} {RULE_START}{IMPORT} {_SPLITTER} {_TARGET_BLOCK_NAME} {_SPLITTER} {UNEXISTENT_LINE_PATTERN}""")
     _ = FunctionMock(monkeypatch, Filter.load, filter, Filter)
 
     with pytest.raises(ExpectedError) as error:
@@ -119,7 +119,7 @@ def test_handle_given_a_circular_reference_should_raise():
     BLOCK_NAME = "1"
     IMPORT_DESCRIPTION = f"{_SPLITTER} {BLOCK_NAME}"
     filter = create_filter(
-    f"""{SHOW}  {RULE_START}{_BLOCK_NAME} {BLOCK_NAME}
+    f"""{Operand.SHOW}  {RULE_START}{_BLOCK_NAME} {BLOCK_NAME}
         {RULE_START}{IMPORT} {IMPORT_DESCRIPTION}""")
     
     with pytest.raises(ExpectedError) as error:

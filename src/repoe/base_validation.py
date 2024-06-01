@@ -1,20 +1,20 @@
-from enum import Enum
+from enum import StrEnum
 from . import gem
 from .constants import *
 from .matchable import Matchable
 
-class _BaseTypeName(Enum):
+class _BaseTypeName(StrEnum):
     BLADE_TRAP = "Blade Trap"
     ENERGY_BLADE = "Energy Blade"
     ORNATE_QUIVER = "Ornate Quiver"
 
-class _ReleaseState(Enum):
+class _ReleaseState(StrEnum):
     LEGACY = "legacy"
     RELEASED = "released"
     UNIQUE_ONLY = "unique_only"
     UNRELEASED = "unreleased"
 
-class _IDPrefixPattern(Enum):
+class _IDPrefixPattern(StrEnum):
     MISC = r"Metadata/Items/[^/]+/(.+)"
     MAP = r"Metadata/Items/Maps/(.+)"
     GEM = r"Metadata/Items/Gems/(.+)"
@@ -27,7 +27,7 @@ class _IDPrefixPattern(Enum):
     ATLAS_UPGRADE = r"Metadata/Items/AtlasUpgrades/(.+)"
     MTX_CURRENCY = r"Metadata/Items/MicrotransactionCurrency/(.+)"
 
-class _IDSuffixPattern(Enum):
+class _IDSuffixPattern(StrEnum):
     VOIDSTONE = r"\w+Primordial\d"
     MAVEN_INVITATION = r"Maven/(.+)"
     CURRENT_SERIES_MAP = r"MapWorlds.+"
@@ -106,8 +106,8 @@ def _is_gem_valid(full_id: str, id: str, info: dict[str]):
     if Matchable(id) == ROYALE_PATTERN or not gem.is_base_gem(full_id):
         return False
 
-    unreleased = info[Field.RELEASE_STATE.value] == _ReleaseState.UNRELEASED.value
-    is_blade_trap = info[Field.NAME.value] == _BaseTypeName.BLADE_TRAP.value
+    unreleased = info[Field.RELEASE_STATE] == _ReleaseState.UNRELEASED
+    is_blade_trap = info[Field.NAME] == _BaseTypeName.BLADE_TRAP
     return not unreleased or is_blade_trap
 
 def _is_resonator_valid(id: str):
@@ -120,15 +120,15 @@ def _is_atlas_upgrade_valid(id: str):
     return Matchable(id) == _IDSuffixPattern.VOIDSTONE
 
 def _is_weapon_valid(id: str, info: dict[str]):
-    is_energy_blade = info[Field.NAME.value] == _BaseTypeName.ENERGY_BLADE.value
+    is_energy_blade = info[Field.NAME] == _BaseTypeName.ENERGY_BLADE
     return not is_energy_blade and _is_misc_valid(id, info)
 
 def _is_quiver_valid(id: str, info: dict[str]):
     dupe = Matchable(id) == _IDSuffixPattern.QUIVER_DUPE
-    is_ornate = info[Field.NAME.value] == _BaseTypeName.ORNATE_QUIVER.value
+    is_ornate = info[Field.NAME] == _BaseTypeName.ORNATE_QUIVER
     return (not dupe or is_ornate) and _is_misc_valid(id, info)
 
 def _is_misc_valid(id: str, info: dict[str]):
     royale = Matchable(id) == ROYALE_PATTERN
-    unreleased = info[Field.RELEASE_STATE.value] == _ReleaseState.UNRELEASED.value
+    unreleased = info[Field.RELEASE_STATE] == _ReleaseState.UNRELEASED
     return not unreleased and not royale

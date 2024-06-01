@@ -47,7 +47,7 @@ def test_try_get_gem_base_given_gem_info_is_incomplete_should_ignore_those_gems(
     get_mock: WebGetMock, field_to_delete: Field):
 
     get_mock.result = _create_gems()
-    del get_mock.result["gem"][field_to_delete.value]
+    del get_mock.result[_METADATA_ID][field_to_delete.value]
 
     result = gem.try_get_gem_base(_GEM_NAME)
 
@@ -58,7 +58,7 @@ def _create_gems(
     name: str = _GEM_NAME,
     base_name: str = _BASE_GEM_NAME):
     return {
-        "gem": {
+        _METADATA_ID: {
             Field.DISPLAY_NAME.value: name,
             Field.BASE_ITEM.value: {
                 Field.ID.value: base_metadata_id,

@@ -1,3 +1,5 @@
+# 1.4.8
+
 # 1.4.7
 * Added `.econ` support for **Memories** and **Gems**. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
 * Added item level support for **Allflame Embers** on `.econ`.

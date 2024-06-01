@@ -1,9 +1,14 @@
 # Backlog
-* Update `.econ` documentation
+* Clean up string Enums:
+    Use StrEnum to avoid `.value` everywhere
+    https://docs.python.org/3/library/enum.html#enum.StrEnum
+
+* Implement Relics on repoe and ninja. Add them to .econ
+
 * Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
 * Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
-* Update `.include` documentation
 * Review regex handling in `.include`
+* Update `.include` documentation
 
 * Let the RePoE dev know about the following base types not currently being fetched:
     https://github.com/lvlvllvlvllvlvl/RePoE

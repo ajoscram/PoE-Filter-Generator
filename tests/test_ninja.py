@@ -5,7 +5,7 @@ from ninja import ValueRange
 from ninja.constants import *
 from ninja.query import _MEMORY_SPLITTER, _UNKNOWN_GET_MODS_QUERY_TYPE
 from test_utilities import FunctionMock, WebGetMock, create_sieve_for_text, create_sieve_for_pattern
-from ninja.validation import _INVALID_FRAGMENT_BASE_TYPES, _REPLICA_ITEM_NAME_EXCEPTIONS
+from ninja.validation import _REPLICA_ITEM_NAME_EXCEPTIONS
 from core import REPLICA, LINKED_SOCKETS, CLASS, ITEM_LEVEL, CORRUPTED, GEM_LEVEL, QUALITY
 
 _LEAGUE_NAME = "league_name"
@@ -74,13 +74,6 @@ def test_get_bases_given_outside_value_bounds_should_not_return_it(value: int, w
     web_get_mock.result = _Response(value=value)
 
     base_types = ninja.get_bases(QueryType.CURRENCY, _LEAGUE_NAME, _DEFAULT_SIEVE, RANGE)
-
-    assert len(base_types) == 0
-
-def test_get_bases_given_invalid_fragment_base_type_was_found_should_not_return_it(web_get_mock: WebGetMock):
-    web_get_mock.result = _Response(base_type=_INVALID_FRAGMENT_BASE_TYPES[0])
-
-    base_types = ninja.get_bases(QueryType.FRAGMENT, _LEAGUE_NAME, _DEFAULT_SIEVE, _RANGE)
 
     assert len(base_types) == 0
 

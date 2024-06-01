@@ -1,9 +1,9 @@
 import re, utils
-from core import Block, Filter, Rule, ExpectedError, RULE_SEPARATOR
+from core import Delimiter, Block, Filter, Rule, ExpectedError
 
 NAME = "alias"
 _ALIAS_SEPARATOR = "="
-_ALIAS_RULE_PATTERN = f"\\{RULE_SEPARATOR}{NAME}[^\\{RULE_SEPARATOR}]*"
+_ALIAS_RULE_PATTERN = f"\\{Delimiter.RULE_SEPARATOR}{NAME}[^\\{Delimiter.RULE_SEPARATOR}]*"
 
 _INCORRECT_RULE_FORMAT_ERROR = "The alias '{0}' is formatted incorrectly. Make sure it looks like this:\n\n\talias_name = replacement text"
 

@@ -1,11 +1,11 @@
 import traceback, re
-from core import ExpectedError, DEFAULT_WIKI_PAGE_NAME as _DEFAULT_HINT_TERM, COMMAND_START, HANDLER_START
+from core import ExpectedError, Delimiter, DEFAULT_WIKI_PAGE_NAME as _DEFAULT_HINT_TERM
 from rich.console import Console
 from rich.markdown import Markdown
 
 _DONE_MESSAGE = "[green]Done![/]"
 _EXPECTED_ERROR_TEMPLATE = "[red]ERROR[/]: {0}"
-_HINT_MESSAGE = "Run [cyan]pfg " + COMMAND_START + "help {0}[/] or visit {1} for more information."
+_HINT_MESSAGE = "Run [cyan]pfg " + Delimiter.COMMAND_START + "help {0}[/] or visit {1} for more information."
 _UNKNOWN_ERROR_MESSAGE = """[red]UNKNOWN ERROR[/]: Oopsie, my bad.
 
 If your're reading this then an unforseen error has ocurred.
@@ -63,9 +63,9 @@ def _get_hint_term(error: ExpectedError):
     filepath_trace = [ trace.filename for trace in reversed_traceback ]
     for filepath in filepath_trace:
         if handler_filename := _try_get_filename(filepath, _HANDLER_FILENAME_REGEX):
-            return HANDLER_START + handler_filename
+            return Delimiter.HANDLER_START + handler_filename
         if command_filename := _try_get_filename(filepath, _COMMAND_FILENAME_REGEX):
-            return COMMAND_START + command_filename
+            return Delimiter.COMMAND_START + command_filename
     return _DEFAULT_HINT_TERM
 
 def _try_get_filename(filepath: str, pattern: str):

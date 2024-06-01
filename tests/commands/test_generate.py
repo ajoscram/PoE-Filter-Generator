@@ -2,7 +2,7 @@ import pytest
 
 from commands import generate
 from commands.generate import _HANDLER_NOT_FOUND_ERROR, _HANDLER_NOT_PROVIDED_ERROR, _TOO_LITTLE_ARGUMENTS_ERROR
-from core import ExpectedError, Filter, Block, HANDLER_START
+from core import Delimiter, ExpectedError, Filter, Block
 from pytest import MonkeyPatch
 from test_utilities import create_filter, FunctionMock
 
@@ -39,7 +39,7 @@ def test_execute_given_a_handler_name_should_apply_it_and_save_the_new_filter(
     monkeypatch: MonkeyPatch, filter: Filter, mock_handler: _MockHandler):
     
     OPTIONS = [ "handler_option_1", "handler_option_2" ]
-    ARGS = [ filter.filepath, HANDLER_START + mock_handler.name ] + OPTIONS
+    ARGS = [ filter.filepath, Delimiter.HANDLER_START + mock_handler.name ] + OPTIONS
     save_filter_mock = FunctionMock(monkeypatch, Filter.save, target=Filter)
 
     generate.execute(ARGS)
@@ -67,7 +67,7 @@ def test_execute_given_no_handler_was_passed_should_raise():
 
 def test_execute_given_an_unknown_handler_name_should_raise(filter: Filter):
     HANDLER_NAME = "unknown_handler"
-    ARGS = [ filter.filepath, f"{HANDLER_START}{HANDLER_NAME}" ]
+    ARGS = [ filter.filepath, f"{Delimiter.HANDLER_START}{HANDLER_NAME}" ]
 
     with pytest.raises(ExpectedError) as error:
         generate.execute(ARGS)

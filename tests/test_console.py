@@ -1,7 +1,7 @@
 import pytest, console, traceback
 from pytest import MonkeyPatch
 from console import functions
-from core import ExpectedError, COMMAND_START, HANDLER_START
+from core import ExpectedError, Delimiter
 from test_utilities import FunctionMock
 from rich.markdown import Markdown
 from rich.console import Console
@@ -60,8 +60,9 @@ def test_err_given_an_expected_error_should_use_the_expected_error_template_and_
     assert console_print_mock.received( \
         _HINT_MESSAGE.format(_DEFAULT_HINT_TERM, _WIKI_PAGE_URL.format(_DEFAULT_HINT_TERM)))
 
-_TRACEBACK_INFO = [(_HANDLERS_FOLDER_NAME, HANDLER_START), (_COMMANDS_FOLDER_NAME, COMMAND_START) ]
-@pytest.mark.parametrize("folder, term_prefix", _TRACEBACK_INFO)
+@pytest.mark.parametrize("folder, term_prefix", [
+    (_HANDLERS_FOLDER_NAME, Delimiter.HANDLER_START),
+    (_COMMANDS_FOLDER_NAME, Delimiter.COMMAND_START) ])
 def test_err_given_an_expected_error_in_a_with_a_known_module_should_use_that_term_in_the_hint(
     folder: str, term_prefix: str, monkeypatch: MonkeyPatch, console_print_mock: FunctionMock):
     

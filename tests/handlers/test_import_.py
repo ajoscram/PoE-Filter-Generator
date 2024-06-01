@@ -1,6 +1,6 @@
 import os, pytest
 from pytest import MonkeyPatch
-from core import ExpectedError, Filter, Operand, RULE_START
+from core import ExpectedError, Filter, Operand, Delimiter
 from handlers import import_
 from handlers.import_ import _BLOCK_NAME, _BLOCK_NAME_ERROR_TEXT, _BLOCK_NOT_FOUND_ERROR, _CIRCULAR_REFERENCE_ERROR, _EMPTY_PARAMETER_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _FILTER_EXTENSION, _INCORRECT_RULE_FORMAT_ERROR, _LINE_PATTERN_NOT_FOUND_ERROR, _LINE_PATTERN_ERROR_TEXT, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, _SPLITTER, NAME as IMPORT
 from test_utilities import create_filter, FunctionMock
@@ -26,7 +26,7 @@ def path_exists_mock(monkeypatch: MonkeyPatch):
 def test_handle_given_a_filter_import_should_import_the_filter_text(monkeypatch: MonkeyPatch, dirname_mock: FunctionMock):
     DIRECTORY = "directory"
     target_filter = create_filter("target filter contents", filepath="target_filter")
-    filter = create_filter(f"{RULE_START}{IMPORT} {target_filter.filepath}", filepath="import_filter")
+    filter = create_filter(f"{Delimiter.RULE_START}{IMPORT} {target_filter.filepath}", filepath="import_filter")
     filter_load_mock = FunctionMock(monkeypatch, Filter.load, target_filter, Filter)
     dirname_mock.result = DIRECTORY
 
@@ -43,9 +43,9 @@ def test_handle_given_a_blockname_or_rule_pattern_should_import_the_appropriate_
     monkeypatch: MonkeyPatch, import_description: str):
     
     filter = create_filter(
-    f"""{Operand.SHOW} {RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
+    f"""{Operand.SHOW} {Delimiter.RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
             {_TARGET_BLOCK_CONTENTS}
-        {Operand.SHOW} {RULE_START}{IMPORT} {import_description}""")
+        {Operand.SHOW} {Delimiter.RULE_START}{IMPORT} {import_description}""")
     _ = FunctionMock(monkeypatch, Filter.load, filter, Filter)
     
     lines = import_.handle(filter, filter.blocks[1], None)
@@ -54,7 +54,7 @@ def test_handle_given_a_blockname_or_rule_pattern_should_import_the_appropriate_
 
 def test_handle_given_import_file_doesnt_exist_should_raise(path_exists_mock: FunctionMock):
     UNEXISTENT_FILEPATH = f"unexistent filepath"
-    filter = create_filter(f"{RULE_START}{IMPORT} {UNEXISTENT_FILEPATH}")
+    filter = create_filter(f"{Delimiter.RULE_START}{IMPORT} {UNEXISTENT_FILEPATH}")
     path_exists_mock.result = False
 
     with pytest.raises(ExpectedError) as error:
@@ -67,7 +67,7 @@ def test_handle_given_import_file_doesnt_exist_should_raise(path_exists_mock: Fu
 
 def test_handle_given_blockname_doesnt_exist_should_raise(monkeypatch: MonkeyPatch):
     UNEXISTENT_BLOCKNAME = "unexistent_blockname"
-    filter = create_filter(f"{RULE_START}{IMPORT} {_SPLITTER} {UNEXISTENT_BLOCKNAME}")
+    filter = create_filter(f"{Delimiter.RULE_START}{IMPORT} {_SPLITTER} {UNEXISTENT_BLOCKNAME}")
     _ = FunctionMock(monkeypatch, Filter.load, filter, Filter)
 
     with pytest.raises(ExpectedError) as error:
@@ -79,8 +79,8 @@ def test_handle_given_blockname_doesnt_exist_should_raise(monkeypatch: MonkeyPat
 def test_handle_given_line_pattern_doesnt_exist_should_raise(monkeypatch: MonkeyPatch):
     UNEXISTENT_LINE_PATTERN = "unexistent line pattern"
     filter = create_filter(
-    f"""{Operand.SHOW} {RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
-        {Operand.SHOW} {RULE_START}{IMPORT} {_SPLITTER} {_TARGET_BLOCK_NAME} {_SPLITTER} {UNEXISTENT_LINE_PATTERN}""")
+    f"""{Operand.SHOW} {Delimiter.RULE_START}{_BLOCK_NAME} {_TARGET_BLOCK_NAME}
+        {Operand.SHOW} {Delimiter.RULE_START}{IMPORT} {_SPLITTER} {_TARGET_BLOCK_NAME} {_SPLITTER} {UNEXISTENT_LINE_PATTERN}""")
     _ = FunctionMock(monkeypatch, Filter.load, filter, Filter)
 
     with pytest.raises(ExpectedError) as error:
@@ -92,7 +92,7 @@ def test_handle_given_line_pattern_doesnt_exist_should_raise(monkeypatch: Monkey
 
 def test_handle_given_incorrect_formatting_should_raise():
     RULE_DESCRPTION = f"1 {_SPLITTER} 2 {_SPLITTER} 3 {_SPLITTER} 4"
-    filter = create_filter(f"{RULE_START}{IMPORT} {RULE_DESCRPTION}")
+    filter = create_filter(f"{Delimiter.RULE_START}{IMPORT} {RULE_DESCRPTION}")
 
     with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)
@@ -106,7 +106,7 @@ def test_handle_given_incorrect_formatting_should_raise():
     (f"{_SPLITTER} block_name {_SPLITTER}", _LINE_PATTERN_ERROR_TEXT)
 ])
 def test_handle_given_an_empty_parameter_should_raise(rule_description: str, error_param: str):
-    filter = create_filter(f"{RULE_START}{IMPORT} {rule_description}")
+    filter = create_filter(f"{Delimiter.RULE_START}{IMPORT} {rule_description}")
 
     with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)
@@ -119,8 +119,8 @@ def test_handle_given_a_circular_reference_should_raise():
     BLOCK_NAME = "1"
     IMPORT_DESCRIPTION = f"{_SPLITTER} {BLOCK_NAME}"
     filter = create_filter(
-    f"""{Operand.SHOW}  {RULE_START}{_BLOCK_NAME} {BLOCK_NAME}
-        {RULE_START}{IMPORT} {IMPORT_DESCRIPTION}""")
+    f"""{Operand.SHOW}  {Delimiter.RULE_START}{_BLOCK_NAME} {BLOCK_NAME}
+        {Delimiter.RULE_START}{IMPORT} {IMPORT_DESCRIPTION}""")
     
     with pytest.raises(ExpectedError) as error:
         import_.handle(filter, filter.blocks[0], None)

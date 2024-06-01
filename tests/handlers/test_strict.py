@@ -1,5 +1,5 @@
 import pytest
-from core import ExpectedError, Operand, RULE_START
+from core import ExpectedError, Operand, Delimiter
 from handlers import strict
 from handlers.strict import _HANDLER, _RULE, _STRICTNESS_ARG_COUNT_ERROR, _STRICTNESS_ARG_TYPE_ERROR, NAME as STRICT
 from test_utilities import create_filter
@@ -22,7 +22,7 @@ def test_handle_given_option_is_not_a_digit_should_raise():
 
 def test_handle_given_rule_description_is_not_a_digit_should_raise():
     NON_DIGIT = "not_a_digit"
-    FILTER = create_filter(f"{Operand.SHOW} {RULE_START}{STRICT} {NON_DIGIT}")
+    FILTER = create_filter(f"{Operand.SHOW} {Delimiter.RULE_START}{STRICT} {NON_DIGIT}")
 
     with pytest.raises(ExpectedError) as error:
         _ = strict.handle(FILTER, FILTER.blocks[0], [ "1" ])
@@ -32,7 +32,7 @@ def test_handle_given_rule_description_is_not_a_digit_should_raise():
 
 def test_handle_given_strictness_in_rule_is_lower_than_options_should_hide():
     STRICTNESS = 1
-    FILTER = create_filter(f"{Operand.SHOW} {RULE_START}{STRICT} {STRICTNESS - 1}")
+    FILTER = create_filter(f"{Operand.SHOW} {Delimiter.RULE_START}{STRICT} {STRICTNESS - 1}")
 
     lines = strict.handle(FILTER, FILTER.blocks[0], [ str(STRICTNESS) ])
 
@@ -40,7 +40,7 @@ def test_handle_given_strictness_in_rule_is_lower_than_options_should_hide():
 
 def test_handle_given_strictness_in_rule_is_higher_than_options_should_show():
     STRICTNESS = 1
-    FILTER = create_filter(f"{Operand.HIDE} {RULE_START}{STRICT} {STRICTNESS + 1}")
+    FILTER = create_filter(f"{Operand.HIDE} {Delimiter.RULE_START}{STRICT} {STRICTNESS + 1}")
 
     lines = strict.handle(FILTER, FILTER.blocks[0], [ str(STRICTNESS) ])
 

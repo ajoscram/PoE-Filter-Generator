@@ -1,7 +1,7 @@
 import pytest, ggg, ninja
 from pytest import MonkeyPatch
 from handlers import econ
-from core import ExpectedError, Operator, Operand, COMMENT_START, RULE_START
+from core import ExpectedError, Operator, Operand, Delimiter
 from handlers.econ import _QUERY_TYPES_BY_MNEMONIC, _LOWER_BOUND_NAME, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR
 from test_utilities import FunctionMock, create_filter
 from ninja import ValueRange, QueryType
@@ -17,7 +17,7 @@ def get_league_name_mock(monkeypatch: MonkeyPatch):
 @pytest.mark.parametrize("param_count", [1, 4])
 def test_handle_given_incorrect_rule_params_count_should_raise(param_count: int):
     PARAMS = [ str(i) for i in range(param_count) ]
-    FILTER = create_filter(f"{RULE_START}{ECON} {' '.join(PARAMS)}")
+    FILTER = create_filter(f"{Delimiter.RULE_START}{ECON} {' '.join(PARAMS)}")
 
     with pytest.raises(ExpectedError) as error:
         _ = econ.handle(FILTER, FILTER.blocks[0], [])
@@ -27,7 +27,7 @@ def test_handle_given_incorrect_rule_params_count_should_raise(param_count: int)
 
 def test_handle_given_unknown_mnemonic_should_raise():
     UNKNOWN_MNEMONIC = "unknown_mnemonic"
-    FILTER = create_filter(f"{RULE_START}{ECON} {UNKNOWN_MNEMONIC} 1")
+    FILTER = create_filter(f"{Delimiter.RULE_START}{ECON} {UNKNOWN_MNEMONIC} 1")
 
     with pytest.raises(ExpectedError) as error:
         _ = econ.handle(FILTER, FILTER.blocks[0], [])
@@ -41,7 +41,7 @@ def test_handle_given_unknown_mnemonic_should_raise():
 ])
 def test_handle_given_non_int_rule_params_should_raise(param_1: str, param_2: str, bound_name: str):
     MNEMONIC = _get_mnemonic(_QUERY_TYPE)
-    FILTER = create_filter(f"{RULE_START}{ECON} {MNEMONIC} {param_1} {param_2}")
+    FILTER = create_filter(f"{Delimiter.RULE_START}{ECON} {MNEMONIC} {param_1} {param_2}")
 
     with pytest.raises(ExpectedError) as error:
         _ = econ.handle(FILTER, FILTER.blocks[0], [])
@@ -51,19 +51,19 @@ def test_handle_given_non_int_rule_params_should_raise(param_1: str, param_2: st
 
 def test_handle_given_no_base_types_are_found_should_comment_out_the_block(monkeypatch: MonkeyPatch):
     MNEMONIC = _get_mnemonic(_QUERY_TYPE)
-    FILTER = create_filter(f"{Operand.REPLICA} {Operator.EQUALS} True {RULE_START}{ECON} {MNEMONIC} 1")
+    FILTER = create_filter(f"{Operand.REPLICA} {Operator.EQUALS} True {Delimiter.RULE_START}{ECON} {MNEMONIC} 1")
     _ = FunctionMock(monkeypatch, ninja.get_bases, set())
 
     lines = econ.handle(FILTER, FILTER.blocks[0], [])
 
-    assert lines[0].startswith(COMMENT_START)
+    assert lines[0].startswith(Delimiter.COMMENT_START)
 
 def test_handle_given_a_valid_mnemonic_should_set_the_base_types_to_the_block(monkeypatch: MonkeyPatch):
     LOWER_BOUND = 1
     UPPER_BOUND = 4
     BASE_TYPES = { "base 1", "base 2" }
     MNEMONIC = _get_mnemonic(_QUERY_TYPE)
-    FILTER = create_filter(f"{Operand.BASE_TYPE} {RULE_START}{ECON} {MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
+    FILTER = create_filter(f"{Operand.BASE_TYPE} {Delimiter.RULE_START}{ECON} {MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
     ninja_mock = FunctionMock(monkeypatch, ninja.get_bases, BASE_TYPES)
 
     lines = econ.handle(FILTER, FILTER.blocks[0], [])
@@ -78,7 +78,7 @@ def test_handle_given_memory_should_set_has_explicit_mod_to_the_block(monkeypatc
     BASE_TYPE = "base_type"
     MOD = "mod"
     MNEMONIC = _get_mnemonic(QueryType.MEMORY)
-    FILTER = create_filter(f"{Operand.HAS_EXPLICIT_MOD} {RULE_START}{ECON} {MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
+    FILTER = create_filter(f"{Operand.HAS_EXPLICIT_MOD} {Delimiter.RULE_START}{ECON} {MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
     get_mods_mock = FunctionMock(monkeypatch, ninja.get_mods, { MOD })
     _ = FunctionMock(monkeypatch, ninja.get_bases, { BASE_TYPE })
 

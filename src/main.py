@@ -1,5 +1,5 @@
 import sys, console, multiprocessing
-from core import ExpectedError, COMMAND_START, ERROR_EXIT_CODE
+from core import ExpectedError, Delimiter, ERROR_EXIT_CODE
 from commands import DEFAULT_COMMAND_NAME, COMMANDS
 
 _NO_ARGS_ERROR = "No arguments were provided to PFG."
@@ -12,10 +12,10 @@ def main(args: list[str]):
         if len(args) == 0:
             raise ExpectedError(_NO_ARGS_ERROR)
 
-        if not args[0].startswith(COMMAND_START):
-            args = [ COMMAND_START + DEFAULT_COMMAND_NAME ] + args
+        if not args[0].startswith(Delimiter.COMMAND_START):
+            args = [ Delimiter.COMMAND_START + DEFAULT_COMMAND_NAME ] + args
         
-        command_name = args[0].lstrip(COMMAND_START)
+        command_name = args[0].lstrip(Delimiter.COMMAND_START)
         if not command_name in COMMANDS:
             raise ExpectedError(_COMMAND_NOT_FOUND_ERROR.format(args[0]))
         

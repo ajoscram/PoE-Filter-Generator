@@ -1,5 +1,7 @@
 # Backlog
 * Implement Relics on repoe and ninja. Add them to .econ
+    https://lvlvllvlvllvlvl.github.io/RePoE/base_items.min.json
+    https://lvlvllvlvllvlvl.github.io/RePoE/item_classes.min.json
 
 * Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
 * Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)

@@ -1,6 +1,6 @@
 from handlers import index
 from test_utilities import create_filter
-from core import RULE_START
+from core import Delimiter
 from handlers.index import _INDEX_RULE_NAME, _SECTION_RULE_NAME, _SUBSECTION_RULE_NAME, _INDEX_HEADER, _INDEX_HINT
 
 def test_handle_given_an_index_section_and_subsection_should_write_them():
@@ -9,9 +9,9 @@ def test_handle_given_an_index_section_and_subsection_should_write_them():
     SUBSECTION_NAME = "first_subsection"
     EXPECTED_SUBSECTION_ID = "1_1"
     filter = create_filter(
-    f"""{RULE_START}{_INDEX_RULE_NAME}
-        {RULE_START}{_SECTION_RULE_NAME} {SECTION_NAME}
-        {RULE_START}{_SUBSECTION_RULE_NAME} {SUBSECTION_NAME}""")
+    f"""{Delimiter.RULE_START}{_INDEX_RULE_NAME}
+        {Delimiter.RULE_START}{_SECTION_RULE_NAME} {SECTION_NAME}
+        {Delimiter.RULE_START}{_SUBSECTION_RULE_NAME} {SUBSECTION_NAME}""")
     
     text = '\n'.join(index.handle(filter, filter.blocks[0], None))
 

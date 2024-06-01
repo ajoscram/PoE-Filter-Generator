@@ -1,7 +1,7 @@
 from .expected_error import ExpectedError
-from .constants import COMMENT_START, RULE_SEPARATOR, RULE_START
+from .constants import Delimiter
 
-_EMPTY_RULE_ERROR = f"Empty rule (probably an extra '{RULE_SEPARATOR}')"
+_EMPTY_RULE_ERROR = f"Empty rule (probably an extra '{Delimiter.RULE_SEPARATOR}')"
 
 class Rule:
     """A rule is a bit of data that can be parsed by handlers.
@@ -24,13 +24,13 @@ class Rule:
         """Returns all rules in a text as a list of rules."""
         if not _should_extract(text):
             return []
-        text = text[text.index(RULE_START) + len(RULE_START):]
-        rule_strings = text.split(RULE_SEPARATOR)
+        text = text[text.index(Delimiter.RULE_START) + len(Delimiter.RULE_START):]
+        rule_strings = text.split(Delimiter.RULE_SEPARATOR)
         return [ _get_rule(rule_string, line_number) for rule_string in rule_strings ]
 
 def _should_extract(text: str):
-    split_text = text.split(RULE_START)
-    return len(split_text) >= 2 and not COMMENT_START in split_text[0]
+    split_text = text.split(Delimiter.RULE_START)
+    return len(split_text) >= 2 and not Delimiter.COMMENT_START in split_text[0]
 
 def _get_rule(text: str, line_number: int):
     if text.strip() == "":

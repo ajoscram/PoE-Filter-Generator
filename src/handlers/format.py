@@ -1,9 +1,9 @@
 import re
-from core import Line, Block, Filter, COMMENT_START, RULE_SEPARATOR
+from core import Delimiter, Line, Block, Filter
 
 NAME = "format"
 
-_RULE_PATTERN = f"{COMMENT_START}\\{RULE_SEPARATOR}.+"
+_RULE_PATTERN = f"{Delimiter.COMMENT_START}\\{Delimiter.RULE_SEPARATOR}.+"
 
 def handle(filter: Filter, block: Block, _):
     """Removes rules, trailing whitespace from lines and extraneous empty lines. Options are ignored."""

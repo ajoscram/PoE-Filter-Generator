@@ -1,5 +1,5 @@
 import console
-from core import ExpectedError, Filter, Block, HANDLER_START
+from core import Delimiter, ExpectedError, Filter, Block
 from handlers import HANDLERS
 
 NAME = "generate"
@@ -19,7 +19,7 @@ class _HandlerInvocation:
         self.options: list[str] = []
     
     def __str__(self):
-        return HANDLER_START + ' '.join([self.handler_name] + self.options)
+        return Delimiter.HANDLER_START + ' '.join([self.handler_name] + self.options)
 
 class _Params:
     def __init__(self, input_filepath: str, output_filepath: str, invocations: list[_HandlerInvocation]):
@@ -54,11 +54,11 @@ def _create_params(args: list[str]):
         raise ExpectedError(_TOO_LITTLE_ARGUMENTS_ERROR)
     input_filepath = args[0]
 
-    if args[1].startswith(HANDLER_START):
+    if args[1].startswith(Delimiter.HANDLER_START):
         args =  [ args[0] ] + args
     output_filepath = args[1]
     
-    if len(args) == 2 or not args[2].startswith(HANDLER_START):
+    if len(args) == 2 or not args[2].startswith(Delimiter.HANDLER_START):
         raise ExpectedError(_HANDLER_NOT_PROVIDED_ERROR)
     invocations = _create_invocations(args[2:])
     
@@ -67,8 +67,8 @@ def _create_params(args: list[str]):
 def _create_invocations(raw_args: list[str]):
     invocations: list[_HandlerInvocation] = []
     for arg in raw_args:
-        if arg.startswith(HANDLER_START):
-            invocations += [ _HandlerInvocation(arg.lstrip(HANDLER_START)) ]
+        if arg.startswith(Delimiter.HANDLER_START):
+            invocations += [ _HandlerInvocation(arg.lstrip(Delimiter.HANDLER_START)) ]
         else:
             invocations[-1].options += [ arg ]
     return invocations

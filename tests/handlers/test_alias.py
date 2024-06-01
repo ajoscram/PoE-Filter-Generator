@@ -1,5 +1,5 @@
 import pytest
-from core import ExpectedError, RULE_START
+from core import Delimiter, ExpectedError
 from handlers import alias
 from handlers.alias import _ALIAS_NAME_ERROR_DESCRIPTOR, _ALIAS_SEPARATOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS_ERROR_DESCRIPTOR, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _INCORRECT_RULE_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, NAME as ALIAS
 from test_utilities import create_filter
@@ -13,7 +13,7 @@ def setup():
 
 def test_handle_given_an_alias_should_replace_all_non_alias_rule_text():
     filter = create_filter(
-    f"""{RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
+    f"""{Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
         {_ALIAS_NAME}""")
     
     lines = alias.handle(filter, filter.blocks[0], None)
@@ -23,7 +23,7 @@ def test_handle_given_an_alias_should_replace_all_non_alias_rule_text():
 
 def test_handle_given_incorrect_description_format_should_raise():
     DESCRIPTION = "incorrect description"
-    filter = create_filter(f"{RULE_START}{ALIAS} {DESCRIPTION}")
+    filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")
 
     with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)
@@ -37,7 +37,7 @@ def test_handle_given_incorrect_description_format_should_raise():
 ])
 def test_handle_given_empty_alias_part_should_raise(name: str, replacement: str, error_descriptor: str):
     DESCRIPTION = f"{name}{_ALIAS_SEPARATOR}{replacement}"
-    filter = create_filter(f"{RULE_START}{ALIAS} {DESCRIPTION}")
+    filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")
 
     with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)
@@ -47,8 +47,8 @@ def test_handle_given_empty_alias_part_should_raise(name: str, replacement: str,
 
 def test_handle_given_duplicate_alias_name_should_raise():
     filter = create_filter(
-    f"""{RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
-        {RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} other replacement""")
+    f"""{Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
+        {Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_SEPARATOR} other replacement""")
     
     with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)
@@ -63,8 +63,8 @@ def test_handle_given_duplicate_alias_name_should_raise():
 ])
 def test_handle_given_contained_alias_names_should_raise(first_name: str, error_name: str, contained_descriptor: str):
     filter = create_filter(
-    f"""{RULE_START}{ALIAS} {first_name} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
-        {RULE_START}{ALIAS} {error_name} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}""")
+    f"""{Delimiter.RULE_START}{ALIAS} {first_name} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}
+        {Delimiter.RULE_START}{ALIAS} {error_name} {_ALIAS_SEPARATOR} {_ALIAS_REPLACEMENT}""")
     
     with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], None)

@@ -1,5 +1,5 @@
 import pytest, repoe
-from core import ExpectedError, Operand, Operator, RULE_START
+from core import ExpectedError, Operand, Operator, Delimiter
 from handlers import game
 from test_utilities import create_filter, FunctionMock
 from handlers.game import NAME, _MOD_PARAM, _BASE_PARAM, _INVALID_PARAM_ERROR
@@ -8,7 +8,7 @@ from pytest import MonkeyPatch
 def test_handle_given_mod_param_should_upsert_on_HasExplicitMod(monkeypatch: MonkeyPatch):
     MOD = "some mod"
     _ = FunctionMock(monkeypatch, repoe.get_mods, { MOD })
-    filter = create_filter(f"{RULE_START}{NAME} {_MOD_PARAM}")
+    filter = create_filter(f"{Delimiter.RULE_START}{NAME} {_MOD_PARAM}")
 
     lines = game.handle(filter, filter.blocks[0], None)
 
@@ -18,7 +18,7 @@ def test_handle_given_mod_param_should_upsert_on_HasExplicitMod(monkeypatch: Mon
 def test_handle_given_base_param_should_upsert_on_BaseType(monkeypatch: MonkeyPatch):
     BASE_TYPE_NAME = "some base"
     _ = FunctionMock(monkeypatch, repoe.get_bases, { BASE_TYPE_NAME })
-    filter = create_filter(f"{RULE_START}{NAME} {_BASE_PARAM}")
+    filter = create_filter(f"{Delimiter.RULE_START}{NAME} {_BASE_PARAM}")
 
     lines = game.handle(filter, filter.blocks[0], None)
 
@@ -27,7 +27,7 @@ def test_handle_given_base_param_should_upsert_on_BaseType(monkeypatch: MonkeyPa
 
 def test_handle_given_unknown_param_should_raise():
     UNKNOWN_PARAM = "unknown_param"
-    filter = create_filter(f"{RULE_START}{NAME} {UNKNOWN_PARAM}")
+    filter = create_filter(f"{Delimiter.RULE_START}{NAME} {UNKNOWN_PARAM}")
 
     with pytest.raises(ExpectedError) as error:
         _ = game.handle(filter, filter.blocks[0], None)

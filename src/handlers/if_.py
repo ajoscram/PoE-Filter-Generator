@@ -1,9 +1,9 @@
 import re
 from enum import Enum
-from core import Block, Line, ExpectedError, RULE_SEPARATOR
+from core import Delimiter, Block, Line, ExpectedError
 
 NAME = "if"
-_IF_RULE_PATTERN = f"\\{RULE_SEPARATOR}{NAME}[^\\{RULE_SEPARATOR}]*"
+_IF_RULE_PATTERN = f"\\{Delimiter.RULE_SEPARATOR}{NAME}[^\\{Delimiter.RULE_SEPARATOR}]*"
 _EMPTY_DESCRIPTION_ERROR = "The .if rule description is empty and cannot be validated as a result."
 
 class _RemoveType(Enum):

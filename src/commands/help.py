@@ -1,6 +1,6 @@
 import re, console, web
 from re import MULTILINE, DOTALL
-from core import ExpectedError, DEFAULT_WIKI_PAGE_NAME, COMMAND_START
+from core import ExpectedError, Delimiter, DEFAULT_WIKI_PAGE_NAME
 
 NAME = "help"
 
@@ -10,7 +10,7 @@ _SIDEBAR_PAGE_NAME = "_Sidebar"
 _API_URL = "https://raw.githubusercontent.com/wiki/ajoscram/PoE-Filter-Generator/{0}.md"
 
 _NOT_FOUND_ERROR = "Could not find help information available for '{0}'."
-_TOO_MANY_ARGS_ERROR = "The " + COMMAND_START + NAME + " command accepts only one argument. You've provided {0}."
+_TOO_MANY_ARGS_ERROR = "The " + Delimiter.COMMAND_START + NAME + " command accepts only one argument. You've provided {0}."
 
 def execute(args: list[str]):
     """Performs a PFG Documentation search for a term specified in the `args`."""

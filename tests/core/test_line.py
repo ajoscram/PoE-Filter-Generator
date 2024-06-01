@@ -1,5 +1,5 @@
 import pytest
-from core import ExpectedError, Line, Operand, COMMENT_START, BLOCK_STARTERS, RULE_SEPARATOR, RULE_START
+from core import ExpectedError, Line, Operand, Delimiter, BLOCK_STARTERS
 from core.line import _MULTILINE_STRING_ERROR
 
 _LINE_NUMBER = 1
@@ -19,7 +19,7 @@ _LINE_PARTS = [
     ("    ", Operand.CLASS, "==", "", ""),
     ("    ", Operand.CLASS, "==", '"Body Armours"', ""),
     ("    ", Operand.CLASS, "==2", '"Body Armours"', ""),
-    ("    ", Operand.CLASS, "==", '"Body Armours"', f"{COMMENT_START}this is a comment"),
+    ("    ", Operand.CLASS, "==", '"Body Armours"', f"{Delimiter.COMMENT_START}this is a comment"),
 ]
 @pytest.mark.parametrize("indent, operand, operator, value, comment", _LINE_PARTS)
 def test_constructor_given_a_valid_line_text_should_parse_it_into_its_parts(
@@ -45,7 +45,7 @@ def test_is_block_starter_given_an_operand_should_return_as_expected(operand: st
 @pytest.mark.parametrize("exclude_comments, expected", [ (False, True), (True, False) ])
 def test_contains_given_a_string_should_return_as_expected(exclude_comments: bool, expected: bool):
     STRING = "string"
-    TEXT = f"operand {COMMENT_START}{STRING}"
+    TEXT = f"operand {Delimiter.COMMENT_START}{STRING}"
     line = Line(TEXT, _LINE_NUMBER)
 
     result = line.contains(STRING, exclude_comments)
@@ -55,7 +55,7 @@ def test_contains_given_a_string_should_return_as_expected(exclude_comments: boo
 @pytest.mark.parametrize("exclude_comments", [ False, True ])
 def test_is_empty_given_(exclude_comments: bool):
     EXPECTED = exclude_comments
-    TEXT = f"    {COMMENT_START} comment"
+    TEXT = f"    {Delimiter.COMMENT_START} comment"
     line = Line(TEXT, _LINE_NUMBER)
 
     result = line.is_empty(exclude_comments)
@@ -64,7 +64,7 @@ def test_is_empty_given_(exclude_comments: bool):
 
 def test_get_rules_given_a_name_should_get_rules_with_that_name():
     RULE_NAME = "rule_name"
-    TEXT = f"operand {RULE_START}{RULE_NAME} {RULE_SEPARATOR}some_other_rule"
+    TEXT = f"operand {Delimiter.RULE_START}{RULE_NAME} {Delimiter.RULE_SEPARATOR}some_other_rule"
     line = Line(TEXT, _LINE_NUMBER)
 
     rules = line.get_rules(RULE_NAME)
@@ -84,7 +84,7 @@ def test_comment_out_should_comment_out_the_line():
     assert TEXT in line.comment
 
 def test_str_overload_should_return_the_input_text():
-    TEXT = f"operand == value {COMMENT_START} a comment"
+    TEXT = f"operand == value {Delimiter.COMMENT_START} a comment"
     line = Line(TEXT, _LINE_NUMBER)
 
     line_str = str(line)

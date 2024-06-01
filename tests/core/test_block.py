@@ -1,4 +1,4 @@
-from core import Block, Operand, Operator, RULE_START, RULE_SEPARATOR, COMMENT_START
+from core import Delimiter, Block, Operand, Operator
 
 _LINE_NUMBER = 1
 _DEFAULT_BLOCK_LINES = [ Operand.SHOW, f"{Operand.CLASS} {Operator.EQUALS} \"Currency\"", f"{Operand.BASE_TYPE} {Operator.EQUALS} \"Jeweller's Orb\"" ]
@@ -71,7 +71,7 @@ def test_upsert_given_new_operand_should_append_new_line():
 
 def test_get_rules_given_a_line_with_rules_should_return_rules_with_that_name():
     RULE_NAME = "rule"
-    block = _create_block(f"{RULE_START}{RULE_NAME} {RULE_SEPARATOR}{RULE_NAME} {RULE_SEPARATOR}another_rule")
+    block = _create_block(f"{Delimiter.RULE_START}{RULE_NAME} {Delimiter.RULE_SEPARATOR}{RULE_NAME} {Delimiter.RULE_SEPARATOR}another_rule")
 
     rules = block.get_rules(RULE_NAME)
 
@@ -86,7 +86,7 @@ def test_get_raw_lines_should_return_equivalent_raw_lines():
         assert raw_line in raw_lines
 
 def test_get_sieve_should_return_a_sieve_that_validates_the_lines_in_the_block():
-    block = _create_block(*_DEFAULT_BLOCK_LINES, f"{COMMENT_START} a line without an operand")
+    block = _create_block(*_DEFAULT_BLOCK_LINES, f"{Delimiter.COMMENT_START} a line without an operand")
 
     sieve = block.get_sieve()
 

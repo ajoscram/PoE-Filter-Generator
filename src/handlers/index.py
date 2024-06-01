@@ -1,4 +1,4 @@
-from core import Rule, Line, Block, Filter, COMMENT_START
+from core import Delimiter, Rule, Line, Block, Filter
 
 _INDEX_RULE_NAME = "index"
 _SECTION_RULE_NAME = "section"
@@ -8,8 +8,8 @@ _RULE_NAMES = [ _INDEX_RULE_NAME ] + _SECTION_RULE_NAMES
 NAME = _INDEX_RULE_NAME
 
 _LINE_PADDING = "-"
-_MAX_LINE_LENGTH = 80 - len(COMMENT_START)
-_SECTION_SEPARATOR = COMMENT_START + _LINE_PADDING * _MAX_LINE_LENGTH
+_MAX_LINE_LENGTH = 80 - len(Delimiter.COMMENT_START)
+_SECTION_SEPARATOR = Delimiter.COMMENT_START + _LINE_PADDING * _MAX_LINE_LENGTH
 
 _INDEX_HEADER = "INDEX"
 _INDEX_HINT = "CTRL+F the IDs to jump to any section in the document."
@@ -66,7 +66,7 @@ def _get_index_lines():
     lines = _get_index_header_lines()
     for section in _index:
         if not section.is_subsection:
-            lines += [ COMMENT_START ]
+            lines += [ Delimiter.COMMENT_START ]
         indent = ' ' * (8 if section.is_subsection else 4)
         lines += [ _render_line(f"{indent}{section.name} ", "", f" {section.id}", ".") ]
     return lines
@@ -76,7 +76,7 @@ def _get_index_header_lines():
         _SECTION_SEPARATOR,
         _render_line("", _INDEX_HEADER, ""),
         _SECTION_SEPARATOR,
-        COMMENT_START,
+        Delimiter.COMMENT_START,
         _render_line("", _INDEX_HINT, ""),
     ]
 
@@ -93,4 +93,4 @@ def _get_subsection_line(section: _Section):
 def _render_line(left_text: str, center_text: str, right_text: str, padding_token: str = " "):
     padding = padding_token * (_MAX_LINE_LENGTH  - len(left_text) - len(center_text) - len(right_text))
     padding_split_index = (len(padding) - len(right_text) - len(left_text)) // 2
-    return COMMENT_START + left_text + padding[padding_split_index:] + center_text + padding[:padding_split_index] + right_text
+    return Delimiter.COMMENT_START + left_text + padding[padding_split_index:] + center_text + padding[:padding_split_index] + right_text

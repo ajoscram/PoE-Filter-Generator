@@ -1,6 +1,22 @@
 from enum import StrEnum
 
-# Operands
+class Delimiter(StrEnum):
+    COMMENT_START = "#"
+    COMMAND_START = ":"
+    RULE_SEPARATOR = "."
+    HANDLER_START = RULE_SEPARATOR
+    RULE_START = COMMENT_START + RULE_SEPARATOR
+
+class Operator(StrEnum):
+    GREATER_EQUALS = ">="
+    GREATER = ">"
+    LESS_EQUALS = "<="
+    LESS = "<"
+    CONTAINS = "="
+    EQUALS = "=="
+    NOT_CONTAINS = "!"
+    NOT_EQUALS = "!="
+
 class Operand(StrEnum):
     HIDE = "Hide"
     SHOW = "Show"
@@ -19,25 +35,7 @@ class Operand(StrEnum):
 
 BLOCK_STARTERS = [ Operand.HIDE, Operand.SHOW, Operand.MINIMAL ]
 
-# Operators
-class Operator(StrEnum):
-    GREATER_EQUALS = ">="
-    GREATER = ">"
-    LESS_EQUALS = "<="
-    LESS = "<"
-    CONTAINS = "="
-    EQUALS = "=="
-    NOT_CONTAINS = "!"
-    NOT_EQUALS = "!="
-
-# Rules
-COMMENT_START = '#'
-RULE_SEPARATOR = '.'
-RULE_START = COMMENT_START + RULE_SEPARATOR
-
-# PFG
+# Miscellaneous
 ERROR_EXIT_CODE = 1
-COMMAND_START = ":"
-DEFAULT_WIKI_PAGE_NAME = "Usage"
-HANDLER_START = RULE_SEPARATOR
 FILE_ENCODING = "utf-8"
+DEFAULT_WIKI_PAGE_NAME = "Usage"

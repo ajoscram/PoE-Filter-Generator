@@ -1,7 +1,7 @@
 import sys, main, pytest, console
 from pytest import MonkeyPatch
 from test_utilities import FunctionMock
-from core import ExpectedError, COMMAND_START, ERROR_EXIT_CODE
+from core import ExpectedError, Delimiter, ERROR_EXIT_CODE
 from commands import DEFAULT_COMMAND_NAME
 from main import _COMMAND_NOT_FOUND_ERROR, _NO_ARGS_ERROR
 
@@ -29,7 +29,7 @@ def sys_exit_mock(monkeypatch: MonkeyPatch):
     return FunctionMock(monkeypatch, sys.exit)
 
 def test_main_given_a_command_name_should_execute_the_command(command_mock: _CommandMock):
-    ARGS = [ COMMAND_START + command_mock.name, "some", "args" ]
+    ARGS = [ Delimiter.COMMAND_START + command_mock.name, "some", "args" ]
 
     main.main(ARGS)
 
@@ -46,7 +46,7 @@ def test_main_given_no_command_name_should_use_default_instead(monkeypatch: Monk
 def test_main_given_unknown_command_should_print_error_and_exit(
     console_err_mock: FunctionMock, sys_exit_mock: FunctionMock):
     
-    UNKNOWN_COMMAND = f"{COMMAND_START}unknown_command"
+    UNKNOWN_COMMAND = f"{Delimiter.COMMAND_START}unknown_command"
 
     main.main([ UNKNOWN_COMMAND ])
 
@@ -67,7 +67,7 @@ def test_main_given_an_exception_is_raised_should_print_error_and_exit(
     command_mock: _CommandMock, console_err_mock: FunctionMock, sys_exit_mock: FunctionMock):
     
     command_mock.exception = Exception("message")
-    args = [ COMMAND_START + command_mock.name ]
+    args = [ Delimiter.COMMAND_START + command_mock.name ]
 
     main.main(args)
 

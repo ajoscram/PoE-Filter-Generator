@@ -1,14 +1,14 @@
 import re
 from .rule import Rule
 from .expected_error import ExpectedError
-from .constants import BLOCK_STARTERS, COMMENT_START
+from .constants import Delimiter, BLOCK_STARTERS
 
 _MULTILINE_STRING_ERROR = "Multiline string"
 
 _INDENTATION_REGEX = "\\s*"
-_OPERAND_REGEX = f"[^\\s{COMMENT_START}]*"
-_VALUES_REGEX = f"[^{COMMENT_START}]+"
-_COMMENT_REGEX = f"{COMMENT_START}.*"
+_OPERAND_REGEX = f"[^\\s{Delimiter.COMMENT_START}]*"
+_VALUES_REGEX = f"[^{Delimiter.COMMENT_START}]+"
+_COMMENT_REGEX = f"{Delimiter.COMMENT_START}.*"
 _OPERATOR_REGEX = "[<|>|=|!]=?\\d*"
 _LINE_REGEX = f"^({_INDENTATION_REGEX})({_OPERAND_REGEX})\\s*({_OPERATOR_REGEX})?\\s*({_VALUES_REGEX})?({_COMMENT_REGEX})?$"
 _SINGLE_VALUE_REGEX = '"[^"]*"|\\w+'
@@ -53,7 +53,7 @@ class Line:
     
     def comment_out(self):
         """Comments the line out by prepending a `#` to the line's text."""
-        self._set_parts(COMMENT_START + str(self))
+        self._set_parts(Delimiter.COMMENT_START + str(self))
 
     def __str__(self):
         values = " ".join(self.values)
@@ -71,4 +71,4 @@ class Line:
         self.rules: list[Rule] = Rule.extract(self.number, self.comment)
     
     def _get_text(self, exclude_comments: bool):
-        return str(self).split(COMMENT_START, 1)[0] if exclude_comments else str(self)
+        return str(self).split(Delimiter.COMMENT_START, 1)[0] if exclude_comments else str(self)

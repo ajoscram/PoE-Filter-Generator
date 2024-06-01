@@ -1,10 +1,10 @@
 import pytest, ggg, ninja
-from pytest import MonkeyPatch
 from handlers import econ
-from core import ExpectedError, Operator, Operand, Delimiter
-from handlers.econ import _QUERY_TYPES_BY_MNEMONIC, _LOWER_BOUND_NAME, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR
-from test_utilities import FunctionMock, create_filter
+from pytest import MonkeyPatch
 from ninja import ValueRange, QueryType
+from core import ExpectedError, Operator, Operand, Delimiter
+from test_utilities import FunctionMock, create_filter
+from handlers.econ import _QUERY_TYPES_BY_MNEMONIC, _LOWER_BOUND_NAME, _RULE_BOUNDS_ERROR, _RULE_MNEMONIC_ERROR, _UPPER_BOUND_NAME, NAME as ECON, _RULE_PARAMETER_COUNT_ERROR
 
 _LEAGUE_NAME = "league_name"
 _NON_INT = "non_int"

@@ -1,0 +1,3 @@
+Show #.game base
+    Class == "Relics"
+    BaseType == "[DO NOT USE] Coffer Relic" "Papyrus Relic" "[DO NOT USE] Censer Relic" "[DO NOT USE] Processional Relic" "Censer Relic" "Candlestick Relic" "[DO NOT USE] Papyrus Relic" "Coffer Relic" "[DO NOT USE] Tome Relic" "Tome Relic" "[DO NOT USE] Urn Relic" "Processional Relic" "Urn Relic" "[DO NOT USE] Candlestick Relic"

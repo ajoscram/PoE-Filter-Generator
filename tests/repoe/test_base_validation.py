@@ -36,6 +36,8 @@ def is_base_gem_mock(monkeypatch: MonkeyPatch):
     ("Weapons/item", { "name": _BaseTypeName.ENERGY_BLADE }, False),
     ("Quivers/item", { }, True),
     ("Quivers/Quiver1", { }, False),
+    ("Relics/SanctumRelic2x3", { }, True),
+    ("Relics/Relic1x1", { }, False),
     ("category/item", { }, True),
     ("category/itemRoyale", { }, False),
     ("category/item", { "release_state": _ReleaseState.UNRELEASED }, False),

@@ -1,4 +1,6 @@
 # 1.4.8
+* Added support for **Unique Relics** in `.econ`'s `uni` mnemonic.
+* Fixed a bug where using `.game`'s `base` mnemonic with the **Relics** `Class` would yield invalid base types.
 
 # 1.4.7
 * Added `.econ` support for **Memories** and **Gems**. More information can now be found on the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).

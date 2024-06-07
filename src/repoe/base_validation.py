@@ -19,6 +19,7 @@ class _IDPrefixPattern(StrEnum):
     MAP = r"Metadata/Items/Maps/(.+)"
     GEM = r"Metadata/Items/Gems/(.+)"
     DELVE = r"Metadata/Items/Delve/(.+)"
+    RELIC = r"Metadata/Items/Relics/(.+)"
     QUIVER = r"Metadata/Items/Quivers/(.+)"
     WEAPON = r"Metadata/Items/Weapons/(.+)"
     CURRENCY = r"Metadata/Items/Currency/(.+)"
@@ -33,6 +34,7 @@ class _IDSuffixPattern(StrEnum):
     CURRENT_SERIES_MAP = r"MapWorlds.+"
     HARBINGER_MAP_DUPE = r".+Harbinger(?:Mid|High|Uber)"
     MAVEN_ATLAS_INVITATION = r".+Atlas1"
+    RELIC_DUPE = r"^Relic\dx\d"
     QUIVER_DUPE = r"Quiver(?:Descent|\d+)"
     TALISMAN_DUPE = r"Talisman\d+_\d+_[^1]"
     FOSSIL_OUTCOME = r"RandomFossilOutcome\d+"
@@ -76,6 +78,8 @@ def validate(base_id: str, base_info: dict[str]) -> bool:
             return _is_weapon_valid(match[1], base_info)
         case _IDPrefixPattern.QUIVER as match:
             return _is_quiver_valid(match[1], base_info)
+        case _IDPrefixPattern.RELIC as match:
+            return _is_relic_valid(match[1])
         case _IDPrefixPattern.MISC as match:
             return _is_misc_valid(match[1], base_info)
         case _:
@@ -122,6 +126,9 @@ def _is_atlas_upgrade_valid(id: str):
 def _is_weapon_valid(id: str, info: dict[str]):
     is_energy_blade = info[Field.NAME] == _BaseTypeName.ENERGY_BLADE
     return not is_energy_blade and _is_misc_valid(id, info)
+
+def _is_relic_valid(id: str):
+    return Matchable(id) != _IDSuffixPattern.RELIC_DUPE
 
 def _is_quiver_valid(id: str, info: dict[str]):
     dupe = Matchable(id) == _IDSuffixPattern.QUIVER_DUPE

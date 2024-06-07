@@ -43,8 +43,10 @@ class QueryType(StrEnum):
     UNIQUE_FLASK = "UniqueFlask"
     UNIQUE_JEWEL = "UniqueJewel"
     UNIQUE_MAP = "UniqueMap"
+    UNIQUE_RELIC = "UniqueRelic"
 
 UNIQUE_QUERY_TYPES = [
     QueryType.UNIQUE_ACCESSORY, QueryType.UNIQUE_ARMOUR, \
     QueryType.UNIQUE_JEWEL, QueryType.UNIQUE_FLASK, \
-    QueryType.UNIQUE_MAP, QueryType.UNIQUE_WEAPON ]
+    QueryType.UNIQUE_MAP, QueryType.UNIQUE_WEAPON, \
+    QueryType.UNIQUE_RELIC ]

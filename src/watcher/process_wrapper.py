@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import IntEnum
 from typing import Callable
 from multiprocessing import Process
 
-class ProcessState(Enum):
+class ProcessState(IntEnum):
     """Represents the current state of a process being executed within `ProcessWrapper`."""
     NOT_RUNNING = 0
     RUNNING = 1

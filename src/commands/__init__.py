@@ -1,3 +1,4 @@
+"""Contains all commands that can be executed by this tool."""
 from typing import Callable
 from . import help, generate, update, path, clean, watch
 from .generate import NAME as DEFAULT_COMMAND_NAME

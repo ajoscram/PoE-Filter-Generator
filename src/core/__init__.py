@@ -1,4 +1,4 @@
-""""Contains all core functionality shared by every handler or command."""
+"""Contains all core functionality shared by every handler or command."""
 from .constants import *
 from .expected_error import ExpectedError
 from .filter import Filter

@@ -1,6 +1,4 @@
 # Backlog
-* Move to Python virtual environments
-* Find out how to debug Python on VSCode
 * Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
 * Add a way to target the input filter's folder in `.include` (a.k.a. absolute pathing)
 * Review regex handling in `.include`
@@ -13,10 +11,12 @@
     - Transfigured gems
 
 # Ideas
-* Make the `FileCache.clear` method smarter by deleting the files listed in entries instead of the whole directory.
+* Make the `FileCache.clear` method smarter by deleting the files listed in entries instead of the whole directory (?)
 * Add a new command `:publish` to upload filters to GGG with
 * Upserting lines into a block should insert before all blank lines at the end of the block
 * Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
+* Move to Python virtual environments
+    - VSCode really didn't like this. This should only be re-tried if it becomes a need in the future.
 * Add E2E testing that actually goes to the internet and does things.
 * Update how `ExpectedError`s work:
     - Provide a possible solution alongside the error if possible (maybe?).

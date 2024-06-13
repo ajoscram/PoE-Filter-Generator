@@ -1,3 +1,4 @@
+"""Contains all handlers used to modify filters."""
 from typing import Callable
 from core import Filter, Block
 from . import choose, econ, format, if_, import_, index, strict, tag, alias, game

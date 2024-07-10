@@ -1,8 +1,9 @@
 # Backlog
-* Change the `.import` rule name to something that doesn't need "_" in the file name. Candidates: include, copy
-* Add a way to target the input filter's folder in `.include` (a.k.a. absolute pathing)
-* Review regex handling in `.include`
-* Update `.include` documentation
+* Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
+* Review regex handling in `.import`
+* Update `.import` documentation
+
+* Add Cluster Jewels to `.econ`
 
 * Let the RePoE dev know about the following base types not currently being fetched:
     https://github.com/lvlvllvlvllvlvl/RePoE

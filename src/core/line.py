@@ -47,7 +47,7 @@ class Line:
     
     def get_rules(self, name_or_names: str | list[str]):
         """Gets every rule within the line with a name equal to or included in `name_or_names`."""
-        if type(name_or_names) == str:
+        if isinstance(name_or_names, str):
             name_or_names = [ name_or_names ]
         return [ rule for rule in self.rules if rule.name in name_or_names ]
     

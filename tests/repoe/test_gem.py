@@ -40,7 +40,7 @@ def test_try_get_gem_base_given_name_not_found_should_return_None(get_mock: WebG
 
     result = gem.try_get_gem_base(_GEM_NAME)
 
-    assert result == None
+    assert result is None
 
 @pytest.mark.parametrize("field_to_delete", [ Field.DISPLAY_NAME, Field.BASE_ITEM ])
 def test_try_get_gem_base_given_gem_info_is_incomplete_should_ignore_those_gems(
@@ -51,7 +51,7 @@ def test_try_get_gem_base_given_gem_info_is_incomplete_should_ignore_those_gems(
 
     result = gem.try_get_gem_base(_GEM_NAME)
 
-    assert result == None
+    assert result is None
 
 def _create_gems(
     base_metadata_id: str = _METADATA_ID,

@@ -1,15 +1,15 @@
 import re
-from enum import Enum
+from enum import IntEnum
 from core import Delimiter, Block, Line, ExpectedError
 
 NAME = "if"
 _IF_RULE_PATTERN = f"\\{Delimiter.RULE_SEPARATOR}{NAME}[^\\{Delimiter.RULE_SEPARATOR}]*"
 _EMPTY_DESCRIPTION_ERROR = "The .if rule description is empty and cannot be validated as a result."
 
-class _RemoveType(Enum):
-    NONE = 0,
-    SINGLE = 1,
-    MUTLI = 2,
+class _RemoveType(IntEnum):
+    NONE = 0
+    SINGLE = 1
+    MUTLI = 2
 
 def handle(_, block: Block, __):
     """Removes lines from blocks if a piece of text is not present within the block.

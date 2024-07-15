@@ -84,6 +84,6 @@ def _execute_powershell(command: str):
     
 def _run_subprocess(command: str):
     try:
-        return subprocess.run(command, capture_output=True, text=True)
-    except FileNotFoundError:
-        raise ExpectedError(_POWERSHELL_NOT_FOUND_ERROR)
+        return subprocess.run(command, capture_output=True, text=True, check=False)
+    except FileNotFoundError as error:
+        raise ExpectedError(_POWERSHELL_NOT_FOUND_ERROR) from error

@@ -1,6 +1,6 @@
 from enum import StrEnum
 from . import gem
-from .constants import *
+from .constants import Field, ROYALE_PATTERN
 from .matchable import Matchable
 
 class _BaseTypeName(StrEnum):

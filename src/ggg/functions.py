@@ -38,19 +38,19 @@ def get_league_name(standard: bool = False, hardcore: bool = False, ruthless: bo
 def _get_league_index(standard: bool, hardcore: bool, ruthless: bool):
     if standard and not hardcore and not ruthless:
         return _LeagueIndex.STANDARD
-    elif standard and hardcore and not ruthless:
+    if standard and hardcore and not ruthless:
         return _LeagueIndex.HARDCORE_STANDARD
-    elif standard and not hardcore and ruthless:
+    if standard and not hardcore and ruthless:
         return _LeagueIndex.RUTHLESS_STANDARD
-    elif standard and hardcore and ruthless:
+    if standard and hardcore and ruthless:
         return _LeagueIndex.RUTHLESS_HARDCORE_STANDARD
-    elif not standard and not hardcore and not ruthless:
+    if not standard and not hardcore and not ruthless:
         return _LeagueIndex.SOFTCORE_TEMP
-    elif not standard and hardcore and not ruthless:
+    if not standard and hardcore and not ruthless:
         return _LeagueIndex.HARDCORE_TEMP
-    elif not standard and not hardcore and ruthless:
+    if not standard and not hardcore and ruthless:
         return _LeagueIndex.RUTHLESS_SOFTCORE_TEMP
-    elif not standard and hardcore and ruthless:
+    if not standard and hardcore and ruthless:
         return _LeagueIndex.RUTHLESS_HARDCORE_TEMP
 
 def _get_error_message(standard: bool, hardcore: bool, ruthless: bool):

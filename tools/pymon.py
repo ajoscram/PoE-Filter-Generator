@@ -12,7 +12,7 @@ class _CLIAction:
         self.command = command
     
     def __call__(self):
-        result = subprocess.run(self.command, shell=True, text=True)
+        result = subprocess.run(self.command, shell=True, text=True, check=False)
         exit(result.returncode)
 
 def main(args: list[str]):
@@ -28,7 +28,7 @@ def main(args: list[str]):
     command = args[0]
     globs = args[1:]
 
-    console.write(f"\n[yellow]👁\tPYMON[/]")
+    console.write("\n[yellow]👁\tPYMON[/]")
     console.write(
         f"Watching directory: [green]{directory}[/]",
         f"\nFiltering files by: [green]{ "[/], [green]".join(globs) }[/]",

@@ -66,5 +66,5 @@ def test_main_given_a_json_param_is_missing_should_call_console_err(
 
 def _get_encoded_params(json_dict_or_str: dict | str):
     json_dict_or_str = json.dumps(json_dict_or_str) \
-        if type(json_dict_or_str) == dict else json_dict_or_str
+        if isinstance(json_dict_or_str, dict) else json_dict_or_str
     return [ utils.b64_encode(json_dict_or_str) ]

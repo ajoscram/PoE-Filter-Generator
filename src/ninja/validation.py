@@ -1,7 +1,7 @@
 from typing import Callable
 from core import Sieve, Operand
 from .value_range import ValueRange
-from .constants import *
+from .constants import QueryType, Field, UNIQUE_QUERY_TYPES
 
 _REPLICA_ITEM_NAME_EXCEPTIONS = [ "Replica Dragonfang's Flight" ]
 

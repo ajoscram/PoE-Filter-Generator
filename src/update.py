@@ -46,8 +46,8 @@ def _load_params(args: list[str]) -> dict[str]:
     try:
         params_text = utils.b64_decode(args[0])    
         return json.loads(params_text)
-    except json.JSONDecodeError:
-        raise ExpectedError(_UNEXPECTED_DATA_ERROR)
+    except json.JSONDecodeError as error:
+        raise ExpectedError(_UNEXPECTED_DATA_ERROR) from error
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -8,4 +8,4 @@ class ValueRange:
 
     def __contains__(self, value: float):
         """Checks if `value` exists within this range."""
-        return value >= self.lower and (self.upper == None or value < self.upper)
+        return value >= self.lower and (self.upper is None or value < self.upper)

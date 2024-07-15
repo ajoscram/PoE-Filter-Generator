@@ -53,7 +53,7 @@ def test_handle_given_a_blockname_or_rule_pattern_should_import_the_appropriate_
     assert lines[-1].lstrip() == _TARGET_BLOCK_CONTENTS
 
 def test_handle_given_import_file_doesnt_exist_should_raise(path_exists_mock: FunctionMock):
-    UNEXISTENT_FILEPATH = f"unexistent filepath"
+    UNEXISTENT_FILEPATH = "unexistent filepath"
     filter = create_filter(f"{Delimiter.RULE_START}{IMPORT} {UNEXISTENT_FILEPATH}")
     path_exists_mock.result = False
 

@@ -35,19 +35,19 @@ class _Response:
             Field.NAME: self.name or _BASE_TYPE,
         }
 
-        if self.links != None:
+        if self.links is not None:
             record[Field.LINKS] = self.links
         
-        if self.level_required != None:
+        if self.level_required is not None:
             record[Field.LEVEL_REQUIRED] = self.level_required
         
-        if self.corrupted != None:
+        if self.corrupted is not None:
             record[Field.CORRUPTED] = self.corrupted
 
-        if self.gem_level != None:
+        if self.gem_level is not None:
             record[Field.GEM_LEVEL] = self.gem_level
         
-        if self.gem_quality != None:
+        if self.gem_quality is not None:
             record[Field.GEM_QUALITY] = self.gem_quality
         
         return { Field.LINES: [ record ] }
@@ -142,7 +142,7 @@ def test_get_bases_given_gem_with_level_should_return_depending_on_sieve(web_get
     assert (_BASE_TYPE in base_types) == (gem_level == web_get_mock.result.gem_level)
 
 @pytest.mark.parametrize("gem_quality", [ _VALUE, _VALUE + 1 ])
-def test_get_bases_given_gem_with_level_should_return_depending_on_sieve(web_get_mock: WebGetMock, gem_quality: bool):
+def test_get_bases_given_gem_with_quality_should_return_depending_on_sieve(web_get_mock: WebGetMock, gem_quality: bool):
     SIEVE = create_sieve_for_pattern({ Operand.QUALITY: gem_quality })
     web_get_mock.result = _Response(gem_level=1, gem_quality=_VALUE)
 

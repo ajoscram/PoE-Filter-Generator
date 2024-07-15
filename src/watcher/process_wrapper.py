@@ -23,7 +23,7 @@ class ProcessWrapper():
     
     def stop(self):
         """Stops the current wrapped process being executed."""
-        if self._process == None:
+        if self._process is None:
             return
         self._process.terminate()
         self._process.close()
@@ -31,7 +31,7 @@ class ProcessWrapper():
     
     def get_state(self) -> ProcessState:
         """Returns the `ProcessState` of the wrapped process."""
-        if self._process == None:
+        if self._process is None:
             return ProcessState.NOT_RUNNING
 
         match self._process.exitcode:

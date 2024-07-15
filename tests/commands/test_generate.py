@@ -1,5 +1,4 @@
 import pytest
-
 from commands import generate
 from commands.generate import _HANDLER_NOT_FOUND_ERROR, _HANDLER_NOT_PROVIDED_ERROR, _TOO_LITTLE_ARGUMENTS_ERROR
 from core import Delimiter, ExpectedError, Filter, Block
@@ -21,7 +20,7 @@ class _MockHandler:
 
 @pytest.fixture(autouse=True)
 def filter(monkeypatch: MonkeyPatch):
-    filter = create_filter(f"filter text")
+    filter = create_filter("filter text")
     _ = FunctionMock(monkeypatch, Filter.load, filter, target=Filter)
     return filter
 

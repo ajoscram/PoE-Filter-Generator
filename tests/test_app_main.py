@@ -13,7 +13,7 @@ class _CommandMock:
     
     def execute(self, args: list[str]):
         self.args_received = args
-        if self.exception != None:
+        if self.exception is not None:
             raise self.exception
 
 @pytest.fixture()
@@ -76,10 +76,10 @@ def test_main_given_an_exception_is_raised_should_print_error_and_exit(
     assert sys_exit_mock.received(ERROR_EXIT_CODE)
 
 def _mock_COMMANDS_and_get_mock(monkeypatch: MonkeyPatch, command_name: str):
-    command_mock = _CommandMock(command_name)
-    mock_commands_dict = { command_mock.name: command_mock.execute }
+    mock = _CommandMock(command_name)
+    mock_commands_dict = { mock.name: mock.execute }
 
     # performing this setattr is fine because it is an import from another module
     monkeypatch.setattr(main, "COMMANDS", mock_commands_dict)
     
-    return command_mock
+    return mock

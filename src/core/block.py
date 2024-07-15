@@ -17,7 +17,7 @@ class Block:
         blocks: list[Block] = [ Block(line_number) ]
         for raw_line in raw_lines:
             line = Line(raw_line, line_number)
-            if line.is_block_starter() and not len(blocks[-1].lines) == 0:
+            if line.is_block_starter() and len(blocks[-1].lines) > 0:
                 blocks.append(Block(line_number))
             blocks[-1].lines.append(line)
             line_number +=1
@@ -70,8 +70,8 @@ class Block:
     def _find_lines(self, operand: Operand = None, operator: Operator = None) -> list[Line]:
         return [ line
             for line in self.lines
-            if operand == None or line.operand == operand
-            if operator == None or line.operator == operator ]
+            if operand is None or line.operand == operand
+            if operator is None or line.operator == operator ]
 
     def __str__(self):
         return '\n'.join(self.get_raw_lines())

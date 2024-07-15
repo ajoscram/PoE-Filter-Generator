@@ -1,6 +1,6 @@
 import repoe, web
 from core import Sieve
-from .constants import *
+from .constants import Field, QueryType
 from .value_range import ValueRange
 from . import validation
 

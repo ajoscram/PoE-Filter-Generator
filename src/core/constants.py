@@ -1,6 +1,7 @@
 from enum import StrEnum
 
 class Delimiter(StrEnum):
+    """Represents various delimiter tokens that can be found on filters."""
     COMMENT_START = "#"
     COMMAND_START = ":"
     RULE_SEPARATOR = "."
@@ -8,6 +9,7 @@ class Delimiter(StrEnum):
     RULE_START = COMMENT_START + RULE_SEPARATOR
 
 class Operator(StrEnum):
+    """Represents operators used to create conditions in filters."""
     GREATER_EQUALS = ">="
     GREATER = ">"
     LESS_EQUALS = "<="
@@ -18,6 +20,7 @@ class Operator(StrEnum):
     NOT_EQUALS = "!="
 
 class Operand(StrEnum):
+    """Represents operands that can be used to start lines in filters."""
     HIDE = "Hide"
     SHOW = "Show"
     MINIMAL = "Minimal"

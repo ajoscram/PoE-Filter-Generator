@@ -24,7 +24,7 @@ class _Params:
         self.filepath = filepath
         self.blockname = blockname
         self.line_pattern = line_pattern
-    
+
     def __eq__(self, other):
         if not isinstance(other, _Params):
             return False
@@ -32,11 +32,11 @@ class _Params:
         same_block = self.blockname == other.blockname
         same_line_pattern = self.line_pattern == other.line_pattern
         return equivalent_filepath and same_block and same_line_pattern
-    
+
     def __str__(self):
         string = self.filepath
-        string += f" {_SPLITTER} " + self.blockname if self.blockname != None else ""
-        string += f" {_SPLITTER} " + self.line_pattern if self.line_pattern != None else ""
+        string += f" {_SPLITTER} " + self.blockname if self.blockname is not None else ""
+        string += f" {_SPLITTER} " + self.line_pattern if self.line_pattern is not None else ""
         return string
 
 _filter_cache: dict[str, Filter] = {}
@@ -75,11 +75,11 @@ def _get_lines_from_rule(rule: Rule, params: list[_Params]) -> list[Line]:
     new_params = _parse_rule_params(rule, params)
 
     filter = _get_filter(new_params.filepath)
-    if new_params.blockname == None:
+    if new_params.blockname is None:
         return _get_lines_from_filter(filter, params + [ new_params ])
 
     block = _get_block(filter, new_params.blockname)
-    if new_params.line_pattern == None:
+    if new_params.line_pattern is None:
         return _get_lines_from_block(block, params + [ new_params ], False)
 
     line = _get_line(block, new_params.line_pattern, new_params.filepath)

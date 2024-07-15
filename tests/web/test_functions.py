@@ -2,7 +2,7 @@ import pytest, web, requests, os
 from test_utilities import FunctionMock, OpenMock
 from pytest import MonkeyPatch
 from requests import ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError
-from web.functions import _JSON_CONTENT_TYPE, _CONTENT_TYPE_HEADER, _HEADERS, _HTTP_ERROR as _HTTP_ERROR_TEXT, _CONNECTION_ERROR, _TEMP_DOWNLOAD_PREFIX, _UNEXISTENT_DIRECTORY_ERROR
+from web.functions import _TIMEOUT, _JSON_CONTENT_TYPE, _CONTENT_TYPE_HEADER, _HEADERS, _HTTP_ERROR as _HTTP_ERROR_TEXT, _CONNECTION_ERROR, _TEMP_DOWNLOAD_PREFIX, _UNEXISTENT_DIRECTORY_ERROR
 from core import ExpectedError
 from web import cache
 
@@ -45,7 +45,7 @@ def cache_add_mock(monkeypatch: MonkeyPatch):
 def test_get_given_a_url_and_headers_should_get_the_json(request_get_mock: FunctionMock):
     response = web.get(_URL)
 
-    assert request_get_mock.received(_URL, headers=_HEADERS)
+    assert request_get_mock.received(_URL, headers=_HEADERS, timeout=_TIMEOUT)
     assert response == _MOCK_RESPONSE.json_response
 
 def test_get_given_text_content_type_should_return_the_text_instead(request_get_mock: FunctionMock):
@@ -119,7 +119,7 @@ def test_download_should_download_the_resource_in_the_url_and_replace_the_previo
     assert os_path_join_mock.received(_DIRECTORY, _TEMP_DOWNLOAD_PREFIX + _FILENAME)
     assert request_get_mock.received(_URL, stream=True)
     assert open_mock.received(FILEPATH, 'wb')
-    for value in filter(lambda x: x != None, _MOCK_RESPONSE.content):
+    for value in filter(lambda x: x is not None, _MOCK_RESPONSE.content):
         assert open_mock.file.got_written(value)
     assert os_path_join_mock.received(_DIRECTORY, _FILENAME)
     assert os_path_isfile_mock.received(FILEPATH)

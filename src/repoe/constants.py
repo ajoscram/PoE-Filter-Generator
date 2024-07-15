@@ -3,6 +3,7 @@ from enum import StrEnum
 ROYALE_PATTERN = r".*Royale\d*"
 
 class Field(StrEnum):
+    """Represents the JSON fields that appear on RePoE reponnses."""
     ID = "id"
     NAME = "name"
     TAGS = "tags"

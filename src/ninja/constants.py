@@ -1,6 +1,7 @@
 from enum import StrEnum
 
 class Field(StrEnum):
+    """Represents the JSON fields that appear on poe.ninja reponnses."""
     LINES = "lines"
     LINKS = "links"
     CLASS = "itemClass"

@@ -26,7 +26,7 @@ _index: list[_Section] = None
 def handle(filter: Filter, block: Block, _):
     """Adds indices and addressable sections. Options are ignored."""
     global _index
-    _index = _create_index(filter) if _index == None else _index
+    _index = _create_index(filter) if _index is None else _index
     return [ raw_line
         for line in block.lines
         for raw_line in _get_raw_lines_from_line(line) ]

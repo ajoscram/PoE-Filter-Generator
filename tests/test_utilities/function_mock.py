@@ -46,9 +46,9 @@ def _get_target_module(obj):
         module_path = inspect.getabsfile(module)
         package_name = pathlib.Path(module_path).parts[-2]
         return importlib.import_module(package_name)
-    except (ModuleNotFoundError, TypeError):
+    except (ModuleNotFoundError, TypeError) as e:
         raise ModuleNotFoundError(
-            f"Could not import '{module.__name__}'. Add it to _KNOWN_MODULES pointing the correct module.")
+            f"Could not import '{module.__name__}'. Add it to _KNOWN_MODULES pointing the correct module.") from e
 
 def _try_get_known_module(obj):
     if obj.__module__ not in _KNOWN_MODULES:

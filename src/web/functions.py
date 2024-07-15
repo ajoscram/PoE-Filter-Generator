@@ -9,6 +9,7 @@ _DOWNLOAD_CHUNK_SIZE = 1024 * 8 # eight megabytes
 _TEMP_DOWNLOAD_PREFIX = "temp_"
 _CONTENT_TYPE_HEADER = "Content-Type"
 _JSON_CONTENT_TYPE = "application/json"
+_TIMEOUT = 30 # seconds
 _HEADERS = { "User-Agent": "PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/" }
 
 _HTTP_ERROR = """An HTTP error occurred while requesting data from this URL:
@@ -31,7 +32,7 @@ def get(
     url: str,
     expiration: Expiration = Expiration.IMMEDIATE,
     formatter: Callable[[str | dict | list], str | dict | list] = lambda data: data,
-    custom_http_errors: dict[int, str] = {}):
+    custom_http_errors: dict[int, str] = None):
     """Performs a `get` request on the `url` passed in.
     - If successful and the request contained a JSON, either a `dict` or `list` is returned.
     - If successful in any other case, the request's body is returned as a `str`.
@@ -47,7 +48,7 @@ def get(
         cache.add(url, expiration, data)
     return data
 
-def download(url: str, directory: str, filename: str, custom_http_errors: dict[int, str] = {}):
+def download(url: str, directory: str, filename: str, custom_http_errors: dict[int, str] = None):
     """Downloads a file and places it in `directory` with the `filename` passed in.
     - This operation overwrites if there's a previous file with the same name.
     - If it fails with an HTTP error and its code is a key in the `custom_http_errors` dictionary,
@@ -66,18 +67,19 @@ def download(url: str, directory: str, filename: str, custom_http_errors: dict[i
         os.remove(final_filepath)
     os.rename(temp_filepath, final_filepath)
 
-def _get_response(url: str, custom_http_errors: dict[int, str], stream=False):
+def _get_response(url: str, custom_http_errors: dict[int, str] = None, stream = False):
     try:
-        response = requests.get(url, headers=_HEADERS, stream=stream)
+        custom_http_errors = custom_http_errors or {}
+        response = requests.get(url, headers=_HEADERS, stream=stream, timeout=_TIMEOUT)
         response.raise_for_status()
         return response
     except HTTPError as error:
         status_code = error.response.status_code
         if status_code in custom_http_errors:
-            raise ExpectedError(custom_http_errors[status_code])
-        raise ExpectedError(_HTTP_ERROR.format(url, error))
-    except (ConnectTimeout, ReadTimeout, Timeout, ConnectionError):
-        raise ExpectedError(_CONNECTION_ERROR.format(url))
+            raise ExpectedError(custom_http_errors[status_code]) from error
+        raise ExpectedError(_HTTP_ERROR.format(url, error)) from error
+    except (ConnectTimeout, ReadTimeout, Timeout, ConnectionError) as error:
+        raise ExpectedError(_CONNECTION_ERROR.format(url)) from error
 
 def _try_write_chunk(file_writer: BufferedWriter, chunk):
     if not chunk:

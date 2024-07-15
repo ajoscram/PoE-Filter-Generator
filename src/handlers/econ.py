@@ -51,8 +51,8 @@ def handle(_, block: Block, options: list[str]):
     if len(rules) > 0:
 
         values_by_operand = _get_values_by_operand(rules, _get_league_name(options), block.get_sieve())
-        for operand in values_by_operand.keys():
-            block.upsert(operand, values_by_operand[operand])
+        for operand, value in values_by_operand.items():
+            block.upsert(operand, value)
         
         if any(len(values) == 0 for values in values_by_operand.values()):
             block.comment_out()

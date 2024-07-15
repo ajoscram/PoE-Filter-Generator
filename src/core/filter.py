@@ -29,22 +29,22 @@ class Filter:
         directory = os.path.dirname(self.filepath)
         if directory != "":
             os.makedirs(directory, exist_ok=True)
-    
+
     def _write_filter(self, text: str):
         try:
             with open(self.filepath, "w", encoding=FILE_ENCODING) as file:
                 file.write(text)
-        except FileExistsError:
-            raise ExpectedError(_FILE_EXISTS_ERROR, filepath=self.filepath)
-        except PermissionError:
-            raise ExpectedError(_PERMISSION_ERROR, filepath=self.filepath)
+        except FileExistsError as error:
+            raise ExpectedError(_FILE_EXISTS_ERROR, filepath=self.filepath) from error
+        except PermissionError as error:
+            raise ExpectedError(_PERMISSION_ERROR, filepath=self.filepath) from error
 
 def _get_blocks(filepath: str):
     try:
         with open(filepath, "r", encoding=FILE_ENCODING) as file:
             raw_lines = file.readlines()
             return Block.extract(raw_lines)
-    except FileNotFoundError:
-        raise ExpectedError(_FILE_NOT_FOUND_ERROR, filepath=filepath)
-    except PermissionError:
-        raise ExpectedError(_PERMISSION_ERROR, filepath=filepath)
+    except FileNotFoundError as error:
+        raise ExpectedError(_FILE_NOT_FOUND_ERROR, filepath=filepath) from error
+    except PermissionError as error:
+        raise ExpectedError(_PERMISSION_ERROR, filepath=filepath) from error

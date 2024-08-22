@@ -38,6 +38,7 @@ class QueryType(StrEnum):
     TATTOO = "Tattoo"
     OMEN = "Omen"
     ALLFLAME_EMBER = "AllflameEmber"
+    RUNE = "KalguuranRune"
     UNIQUE_WEAPON = "UniqueWeapon"
     UNIQUE_ARMOUR = "UniqueArmour"
     UNIQUE_ACCESSORY = "UniqueAccessory"

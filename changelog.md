@@ -1,3 +1,8 @@
+# 1.4.9
+* Fixed a bug where the negative sign on numeric values within lines was being deleted.
+* `.alias` now allows for multiple alias to be declared in a single rule, separated by a comma (`,`). More information is now available in the [`.alias` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.alias).
+* `.alias` can now receive aliases as handler options, in the same fashion as it would through a rule's description.
+
 # 1.4.8
 * Added support for **Unique Relics** in `.econ`'s `uni` mnemonic.
 * Fixed a bug where using `.game`'s `base` mnemonic with the **Relics** `Class` would yield invalid base types.

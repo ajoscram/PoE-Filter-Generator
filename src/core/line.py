@@ -11,7 +11,7 @@ _VALUES_REGEX = f"[^{Delimiter.COMMENT_START}]+"
 _COMMENT_REGEX = f"{Delimiter.COMMENT_START}.*"
 _OPERATOR_REGEX = "[<|>|=|!]=?\\d*"
 _LINE_REGEX = f"^({_INDENTATION_REGEX})({_OPERAND_REGEX})\\s*({_OPERATOR_REGEX})?\\s*({_VALUES_REGEX})?({_COMMENT_REGEX})?$"
-_SINGLE_VALUE_REGEX = '"[^"]*"|\\w+'
+_SINGLE_VALUE_REGEX = '"[^"]*"|-?\\w+'
 
 class Line:
     """

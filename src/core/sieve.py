@@ -21,7 +21,7 @@ class Sieve:
             else:
                 self._lines_by_operand[line.operand].append(line)
     
-    def __contains__(self, pattern: dict[str, str | bool | int]):
+    def __contains__(self, pattern: dict[str, str | bool | int | None]):
         """Checks if a pattern, represented as a dictionary, is contained within the lines of this sieve."""
         for operand, value in pattern.items():
             if not self._is_value_valid(operand, value):

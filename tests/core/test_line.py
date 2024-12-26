@@ -15,8 +15,10 @@ def test_constructor_given_text_has_linebreak_should_raise():
 
 _LINE_PARTS = [
     ("    ", Operand.CLASS, "", "", ""),
-    ("    ", Operand.CLASS, "", "\"\"", ""),
+    ("    ", Operand.CLASS, "", '""', ""),
     ("    ", Operand.CLASS, "==", "", ""),
+    ("    ", Operand.AREA_LEVEL, "", "-1", ""),
+    ("    ", Operand.AREA_LEVEL, "", "1", ""),
     ("    ", Operand.CLASS, "==", '"Body Armours"', ""),
     ("    ", Operand.CLASS, "==2", '"Body Armours"', ""),
     ("    ", Operand.CLASS, "==", '"Body Armours"', f"{Delimiter.COMMENT_START}this is a comment"),

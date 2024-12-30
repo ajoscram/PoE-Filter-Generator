@@ -7,11 +7,6 @@ from test_utilities import create_filter
 _ALIAS_NAME = "NAME"
 _ALIAS_REPLACEMENT = "replacement"
 
-@pytest.fixture(autouse=True)
-def setup():
-    alias._aliases = None
-
-
 def test_handle_given_an_alias_in_options_should_replace():
     OPTIONS = [ _ALIAS_NAME, _ALIAS_PART_SEPARATOR, _ALIAS_REPLACEMENT ]
     filter = create_filter(f"{_ALIAS_NAME}")
@@ -19,6 +14,7 @@ def test_handle_given_an_alias_in_options_should_replace():
     lines = alias.handle(filter, filter.blocks[0], OPTIONS)
 
     assert _ALIAS_REPLACEMENT in lines[0]
+    assert alias._aliases == None #  the list of aliases should be reset after the invocation
 
 def test_handle_given_multiple_alias_should_replace_all():
     _ALIAS_NAME_2 = "_ALIAS_2"

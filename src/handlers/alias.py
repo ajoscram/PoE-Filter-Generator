@@ -51,8 +51,14 @@ def handle(filter: Filter, block: Block, options: list[str]):
     Text within `.alias` rules is excempt from replacement."""
     global _aliases
     _aliases = _aliases or _get_aliases(filter, options)
-    return [ _get_aliased_line(raw_line, _aliases)
+    
+    lines = [ _get_aliased_line(raw_line, _aliases)
         for raw_line in block.get_raw_lines() ]
+    
+    if block == filter.blocks[-1]:
+        _aliases = None
+    
+    return lines
 
 def _get_aliases(filter: Filter, options: list[str]):
     aliases = [ _get_alias(_Source.from_options(entry))

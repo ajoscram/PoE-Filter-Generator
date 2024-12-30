@@ -21,3 +21,4 @@ def test_handle_given_an_index_section_and_subsection_should_write_them():
     assert text.count(EXPECTED_SECTION_ID) == 2 # the section and the index
     assert text.count(SUBSECTION_NAME) == 3 # the rule, the section and the index
     assert text.count(EXPECTED_SUBSECTION_ID) == 2 # the section and the index
+    assert index._index == None # the index should be reset after the invocation

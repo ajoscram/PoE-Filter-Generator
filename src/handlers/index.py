@@ -26,10 +26,16 @@ _index: list[_Section] = None
 def handle(filter: Filter, block: Block, _):
     """Adds indices and addressable sections. Options are ignored."""
     global _index
-    _index = _create_index(filter) if _index is None else _index
-    return [ raw_line
+    _index = _index or _create_index(filter)
+    
+    lines = [ raw_line
         for line in block.lines
         for raw_line in _get_raw_lines_from_line(line) ]
+    
+    if block == filter.blocks[-1]:
+        _index = None
+    
+    return lines
 
 def _create_index(filter: Filter):
     sections: list[_Section] = []
@@ -77,15 +83,13 @@ def _get_index_header_lines():
         _render_line("", _INDEX_HEADER, ""),
         _SECTION_SEPARATOR,
         Delimiter.COMMENT_START,
-        _render_line("", _INDEX_HINT, ""),
-    ]
+        _render_line("", _INDEX_HINT, "") ]
 
 def _get_section_lines(section: _Section):
     return [
         _SECTION_SEPARATOR,
         _render_line("", section.name, section.id),
-        _SECTION_SEPARATOR
-    ]
+        _SECTION_SEPARATOR ]
 
 def _get_subsection_line(section: _Section):
     return _render_line(f" {section.name} ", "", f" {section.id}", _LINE_PADDING)

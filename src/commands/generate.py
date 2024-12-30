@@ -42,10 +42,10 @@ def execute(args: list[str]):
 
     for invocation in params.invocations:
         console.write(_APPLYING_HANDLER_MESSAGE.format(invocation))
-        filter = _generate_filter(filter, params.output_filepath, invocation.handler_name, invocation.options)
+        filter = _generate_filter(filter, invocation.handler_name, invocation.options)
     
     console.write(_SAVING_FILTER_MESSAGE)
-    filter.save()
+    filter.save(params.output_filepath)
 
     console.write(_FILTER_SAVED_MESSAGE.format(params.output_filepath), done=True)
 
@@ -73,7 +73,7 @@ def _create_invocations(raw_args: list[str]):
             invocations[-1].options += [ arg ]
     return invocations
 
-def _generate_filter(filter: Filter, output_filepath: str, handler_name: str, options: list[str]):
+def _generate_filter(filter: Filter, handler_name: str, options: list[str]):
     if handler_name not in HANDLERS:
         raise ExpectedError(_HANDLER_NOT_FOUND_ERROR.format(handler_name))
 
@@ -81,4 +81,4 @@ def _generate_filter(filter: Filter, output_filepath: str, handler_name: str, op
     generated_raw_lines = [ line
         for block in filter.blocks
         for line in handler(filter, block, options) ]
-    return Filter(output_filepath, Block.extract(generated_raw_lines))
+    return Filter(filter.filepath, Block.extract(generated_raw_lines))

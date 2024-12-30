@@ -19,25 +19,25 @@ class Filter:
         blocks = _get_blocks(filepath)
         return Filter(filepath, blocks)
 
-    def save(self):
-        """Saves the filter to its filepath."""
-        self._create_directory()
+    def save(self, filepath: str):
+        """Saves the filter to the filepath received."""
+        self._create_directory(filepath)
         block_texts = [ str(block) for block in self.blocks ]
-        self._write_filter("\n".join(block_texts))
+        self._write_filter(filepath, "\n".join(block_texts))
 
-    def _create_directory(self):
-        directory = os.path.dirname(self.filepath)
+    def _create_directory(self, filepath: str):
+        directory = os.path.dirname(filepath)
         if directory != "":
             os.makedirs(directory, exist_ok=True)
 
-    def _write_filter(self, text: str):
+    def _write_filter(self, filepath: str, text: str):
         try:
-            with open(self.filepath, "w", encoding=FILE_ENCODING) as file:
+            with open(filepath, "w", encoding=FILE_ENCODING) as file:
                 file.write(text)
         except FileExistsError as error:
-            raise ExpectedError(_FILE_EXISTS_ERROR, filepath=self.filepath) from error
+            raise ExpectedError(_FILE_EXISTS_ERROR, filepath=filepath) from error
         except PermissionError as error:
-            raise ExpectedError(_PERMISSION_ERROR, filepath=self.filepath) from error
+            raise ExpectedError(_PERMISSION_ERROR, filepath=filepath) from error
 
 def _get_blocks(filepath: str):
     try:

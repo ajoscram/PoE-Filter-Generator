@@ -1,4 +1,14 @@
 # Backlog
+
+* **IMPORTANT:** ADD DOCUMENTATION OF NEW ALIAS FEATURES
+
+* Clean up formatting from other rules by:
+    * Upserting lines into a block should insert before all blank lines at the end of the block
+    * Add something to `.format` so that it can delete commented out sections of code.
+    * Add a mechanism to emit warnings and return no block on econ if base_types is empty OR add the `.block` rule to split the commented out block from the previous block.
+
+* Add non-significant zeroes to `.index` so that it is impossible to mistake an index number by orders of magnitude when doing CTRL+F.
+
 * Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
 * Review regex handling in `.import`
 * Update `.import` documentation
@@ -14,7 +24,6 @@
 # Ideas
 * Make the `FileCache.clear` method smarter by deleting the files listed in entries instead of the whole directory (?)
 * Add a new command `:publish` to upload filters to GGG with
-* Upserting lines into a block should insert before all blank lines at the end of the block
 * Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
 * Move to Python virtual environments
     - VSCode really didn't like this. This should only be re-tried if it becomes a need in the future.
@@ -24,8 +33,6 @@
     - Define a color scheme for the text in the program and use those rules across all strings shown to the user.
 * Use levenshtein distances to improve `:help`'s searching of the correct page.
     If the user types something slightly different than any existing page, then the closest page within a distance threshold is used instead.
-* Add a mechanism to emit warnings and return no block on econ if base_types is empty OR add the `.block` rule to split the commented out block from the previous block.
-* Add something to `.format` so that it can delete commented out sections of code.
 * Express progress of tasks incrementally in the CLI via a progress bar:
     - https://rich.readthedocs.io/en/stable/reference/progress.html#rich.progress.track
     - https://rich.readthedocs.io/en/stable/_modules/rich/progress.html#track

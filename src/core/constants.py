@@ -7,6 +7,8 @@ class Delimiter(StrEnum):
     RULE_SEPARATOR = "."
     HANDLER_START = RULE_SEPARATOR
     RULE_START = COMMENT_START + RULE_SEPARATOR
+    LIST_ENTRY_SEPARATOR = ","
+    PAIR_SEPARATOR = "="
 
 class Operator(StrEnum):
     """Represents operators used to create conditions in filters."""

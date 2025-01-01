@@ -1,17 +1,15 @@
 # Backlog
 
-* **IMPORTANT:** ADD DOCUMENTATION OF NEW ALIAS FEATURES
+* The `:help` message for `.import` AND `.if` is incorrect because the python module ends with `_` and the handler does not. Must resolve
+
+* Add non-significant zeroes to `.index` so that it is impossible to mistake an index number by orders of magnitude when doing CTRL+F.
 
 * Clean up formatting from other rules by:
     * Upserting lines into a block should insert before all blank lines at the end of the block
     * Add something to `.format` so that it can delete commented out sections of code.
     * Add a mechanism to emit warnings and return no block on econ if base_types is empty OR add the `.block` rule to split the commented out block from the previous block.
 
-* Add non-significant zeroes to `.index` so that it is impossible to mistake an index number by orders of magnitude when doing CTRL+F.
-
-* Add a way to target the input filter's folder in `.import` (a.k.a. absolute pathing)
-* Review regex handling in `.import`
-* Update `.import` documentation
+* Release and update `.import` and `.alias` documentation
 
 * Add Cluster Jewels to `.econ`
 

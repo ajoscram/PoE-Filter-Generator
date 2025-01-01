@@ -1,14 +1,14 @@
 import pytest
 from core import Delimiter, ExpectedError
 from handlers import alias
-from handlers.alias import _ALIAS_ENTRY_SEPARATOR, _ALIAS_NAME_ERROR_DESCRIPTOR, _ALIAS_PART_SEPARATOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS_ERROR_DESCRIPTOR, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _ALIAS_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, _RULE_SOURCE_NAME, NAME as ALIAS
+from handlers.alias import _ALIAS_NAME_ERROR_DESCRIPTOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS_ERROR_DESCRIPTOR, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _ALIAS_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, _RULE_SOURCE_NAME, NAME as ALIAS
 from test_utilities import create_filter
 
 _ALIAS_NAME = "NAME"
 _ALIAS_REPLACEMENT = "replacement"
 
 def test_handle_given_an_alias_in_options_should_replace():
-    OPTIONS = [ _ALIAS_NAME, _ALIAS_PART_SEPARATOR, _ALIAS_REPLACEMENT ]
+    OPTIONS = [ _ALIAS_NAME, Delimiter.PAIR_SEPARATOR, _ALIAS_REPLACEMENT ]
     filter = create_filter(f"{_ALIAS_NAME}")
     
     lines = alias.handle(filter, filter.blocks[0], OPTIONS)
@@ -20,9 +20,9 @@ def test_handle_given_multiple_alias_should_replace_all():
     _ALIAS_NAME_2 = "_ALIAS_2"
     _ALIAS_REPLACEMENT_2 = "replacement_2"
     OPTIONS = [
-        _ALIAS_NAME, _ALIAS_PART_SEPARATOR, _ALIAS_REPLACEMENT,
-        _ALIAS_ENTRY_SEPARATOR,
-        _ALIAS_NAME_2, _ALIAS_PART_SEPARATOR, _ALIAS_REPLACEMENT_2 ]
+        _ALIAS_NAME, Delimiter.PAIR_SEPARATOR, _ALIAS_REPLACEMENT,
+        Delimiter.LIST_ENTRY_SEPARATOR,
+        _ALIAS_NAME_2, Delimiter.PAIR_SEPARATOR, _ALIAS_REPLACEMENT_2 ]
     filter = create_filter(
     f"""{_ALIAS_NAME}
         {_ALIAS_NAME_2}""")
@@ -34,7 +34,7 @@ def test_handle_given_multiple_alias_should_replace_all():
 
 def test_handle_given_an_alias_in_a_rule_should_replace():
     filter = create_filter(
-    f"""{Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_PART_SEPARATOR} {_ALIAS_REPLACEMENT}
+    f"""{Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {Delimiter.PAIR_SEPARATOR} {_ALIAS_REPLACEMENT}
         {_ALIAS_NAME}""")
     
     lines = alias.handle(filter, filter.blocks[0], [])
@@ -57,7 +57,7 @@ def test_handle_given_incorrect_description_format_should_raise():
     (_ALIAS_NAME, "", _REPLACEMENT_ERROR_DESCRIPTOR)
 ])
 def test_handle_given_empty_alias_part_should_raise(name: str, replacement: str, error_descriptor: str):
-    DESCRIPTION = f"{name}{_ALIAS_PART_SEPARATOR}{replacement}"
+    DESCRIPTION = f"{name}{Delimiter.PAIR_SEPARATOR}{replacement}"
     filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")
 
     with pytest.raises(ExpectedError) as error:
@@ -68,8 +68,8 @@ def test_handle_given_empty_alias_part_should_raise(name: str, replacement: str,
 
 def test_handle_given_duplicate_alias_name_should_raise():
     filter = create_filter(
-    f"""{Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_PART_SEPARATOR} {_ALIAS_REPLACEMENT}
-        {Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {_ALIAS_PART_SEPARATOR} other replacement""")
+    f"""{Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {Delimiter.PAIR_SEPARATOR} {_ALIAS_REPLACEMENT}
+        {Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {Delimiter.PAIR_SEPARATOR} other replacement""")
     
     with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], [])
@@ -85,8 +85,8 @@ def test_handle_given_duplicate_alias_name_should_raise():
 ])
 def test_handle_given_contained_alias_names_should_raise(first_name: str, error_name: str, contained_descriptor: str):
     filter = create_filter(
-    f"""{Delimiter.RULE_START}{ALIAS} {first_name} {_ALIAS_PART_SEPARATOR} {_ALIAS_REPLACEMENT}
-        {Delimiter.RULE_START}{ALIAS} {error_name} {_ALIAS_PART_SEPARATOR} {_ALIAS_REPLACEMENT}""")
+    f"""{Delimiter.RULE_START}{ALIAS} {first_name} {Delimiter.PAIR_SEPARATOR} {_ALIAS_REPLACEMENT}
+        {Delimiter.RULE_START}{ALIAS} {error_name} {Delimiter.PAIR_SEPARATOR} {_ALIAS_REPLACEMENT}""")
     
     with pytest.raises(ExpectedError) as error:
         _ = alias.handle(filter, filter.blocks[0], [])

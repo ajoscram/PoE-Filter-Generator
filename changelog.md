@@ -1,9 +1,10 @@
 # 1.4.9
+* `.import` now supports **path rooting**, a technique used to change the root directory during import resolution. More information is available in the [`.import` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.import).
+* `.alias` now allows for multiple alias pairs to be declared in a single rule, separated by a comma (`,`). More information is available in the [`.alias` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.alias).
+* `.alias` can now receive alias pairs as handler options, in the same fashion as it would through a rule's description.
 * Fixed a bug where `.alias` and `.index` were keeping outdated information on subsequent invocations.
-* Fixed a bug where calling `.import` in anywhere but the first handler invocation would begin searching from the filter's output directory instead of the input's.
 * Fixed a bug where the negative sign on numeric values within lines was being deleted.
-* `.alias` now allows for multiple alias to be declared in a single rule, separated by a comma (`,`). More information is now available in the [`.alias` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.alias).
-* `.alias` can now receive aliases as handler options, in the same fashion as it would through a rule's description.
+* Fixed a bug where calling `.import` in anywhere but the first handler invocation would begin searching from the filter's output directory instead of the input's.
 
 # 1.4.8
 * Added support for **Unique Relics** in `.econ`'s `uni` mnemonic.

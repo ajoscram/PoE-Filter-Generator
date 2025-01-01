@@ -6,11 +6,8 @@ NAME = "alias"
 _OPTIONS_SOURCE_NAME = "the handler's options"
 _RULE_SOURCE_NAME = "line {0}"
 
-_ALIAS_ENTRY_SEPARATOR = ","
-_ALIAS_PART_SEPARATOR = "="
-
-_ALIAS_PARTS_PATTERN = f"([^{_ALIAS_PART_SEPARATOR}]*){_ALIAS_PART_SEPARATOR}(.*)"
-_ALIAS_ENTRIES_PATTERN = f"([^{_ALIAS_ENTRY_SEPARATOR}]+){_ALIAS_ENTRY_SEPARATOR}?"
+_ALIAS_PARTS_PATTERN = f"([^{Delimiter.PAIR_SEPARATOR}]*){Delimiter.PAIR_SEPARATOR}(.*)"
+_ALIAS_ENTRIES_PATTERN = f"([^{Delimiter.LIST_ENTRY_SEPARATOR}]+){Delimiter.LIST_ENTRY_SEPARATOR}?"
 _ALIAS_RULE_PATTERN = f"\\{Delimiter.RULE_SEPARATOR}{NAME}[^\\{Delimiter.RULE_SEPARATOR}]*"
 
 _ALIAS_FORMAT_ERROR = "The alias '{0}' is formatted incorrectly. Make sure it looks like this:\n\n\talias_name = replacement text"
@@ -48,7 +45,8 @@ _aliases: list[_Alias] = None
 
 def handle(filter: Filter, block: Block, options: list[str]):
     """Finds and replaces aliased text for a replacement.
-    Text within `.alias` rules is excempt from replacement."""
+    Text within `.alias` rules is excempt from replacement.
+    Additional aliases can be passed in via the options and are interpreted as any other alias rule."""
     global _aliases
     _aliases = _aliases or _get_aliases(filter, options)
     

@@ -74,6 +74,17 @@ def test_err_given_an_expected_error_in_a_with_a_known_module_should_use_that_te
     term = term_prefix + TERM_NAME
     assert console_print_mock.received(_HINT_MESSAGE.format(term, _WIKI_PAGE_URL.format(term)))
 
+def test_err_given_an_expected_error_in_a_with_a_known_module_that_ends_with_underscore_should_remove_the_underscore(
+    monkeypatch: MonkeyPatch, console_print_mock: FunctionMock):
+    
+    TERM_NAME = "term"
+    _setup_traceback(monkeypatch, _HANDLERS_FOLDER_NAME, TERM_NAME + "_")
+
+    console.err(_ERROR)
+
+    term = Delimiter.HANDLER_START + TERM_NAME
+    assert console_print_mock.received(_HINT_MESSAGE.format(term, _WIKI_PAGE_URL.format(term)))
+
 def _setup_traceback(monkeypatch: MonkeyPatch, folder: str, filename: str):
     filepaths = [ "src\\main.py", f"src\\{folder}\\{filename}.py" ]
     mock_traces = [ _MockTrace(filepath) for filepath in reversed(filepaths) ]

@@ -2,6 +2,7 @@
 * `.import` now supports **path rooting**, a technique used to change the root directory during import resolution. More information is available in the [`.import` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.import).
 * `.alias` now allows for multiple alias pairs to be declared in a single rule, separated by a comma (`,`). More information is available in the [`.alias` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.alias).
 * `.alias` can now receive alias pairs as handler options, in the same fashion as it would through a rule's description.
+* Fixed a bug where help hints shown for some handlers / commands could end in an `_` resulting in an invalid link.
 * Fixed a bug where `.alias` and `.index` were keeping outdated information on subsequent invocations.
 * Fixed a bug where the negative sign on numeric values within lines was being deleted.
 * Fixed a bug where calling `.import` in anywhere but the first handler invocation would begin searching from the filter's output directory instead of the input's.

@@ -70,5 +70,6 @@ def _get_hint_term(error: ExpectedError):
 
 def _try_get_filename(filepath: str, pattern: str):
     if match := re.search(pattern, filepath):
-        return match.groups()[0]
+        text = match.groups()[0]
+        return text[:-1] if text.endswith("_") else text
     return None

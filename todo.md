@@ -1,9 +1,4 @@
 # Backlog
-
-* The `:help` message for `.import` AND `.if` is incorrect because the python module ends with `_` and the handler does not. Must resolve
-
-* Add non-significant zeroes to `.index` so that it is impossible to mistake an index number by orders of magnitude when doing CTRL+F.
-
 * Clean up formatting from other rules by:
     * Upserting lines into a block should insert before all blank lines at the end of the block
     * Add something to `.format` so that it can delete commented out sections of code.

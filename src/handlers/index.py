@@ -124,7 +124,11 @@ def _get_raw_lines_from_line(line: Line, index: _Index):
     raw_lines = [ rule_line
         for rule in line.get_rules(_RULE_NAMES)
         for rule_line in index.get_lines(rule) ]
-    return [ str(line), "\n" ] + raw_lines + [ "\n" ]
+    
+    if len(raw_lines) > 0:
+        raw_lines = [ "\n" ] + raw_lines + [ "\n" ]
+
+    return [ str(line) ] + raw_lines 
 
 def _render_line(left_text: str, center_text: str, right_text: str, padding_token: str = " "):
     padding = padding_token * (_MAX_LINE_LENGTH  - len(left_text) - len(center_text) - len(right_text))

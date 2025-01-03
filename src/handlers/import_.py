@@ -200,7 +200,6 @@ def _split_root_and_filepath(rule_filepath: str, rule: Rule, context: _Context):
     return (None, parts[0]) if len(parts) == 1 else (parts[0], parts[1])
 
 def _get_root_dir(root: str | None, rule: Rule, context: _Context):
-    print(context.roots)
     match root:
         case None:
             root_dir = os.path.dirname(context.get_current_filepath())

@@ -54,11 +54,11 @@ class _Index:
     
     def get_lines(self, rule: Rule):
         if rule.name == _INDEX_RULE_NAME:
-            return self._get_index_lines()
+            return self._get_index_lines(rule.description.strip())
         return self._get_section_lines(rule)
 
-    def _get_index_lines(self):
-        lines = self._get_header_lines()
+    def _get_index_lines(self, description: str = ""):
+        lines = self._get_header_lines(description)
         for section in self._sections:
             lines += section.get_lines_for_index(self._subid_length)
             section_id = section.get_padded_subid(self._subid_length)
@@ -76,8 +76,9 @@ class _Index:
                 return subsection.get_lines_for_rule(self._subid_length, section_id)
         raise RuntimeError(f"'{rule}' was not registered in .index's index. This should never happen.")
     
-    def _get_header_lines(self):
-        return [
+    def _get_header_lines(self, description: str = ""):
+        title_lines = [ _render_line("", "", description) ] if description != "" else []
+        return title_lines + [
             _SECTION_SEPARATOR,
             _render_line("", _INDEX_HEADER, ""),
             _SECTION_SEPARATOR,

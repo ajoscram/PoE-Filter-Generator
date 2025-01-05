@@ -1,7 +1,4 @@
 # Backlog
-* Add a "side-title" option for the index header, passed in via the index rule
-* Update `.import`, `.alias`, `.index` and `.format` documentation and release
-
 * Add Cluster Jewels to `.econ`
 * `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block. 
 * Let the RePoE dev know about the following base types not currently being fetched:

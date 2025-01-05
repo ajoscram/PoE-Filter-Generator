@@ -38,3 +38,11 @@ def test_handle_given_enough_sections_to_cause_id_padding_should_add_the_padding
 
     assert text.count(EXPECTED_SECTION_ID) == 2 # the section and the index
     assert text.count(EXPECTED_SUBSECTION_ID) == 2 # the section and the index
+
+def test_handle_given_index_with_description_should_add_it():
+    DESCRIPTION = "description"
+    filter = create_filter(f"{Delimiter.RULE_START}{_INDEX_RULE_NAME} description")
+
+    text = '\n'.join(index.handle(filter, filter.blocks[0], None))
+
+    assert DESCRIPTION in text

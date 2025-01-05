@@ -2,13 +2,14 @@ from enum import StrEnum
 
 class Delimiter(StrEnum):
     """Represents various delimiter tokens that can be found on filters."""
+    LIST_ENTRY_SEPARATOR = ","
+    PAIR_SEPARATOR = "="
     COMMENT_START = "#"
     COMMAND_START = ":"
     RULE_SEPARATOR = "."
     HANDLER_START = RULE_SEPARATOR
     RULE_START = COMMENT_START + RULE_SEPARATOR
-    LIST_ENTRY_SEPARATOR = ","
-    PAIR_SEPARATOR = "="
+    COMMENT_RULE_START = COMMENT_START + RULE_SEPARATOR + COMMENT_START
 
 class Operator(StrEnum):
     """Represents operators used to create conditions in filters."""

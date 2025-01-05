@@ -171,7 +171,7 @@ def _get_block(filter: Filter, blockname: str):
 
 def _get_line(block: Block, line_pattern: str, filepath: str):
     for line in block.lines:
-        if line.contains(line_pattern):
+        if line_pattern in line:
             return line
     blockname = _get_blockname(block)
     error = _LINE_PATTERN_NOT_FOUND_ERROR.format(line_pattern, blockname)

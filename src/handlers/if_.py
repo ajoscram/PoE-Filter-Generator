@@ -20,7 +20,7 @@ def handle(_, block: Block, __):
         if remove_type == _RemoveType.SINGLE:
             line.comment_out()
         elif remove_type == _RemoveType.MUTLI:
-            _comment_out_starting_from_line(block, line)
+            block.comment_out(start=line)
             break
     return block.get_raw_lines()
 
@@ -34,12 +34,7 @@ def _get_remove_type(line: Line, block_text: str):
             raise ExpectedError(_EMPTY_DESCRIPTION_ERROR, rule.line_number)
         if rule.description in block_text:
             continue
-        if line.is_block_starter() or line.is_empty(exclude_comments=True):
+        if line.is_block_starter() or not line.has_filter_info():
             return _RemoveType.MUTLI
         return _RemoveType.SINGLE
     return _RemoveType.NONE
-
-def _comment_out_starting_from_line(block: Block, line: Line):
-    line_index = line.number - block.line_number
-    for line in block.lines[line_index:]:
-        line.comment_out()

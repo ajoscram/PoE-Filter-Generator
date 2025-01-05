@@ -32,7 +32,7 @@ def test_handle_given_if_was_placed_on_empty_line_should_comment_out_lines_start
         another line""")
     
     lines = if_.handle(filter, filter.blocks[0], None)
-    
+
     for line in lines[1:]:
         assert line.startswith(Delimiter.COMMENT_START)
 

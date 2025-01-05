@@ -25,14 +25,6 @@ def test_extract_given_lines_that_represent_two_blocks_and_a_line_number_should_
     assert len(blocks[0].lines) == len(_DEFAULT_BLOCK_LINES)
     assert len(blocks[1].lines) == len(ANOTHER_BLOCK)
 
-def test_comment_out_should_comment_out_lines_in_the_block():
-    block = _create_block(*_DEFAULT_BLOCK_LINES)
-
-    block.comment_out()
-
-    for uncommented_text_line, commented_out_line in zip(_DEFAULT_BLOCK_LINES, block.lines):
-        assert uncommented_text_line in commented_out_line.comment
-
 def test_hide_should_set_show_to_hide():
     block = _create_block(Operand.SHOW)
 
@@ -46,6 +38,35 @@ def test_show_should_set_hide_to_show():
     block.show()
 
     assert block.lines[0].operand == Operand.SHOW
+
+def test_comment_out_should_comment_out_lines_in_the_block():
+    block = _create_block(*_DEFAULT_BLOCK_LINES)
+
+    block.comment_out()
+
+    for uncommented_text_line, commented_out_line in zip(_DEFAULT_BLOCK_LINES, block.lines):
+        assert uncommented_text_line in commented_out_line.comment
+
+def test_comment_out_given_lines_have_no_content_should_not_comment_out():
+    WHITESPACE = " \t"
+    COMMENT = f"{Delimiter.COMMENT_START} comment"
+    block = _create_block(WHITESPACE, COMMENT)
+
+    block.comment_out()
+
+    assert Delimiter.COMMENT_RULE_START not in str(block.lines[0])
+    assert str(block.lines[1]) == COMMENT
+
+def test_comment_out_given_a_start_line_should_comment_starting_from_it():
+    INDEX = 1
+    block = _create_block(*_DEFAULT_BLOCK_LINES)
+
+    block.comment_out(start=block.lines[INDEX])
+
+    for line in block.lines[:INDEX]:
+        assert Delimiter.COMMENT_RULE_START not in str(line)
+    for line in block.lines[INDEX:]:
+        assert str(line).startswith(Delimiter.COMMENT_RULE_START)
 
 def test_upsert_given_existing_operand_should_override_values():
     OPERAND = "operand"
@@ -68,6 +89,16 @@ def test_upsert_given_new_operand_should_append_new_line():
     assert block.lines[-1].operand == OPERAND
     assert block.lines[-1].operator == Operator.GREATER_EQUALS
     assert block.lines[-1].values == VALUES
+
+def test_upsert_given_extra_lines_without_filter_info_should_append_before_them():
+    OPERAND = "operand"
+    LINES_WITHOUT_FILTER_INFO = [ "\t", "# comment", "#.rule" ]
+    block = _create_block(*_DEFAULT_BLOCK_LINES + LINES_WITHOUT_FILTER_INFO)
+
+    block.upsert(OPERAND, [ "some_value" ])
+
+    assert len(block.lines) == len(_DEFAULT_BLOCK_LINES) + len(LINES_WITHOUT_FILTER_INFO) + 1
+    assert block.lines[len(_DEFAULT_BLOCK_LINES)].operand == OPERAND
 
 def test_get_rules_given_a_line_with_rules_should_return_rules_with_that_name():
     RULE_NAME = "rule"

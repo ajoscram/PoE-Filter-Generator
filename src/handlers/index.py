@@ -31,7 +31,7 @@ def handle(filter: Filter, block: Block, _):
 
 class _Index:
     def __init__(self, filter: Filter):
-        self.subid_length = 0
+        self._subid_length = 0
         self._sections: list[_Section] = []
 
         rules = (rule
@@ -49,8 +49,8 @@ class _Index:
         section_list.append(section)
 
         new_id_length = len(str(len(section_list)))
-        if new_id_length > self.subid_length:
-            self.subid_length = new_id_length
+        if new_id_length > self._subid_length:
+            self._subid_length = new_id_length
     
     def get_lines(self, rule: Rule):
         if rule.name == _INDEX_RULE_NAME:
@@ -60,20 +60,20 @@ class _Index:
     def _get_index_lines(self):
         lines = self._get_header_lines()
         for section in self._sections:
-            lines += section.get_lines_for_index(self.subid_length)
-            section_id = section.get_padded_subid(self.subid_length)
+            lines += section.get_lines_for_index(self._subid_length)
+            section_id = section.get_padded_subid(self._subid_length)
             for subsection in section.subsections:
                 lines += subsection.get_lines_for_index(
-                    self.subid_length, section_id)
+                    self._subid_length, section_id)
         return lines
 
     def _get_section_lines(self, rule: Rule):
         for section in self._sections:
             if section.rule == rule:
-                return section.get_lines_for_rule(self.subid_length)
+                return section.get_lines_for_rule(self._subid_length)
             if subsection := next((sub for sub in section.subsections if sub.rule == rule), None):
-                section_id = section.get_padded_subid(self.subid_length)
-                return subsection.get_lines_for_rule(self.subid_length, section_id)
+                section_id = section.get_padded_subid(self._subid_length)
+                return subsection.get_lines_for_rule(self._subid_length, section_id)
         raise RuntimeError(f"'{rule}' was not registered in .index's index. This should never happen.")
     
     def _get_header_lines(self):

@@ -15,14 +15,14 @@ _SINGLE_VALUE_REGEX = '"[^"]*"|-?\\w+'
 
 class Line:
     """
-    A line represents a line of text inside a Block, which may include rules in it.
+    A Line represents a line of text inside a Block, which may include rules in it.
     Rules are extracted upon creation.
     Multiline strings are not allowed as text.
     """
     def __init__(self, text: str, number: int):
         """
         * `text`: the text in the line. Passing in a string with a new-line character raisesan error.
-        * `number`: The line's number in the file.
+        * `number`: The line's number in a filter file.
         """
         text = text.rstrip()
         if '\n' in text:
@@ -34,16 +34,21 @@ class Line:
         """Returns whether or not this line should start a new Block."""
         return self.operand in BLOCK_STARTERS
     
-    def is_empty(self, exclude_comments: bool = False):
-        """Returns `True` if the line contains no text other than whitespace.
-        Comments are optionally excluded with `exclude_comments`."""
-        text = self._get_text(exclude_comments)
-        return len(text.strip()) == 0
+    def has_filter_info(self):
+        """Returns `True` if the line contains any item filter information."""
+        return self.operand != "" or self.operator != "" or len(self.values) > 0
 
-    def contains(self, string: str, exclude_comments: bool = False):
-        """Returns whether or not this line contains the string.
-        Comments are optionally excluded with `exclude_comments`."""
-        return string in self._get_text(exclude_comments)
+    def has_rules(self):
+        """Returns `True` if the line contains any `Rule`s."""
+        return len(self.rules) > 0
+    
+    def has_comment(self):
+        """Returns `True` if the line has a non-rule comment."""
+        return self.comment != "" and not self.has_rules()
+    
+    def is_empty(self):
+        """Returns `True` if the line contains no text other than whitespace."""
+        return not (self.has_filter_info() or self.has_rules() or self.has_comment())
     
     def get_rules(self, name_or_names: str | list[str]):
         """Gets every rule within the line with a name equal to or included in `name_or_names`."""
@@ -52,8 +57,12 @@ class Line:
         return [ rule for rule in self.rules if rule.name in name_or_names ]
     
     def comment_out(self):
-        """Comments the line out by prepending a `#` to the line's text."""
-        self._set_parts(Delimiter.COMMENT_START + str(self))
+        """Comments the line out by prepending a `#.#` to the line's text."""
+        self._set_parts(Delimiter.COMMENT_RULE_START + str(self))
+
+    def __contains__(self, string: str):
+        """Returns whether or not this line contains the string."""
+        return string in str(self)
 
     def __str__(self):
         values = " ".join(self.values)
@@ -69,6 +78,3 @@ class Line:
         self.values: list[str] = re.findall(_SINGLE_VALUE_REGEX, parts[3] or "")
         self.comment: str = parts[4] or ""
         self.rules: list[Rule] = Rule.extract(self.number, self.comment)
-    
-    def _get_text(self, exclude_comments: bool):
-        return str(self).split(Delimiter.COMMENT_START, 1)[0] if exclude_comments else str(self)

@@ -16,7 +16,7 @@ def handle(_, block: Block, __):
         for param in rule.description.split() }
     
     for param, line_number in params.items():
-        (operand, values) = _get_operand_and_values(param, block.get_sieve(), line_number)
+        operand, values = _get_operand_and_values(param, block.get_sieve(), line_number)
         block.upsert(operand, [ f'"{value}"' for value in values ])
 
     return block.get_raw_lines()

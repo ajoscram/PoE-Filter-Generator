@@ -2,11 +2,14 @@
 * `.import` now supports **path rooting**, a technique used to change the root directory during import resolution. More information is available in the [`.import` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.import).
 * `.alias` now allows for multiple alias pairs to be declared in a single rule, separated by a comma (`,`). More information is available in the [`.alias` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.alias).
 * `.alias` can now receive alias pairs as handler options, in the same fashion as it would through a rule's description.
-* `.index` now adds non-significant zeroes to it's index numbers so that it is impossible to have collisions when doing CTRL+F.
-* Fixed a bug where help hints shown for some handlers / commands could end in an `_` resulting in an invalid link.
+* `.index` now adds non-significant zeroes to it's index numbers (if applicable) so that it is impossible to have collisions when doing CTRL+F.
+* Handlers that comment out lines now only do so for lines that either have item filter instructions or rules in them. They also use a "comment" rule (`#.#`) instead of a traditional comment in order to set them up for deletion with `.format`.
+* `.format` now removes all previous indentation from filter instruction lines, and assigns them an indent of 4 spaces if they are not block-starting lines.
+* Fixed a bug where `.format` could leave two blank lines in a row in some cases.
 * Fixed a bug where `.alias` and `.index` were keeping outdated information on subsequent invocations.
 * Fixed a bug where the negative sign on numeric values within lines was being deleted.
 * Fixed a bug where calling `.import` in anywhere but the first handler invocation would begin searching from the filter's output directory instead of the input's.
+* Fixed a bug where help hints shown for some handlers / commands could end in an `_` resulting in an invalid link.
 
 # 1.4.8
 * Added support for **Unique Relics** in `.econ`'s `uni` mnemonic.

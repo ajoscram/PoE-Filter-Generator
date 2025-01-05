@@ -24,11 +24,6 @@ class Block:
         
         return blocks
 
-    def comment_out(self):
-        """Comments out every line in the block."""
-        for line in self.lines:
-            line.comment_out()
-
     def hide(self):
         """Attempts to hide a block by setting every 'Show' operand in it to 'Hide'."""
         for line in self._find_lines(operand=Operand.SHOW):
@@ -39,19 +34,28 @@ class Block:
         This is the reverse function to hide."""
         for line in self._find_lines(operand=Operand.HIDE):
             line.operand = Operand.SHOW
+
+    def comment_out(self, start: Line = None):
+        """Comments out every line in the block that contains either filter information or rules in it.
+        If `start` is provided, only the lines from the `start` line onwards will be commented out.
+        `start` must be contained within the block."""
+        start_index = start.number - self.line_number if start != None else 0
+        for line in self.lines[start_index:]:
+            if line.has_rules() or line.has_filter_info():
+                line.comment_out()
     
-    def upsert(self, operand: Operand, values: list[str], operator: str = "=="):
+    def upsert(self, operand: Operand, values: list[str], operator: str = Operator.EQUALS):
         """Updates every line that contains the `operand` with the `values` listed.
         If a line with the `operand` was not found, then a new line with the
-        `operand`, `operator` and `values`is appended to the block."""
+        `operand`, `operator` and `values`is inserted to the block."""
         lines = self._find_lines(operand)
         if len(lines) == 0:
             new_line = Line(f"{self.lines[-1].indentation}{operand} {operator}", self.lines[-1].number + 1)
-            self.lines.append(new_line)
+            self._insert_after_filter_info_lines(new_line)
             lines = [ new_line ]
 
         for line in lines:
-            line.values = values    
+            line.values = values
 
     def get_rules(self, name_or_names: str | list[str]):
         """Gets all the rules in the block with name equals to rule_name."""
@@ -72,6 +76,11 @@ class Block:
             for line in self.lines
             if operand is None or line.operand == operand
             if operator is None or line.operator == operator ]
+
+    def _insert_after_filter_info_lines(self, line: Line):
+        filter_info_lines = (i + 1 for i, line in enumerate(self.lines) if line.has_filter_info())
+        index = max(filter_info_lines, default=len(self.lines))
+        self.lines.insert(index, line)
 
     def __str__(self):
         return '\n'.join(self.get_raw_lines())

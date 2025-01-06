@@ -181,16 +181,16 @@ def _get_blockname(block: Block):
     name_rules = block.get_rules(_NAME_RULE)
     return name_rules[-1].description if len(name_rules) > 0 else None
 
-def _parse_rule_filepath(rule_filepath: str, rule: Rule, context: _Context):
-    if rule_filepath == "":
+def _parse_rule_filepath(navigation: str, rule: Rule, context: _Context):
+    if navigation == "":
         return context.get_current_filepath()
     
-    (root, filepath) = _split_root_and_filepath(rule_filepath, rule, context)
-    root_dir = _get_root_dir(root, rule, context)
-    filepath_suffix = _transform_navigation_to_real_path(filepath)
-    return _get_full_filepath(root_dir, filepath_suffix)
+    (root_name, navigation) = _split_root_name_and_navigation(navigation, rule, context)
+    root_dir = _get_root_dir(root_name, rule, context)
+    filepath = _transform_navigation_to_real_path(navigation)
+    return _get_full_filepath(root_dir, filepath)
 
-def _split_root_and_filepath(rule_filepath: str, rule: Rule, context: _Context):
+def _split_root_name_and_navigation(rule_filepath: str, rule: Rule, context: _Context):
     parts = [ part.strip() for part in rule_filepath.split(_Navigation.ROOT) ]
     
     if len(parts) > 2:

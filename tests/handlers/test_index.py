@@ -41,7 +41,7 @@ def test_handle_given_enough_sections_to_cause_id_padding_should_add_the_padding
 
 def test_handle_given_index_with_description_should_add_it():
     DESCRIPTION = "description"
-    filter = create_filter(f"{Delimiter.RULE_START}{_INDEX_RULE_NAME} description")
+    filter = create_filter(f"{Delimiter.RULE_START}{_INDEX_RULE_NAME} {DESCRIPTION}")
 
     text = '\n'.join(index.handle(filter, filter.blocks[0], None))
 

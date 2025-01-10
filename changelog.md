@@ -1,3 +1,6 @@
+# 1.4.10
+* Fixed a bug where the `.alias` handler wouldn't keep spaces in-between the text of alias pairs declared via the command line.
+
 # 1.4.9
 * `.import` now supports **path rooting**, a technique used to change the root directory during import resolution. More information is available in the [`.import` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.import).
 * `.alias` now allows for multiple alias pairs to be declared in a single rule, separated by a comma (`,`). More information is available in the [`.alias` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.alias).

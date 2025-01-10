@@ -60,7 +60,7 @@ def handle(filter: Filter, block: Block, options: list[str]):
 
 def _get_aliases(filter: Filter, options: list[str]):
     aliases = [ _get_alias(_Source.from_options(entry))
-        for entry in re.findall(_ALIAS_ENTRIES_PATTERN, "".join(options)) ]
+        for entry in re.findall(_ALIAS_ENTRIES_PATTERN, " ".join(options)) ]
     
     aliases += [ _get_alias(_Source.from_rule(entry, rule))
         for block in filter.blocks

@@ -42,6 +42,15 @@ def test_handle_given_an_alias_in_a_rule_should_replace():
     assert _ALIAS_NAME in lines[0] # text in alias rules should not be replaced
     assert _ALIAS_REPLACEMENT in lines[1]
 
+def test_handle_given_options_as_received_in_the_command_line_should_keep_spaces():
+    REPLACEMENT = "hello world"
+    OPTIONS = [ _ALIAS_NAME, "=", REPLACEMENT ]
+    filter = create_filter(_ALIAS_NAME)
+
+    lines = alias.handle(filter, filter.blocks[0], OPTIONS)
+
+    assert lines[0] == REPLACEMENT
+
 def test_handle_given_incorrect_description_format_should_raise():
     DESCRIPTION = "incorrect description"
     filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")

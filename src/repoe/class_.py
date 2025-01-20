@@ -2,7 +2,7 @@ import web
 from web import Expiration
 from .constants import Field
 
-_URL = "https://lvlvllvlvllvlvl.github.io/RePoE/item_classes.min.json"
+_URL = "https://repoe-fork.github.io/item_classes.min.json"
 
 def get_filter_item_class(class_name: str):
     """Returns the item filter equivalent class name for `class_name`."""

@@ -4,7 +4,7 @@ from web import Expiration
 from core import Sieve, Operand
 from .constants import Field
 
-_URL = "https://lvlvllvlvllvlvl.github.io/RePoE/mods.min.json"
+_URL = "https://repoe-fork.github.io/mods.min.json"
 _VALID_GENERATION_TYPES = [ "prefix", "suffix" ]
 
 def get_mods(sieve: Sieve) -> set[str]:

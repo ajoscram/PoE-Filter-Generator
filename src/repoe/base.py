@@ -5,7 +5,7 @@ from web import Expiration
 from . import base_validation, class_, gem
 from .constants import Field
 
-_URL = "https://lvlvllvlvllvlvl.github.io/RePoE/base_items.min.json"
+_URL = "https://repoe-fork.github.io/base_items.min.json"
 
 _BASE_NAME_NOT_FOUND_ERROR = """The base item name '{0}' could not be identified when attempting to get its class name.
 

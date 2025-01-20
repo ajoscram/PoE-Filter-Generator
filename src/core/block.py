@@ -67,7 +67,7 @@ class Block:
     
     def get_sieve(self):
         """Creates a `Sieve` from the lines within the block.
-        Lines without operands are excluded from the it."""
+        Lines without operands are excluded from it."""
         sieveable_lines = [ line for line in self.lines if line.operand != "" ]
         return Sieve(sieveable_lines)
 

@@ -1,5 +1,6 @@
 # 1.4.10
 * Fixed a bug where the `.alias` handler wouldn't keep spaces in-between the text of alias pairs declared via the command line.
+* Moved to [the newest fork of RePoE](https://repoe-fork.github.io/) for game info queries.
 
 # 1.4.9
 * `.import` now supports **path rooting**, a technique used to change the root directory during import resolution. More information is available in the [`.import` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.import).

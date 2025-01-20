@@ -3,7 +3,7 @@ from web import Expiration
 from .constants import Field, ROYALE_PATTERN
 from .matchable import Matchable
 
-_URL = "https://lvlvllvlvllvlvl.github.io/RePoE/gems.min.json"
+_URL = "https://repoe-fork.github.io/gems.min.json"
 
 def is_base_gem(metadata_id: str):
     """Returns `True` if the `metadata_id` received corresponds to a base gem. `False` otherwise."""

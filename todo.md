@@ -1,8 +1,10 @@
 # Backlog
+* : https://repoe-fork.github.io/
 * Add Cluster Jewels to `.econ`
 * `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block. 
+* Add a way for `.if` to target other named blocks (?)
 * Let the RePoE dev know about the following base types not currently being fetched:
-    https://github.com/lvlvllvlvllvlvl/RePoE
+    https://github.com/repoe-fork/repoe-fork.github.io
     - All harbinger staff pieces
     - Allflame embers
     - Transfigured gems

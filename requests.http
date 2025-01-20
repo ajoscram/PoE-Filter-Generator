@@ -17,13 +17,13 @@ GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
 #### Docs: https://github.com/brather1ng/RePoE/tree/master/RePoE/docs
 
 #### Item classes
-GET https://lvlvllvlvllvlvl.github.io/RePoE/item_classes.min.json
+GET https://repoe-fork.github.io/item_classes.min.json
 
 #### Item mods
-GET https://lvlvllvlvllvlvl.github.io/RePoE/mods.min.json
+GET https://repoe-fork.github.io/mods.min.json
 
 #### Base items
-GET https://lvlvllvlvllvlvl.github.io/RePoE/base_items.min.json
+GET https://repoe-fork.github.io/base_items.min.json
 
 ### Wiki Cargo Queries
 #### Docs: https://www.poewiki.net/wiki/Special:CargoQuery

@@ -14,13 +14,16 @@ class Block:
         """Returns all blocks in a from a list of textual lines."""
         if len(raw_lines) == 0:
             return []
+        
         blocks: list[Block] = [ Block(line_number) ]
         for raw_line in raw_lines:
+        
             line = Line(raw_line, line_number)
             if line.is_block_starter() and len(blocks[-1].lines) > 0:
                 blocks.append(Block(line_number))
+
             blocks[-1].lines.append(line)
-            line_number +=1
+            line_number += 1
         
         return blocks
 

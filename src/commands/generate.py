@@ -81,4 +81,5 @@ def _generate_filter(filter: Filter, handler_name: str, options: list[str]):
     generated_raw_lines = [ line
         for block in filter.blocks
         for line in handler(filter, block, options) ]
+
     return Filter(filter.filepath, Block.extract(generated_raw_lines))

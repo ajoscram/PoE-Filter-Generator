@@ -1,7 +1,13 @@
 # Backlog
-* : https://repoe-fork.github.io/
+* Refactor context initialization:
+    * add a base context and initializer for it
+    * change all handler signatures to use a context instead of the current signature
+    * implement context initialization functions for `.alias` and `.index` using custom contexts for both
+    * change handler invocations in tests to use context
+
+* `.import`'s error messages with arrows in them are kinda shit, should improve
 * Add Cluster Jewels to `.econ`
-* `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block. 
+* `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block (?)
 * Add a way for `.if` to target other named blocks (?)
 * Let the RePoE dev know about the following base types not currently being fetched:
     https://github.com/repoe-fork/repoe-fork.github.io

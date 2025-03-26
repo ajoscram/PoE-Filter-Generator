@@ -52,7 +52,7 @@ def test_handle_given_a_blockname_or_rule_pattern_should_import_the_appropriate_
 
     assert lines[-1].lstrip() == _TARGET_BLOCK_CONTENTS
 
-def test_handle_given_an_empty_root_should_resolve_to_the_(
+def test_handle_given_an_empty_root_should_resolve_to_the_filters_directory(
     monkeypatch: MonkeyPatch, dirname_mock: FunctionMock):
 
     target_filter = create_filter("target filter contents", filepath="target_filter")

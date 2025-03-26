@@ -1,3 +1,5 @@
+# 1.5.1
+
 # 1.5.0
 * Fixed a bug where the `.alias` handler wouldn't keep spaces in-between the text of alias pairs declared via the command line.
 * Moved to [the newest fork of RePoE](https://repoe-fork.github.io/) for game info queries.

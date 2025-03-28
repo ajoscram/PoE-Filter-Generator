@@ -1,10 +1,4 @@
 # Backlog
-* Refactor context initialization:
-    * add a base context and initializer for it
-    * change all handler signatures to use a context instead of the current signature
-    * implement context initialization functions for `.alias` and `.index` using custom contexts for both
-    * change handler invocations in tests to use context
-
 * `.import`'s error messages with arrows in them are kinda shit, should improve
 * Add Cluster Jewels to `.econ`
 * `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block (?)

@@ -1,7 +1,7 @@
 import pytest
 from core import Delimiter, ExpectedError
 from handlers import alias
-from handlers.alias import _ALIAS_NAME_ERROR_DESCRIPTOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS_ERROR_DESCRIPTOR, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _ALIAS_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, _RULE_SOURCE_NAME, NAME as ALIAS
+from handlers.alias import AliasContext, _ALIAS_NAME_ERROR_DESCRIPTOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS_ERROR_DESCRIPTOR, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _ALIAS_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, _RULE_SOURCE_NAME, NAME as ALIAS
 from test_utilities import create_filter
 
 _ALIAS_NAME = "NAME"
@@ -11,10 +11,9 @@ def test_handle_given_an_alias_in_options_should_replace():
     OPTIONS = [ _ALIAS_NAME, Delimiter.PAIR_SEPARATOR, _ALIAS_REPLACEMENT ]
     filter = create_filter(f"{_ALIAS_NAME}")
     
-    lines = alias.handle(filter, filter.blocks[0], OPTIONS)
+    lines = alias.handle(filter.blocks[0], AliasContext(filter, OPTIONS))
 
     assert _ALIAS_REPLACEMENT in lines[0]
-    assert alias._aliases == None #  the list of aliases should be reset after the invocation
 
 def test_handle_given_multiple_alias_should_replace_all():
     _ALIAS_NAME_2 = "_ALIAS_2"
@@ -27,7 +26,7 @@ def test_handle_given_multiple_alias_should_replace_all():
     f"""{_ALIAS_NAME}
         {_ALIAS_NAME_2}""")
     
-    lines = alias.handle(filter, filter.blocks[0], OPTIONS)
+    lines = alias.handle(filter.blocks[0], AliasContext(filter, OPTIONS))
 
     assert _ALIAS_REPLACEMENT in lines[0]
     assert _ALIAS_REPLACEMENT_2 in lines[1]
@@ -37,7 +36,7 @@ def test_handle_given_an_alias_in_a_rule_should_replace():
     f"""{Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {Delimiter.PAIR_SEPARATOR} {_ALIAS_REPLACEMENT}
         {_ALIAS_NAME}""")
     
-    lines = alias.handle(filter, filter.blocks[0], [])
+    lines = alias.handle(filter.blocks[0], AliasContext(filter, []))
 
     assert _ALIAS_NAME in lines[0] # text in alias rules should not be replaced
     assert _ALIAS_REPLACEMENT in lines[1]
@@ -47,7 +46,7 @@ def test_handle_given_options_as_received_in_the_command_line_should_keep_spaces
     OPTIONS = [ _ALIAS_NAME, "=", REPLACEMENT ]
     filter = create_filter(_ALIAS_NAME)
 
-    lines = alias.handle(filter, filter.blocks[0], OPTIONS)
+    lines = alias.handle(filter.blocks[0], AliasContext(filter, OPTIONS))
 
     assert lines[0] == REPLACEMENT
 
@@ -56,7 +55,7 @@ def test_handle_given_incorrect_description_format_should_raise():
     filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")
 
     with pytest.raises(ExpectedError) as error:
-        _ = alias.handle(filter, filter.blocks[0], [])
+        _ = alias.handle(filter.blocks[0], AliasContext(filter, []))
 
     assert error.value.line_number == filter.blocks[0].lines[0].number
     assert error.value.message == _ALIAS_FORMAT_ERROR.format(DESCRIPTION)
@@ -70,7 +69,7 @@ def test_handle_given_empty_alias_part_should_raise(name: str, replacement: str,
     filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")
 
     with pytest.raises(ExpectedError) as error:
-        _ = alias.handle(filter, filter.blocks[0], [])
+        _ = alias.handle(filter.blocks[0], AliasContext(filter, []))
     
     assert error.value.line_number == filter.blocks[0].lines[0].number
     assert error.value.message == _EMPTY_PARAMETER_ERROR.format(error_descriptor, DESCRIPTION)
@@ -81,7 +80,7 @@ def test_handle_given_duplicate_alias_name_should_raise():
         {Delimiter.RULE_START}{ALIAS} {_ALIAS_NAME} {Delimiter.PAIR_SEPARATOR} other replacement""")
     
     with pytest.raises(ExpectedError) as error:
-        _ = alias.handle(filter, filter.blocks[0], [])
+        _ = alias.handle(filter.blocks[0], AliasContext(filter, []))
     
     assert error.value.line_number == filter.blocks[0].lines[1].number
     assert error.value.message == _DUPLICATE_ALIAS_NAME_ERROR.format(
@@ -98,7 +97,7 @@ def test_handle_given_contained_alias_names_should_raise(first_name: str, error_
         {Delimiter.RULE_START}{ALIAS} {error_name} {Delimiter.PAIR_SEPARATOR} {_ALIAS_REPLACEMENT}""")
     
     with pytest.raises(ExpectedError) as error:
-        _ = alias.handle(filter, filter.blocks[0], [])
+        _ = alias.handle(filter.blocks[0], AliasContext(filter, []))
 
     assert error.value.line_number == filter.blocks[0].lines[1].number
     assert error.value.message == _CONTAINED_ALIAS_NAME_ERROR.format(

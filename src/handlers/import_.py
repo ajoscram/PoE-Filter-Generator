@@ -1,6 +1,7 @@
 import os.path, re
 from enum import StrEnum
 from core import Rule, Line, Block, Filter, ExpectedError, Delimiter
+from .context import Context
 
 NAME = "import"
 _NAME_RULE = "name"
@@ -66,11 +67,11 @@ class _Context:
 
 _filter_cache: dict[str, Filter] = {}
 
-def handle(filter: Filter, block: Block, options: list[str]):
+def handle(block: Block, context: Context):
     """Handles text import from filter files.
     Absolute paths can be defined via the options."""
-    roots = _get_roots(options)
-    initial_import = _get_initial_import(filter.filepath, block)
+    roots = _get_roots(context.options)
+    initial_import = _get_initial_import(context.filter.filepath, block)
     context = _Context(roots, [ initial_import ])
     return [ str(line) for line in _get_lines_from_block(block, context, True) ]
 

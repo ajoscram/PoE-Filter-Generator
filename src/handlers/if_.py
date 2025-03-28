@@ -11,7 +11,7 @@ class _RemoveType(IntEnum):
     SINGLE = 1
     MUTLI = 2
 
-def handle(_, block: Block, __):
+def handle(block: Block, _):
     """Removes lines from blocks if a piece of text is not present within the block.
     Text from `.if` rules is ignored when comparing."""
     block_text = _get_block_text(block)

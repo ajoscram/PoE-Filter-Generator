@@ -61,7 +61,7 @@ class Block:
             line.values = values
 
     def get_rules(self, name_or_names: str | list[str]):
-        """Gets all the rules in the block with name equals to rule_name."""
+        """Gets all the rules in the block with the `name_or_names` specified."""
         return [ rule for line in self.lines for rule in line.get_rules(name_or_names) ]
     
     def get_raw_lines(self):

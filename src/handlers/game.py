@@ -8,7 +8,7 @@ _BASE_PARAM = "base"
 
 _INVALID_PARAM_ERROR = "'{0}' is not a valid parameter for the .game rule."
 
-def handle(_, block: Block, __):
+def handle(block: Block, _):
     """Updates lines within blocks with in-game information."""
     params = {
         param: rule.line_number

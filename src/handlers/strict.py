@@ -1,4 +1,5 @@
 from core import Block, ExpectedError
+from .context import Context
 
 NAME = "strict"
 _HANDLER = "handler"
@@ -7,10 +8,10 @@ _STRICTNESS_ERROR_PREFIX = "You must provide only 1 integer value for the strict
 _STRICTNESS_ARG_COUNT_ERROR = _STRICTNESS_ERROR_PREFIX + " You've provided {1} arguments."
 _STRICTNESS_ARG_TYPE_ERROR =  _STRICTNESS_ERROR_PREFIX + " You've provided '{1}'."
 
-def handle(_, block: Block, options:list[str]):
+def handle(block: Block, context: Context):
     """Handles creation of strictness subfilters.
     Only one option is accepted and it should include the strictness value to use."""
-    handler_strictness = _get_handler_strictness(options)
+    handler_strictness = _get_handler_strictness(context.options)
 
     for rule in block.get_rules(NAME):
         if not rule.description.isdigit():

@@ -1,5 +1,6 @@
 import re, utils
 from core import Delimiter, Block, Filter, Rule, ExpectedError
+from .context import Context
 
 NAME = "alias"
 
@@ -41,22 +42,17 @@ class _Alias:
         self.replacement = replacement
         self.source = source
 
-_aliases: list[_Alias] = None
+class AliasContext(Context):
+    def __init__(self, filter, options):
+        super().__init__(filter, options)
+        self.aliases: list[_Alias] = _get_aliases(filter, options)
 
-def handle(filter: Filter, block: Block, options: list[str]):
+def handle(block: Block, context: AliasContext):
     """Finds and replaces aliased text for a replacement.
     Text within `.alias` rules is excempt from replacement.
     Additional aliases can be passed in via the options and are interpreted as any other alias rule."""
-    global _aliases
-    _aliases = _aliases or _get_aliases(filter, options)
-    
-    lines = [ _get_aliased_line(raw_line, _aliases)
+    return [ _get_aliased_line(raw_line, context.aliases)
         for raw_line in block.get_raw_lines() ]
-    
-    if block == filter.blocks[-1]:
-        _aliases = None
-    
-    return lines
 
 def _get_aliases(filter: Filter, options: list[str]):
     aliases = [ _get_alias(_Source.from_options(entry))

@@ -1,6 +1,7 @@
 import ggg, ninja
 from core import ExpectedError, Block, Rule, Sieve, Operand
 from ninja import QueryType, ValueRange, UNIQUE_QUERY_TYPES
+from .context import Context
 
 NAME = "econ"
 
@@ -42,7 +43,7 @@ class _Params:
         self.league_name = league_name
         self.value_range = value_range
 
-def handle(_, block: Block, options: list[str]):
+def handle(block: Block, context: Context):
     """Handles creation of economy adjusted filters.
     Options:
     - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead.
@@ -51,7 +52,7 @@ def handle(_, block: Block, options: list[str]):
     rules = block.get_rules(NAME)
     if len(rules) > 0:
 
-        values_by_operand = _get_values_by_operand(rules, _get_league_name(options), block.get_sieve())
+        values_by_operand = _get_values_by_operand(rules, _get_league_name(context.options), block.get_sieve())
         for operand, value in values_by_operand.items():
             block.upsert(operand, value)
         

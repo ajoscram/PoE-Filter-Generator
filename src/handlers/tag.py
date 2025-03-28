@@ -1,4 +1,5 @@
 from core import Block, ExpectedError
+from .context import Context
 
 NAME = "tag"
 _WILDCARD = "_"
@@ -7,11 +8,11 @@ _RULE = "rule"
 
 _EMPTY_TAG_ERROR = "You must provide at least a tag for the 'tag' {0}."
 
-def handle(_, block: Block, options: list[str]):
+def handle(block: Block, context: Context):
     """Hides or shows blocks based on their tags.
     Every option with the exception of the last is treated as a tag category.
     The last option is the tag inside that category."""
-    handler_category, handler_tag = _get_category_and_tag(options, _HANDLER)
+    handler_category, handler_tag = _get_category_and_tag(context.options, _HANDLER)
 
     for rule in block.get_rules(NAME):
 

@@ -1,4 +1,5 @@
 from core import Delimiter, Rule, Line, Block, Filter
+from .context import Context
 
 _INDEX_RULE_NAME = "index"
 _SECTION_RULE_NAME = "section"
@@ -15,19 +16,16 @@ _SECTION_SEPARATOR = Delimiter.COMMENT_START + _LINE_PADDING * _MAX_LINE_LENGTH
 _INDEX_HEADER = "INDEX"
 _INDEX_HINT = "CTRL+F the IDs to jump to any section in the document."
 
-def handle(filter: Filter, block: Block, _):
-    """Adds indices and addressable sections. Options are ignored."""
-    global _index
-    _index = _index or _Index(filter)
-    
-    lines = [ raw_line
+class IndexContext(Context):
+    def __init__(self, filter, options):
+        super().__init__(filter, options)
+        self.index = _Index(filter)
+
+def handle(block: Block, context: IndexContext):
+    """Adds indices and addressable sections."""
+    return [ raw_line
         for line in block.lines
-        for raw_line in _get_raw_lines_from_line(line, _index) ]
-    
-    if block == filter.blocks[-1]:
-        _index = None
-    
-    return lines
+        for raw_line in _get_raw_lines_from_line(line, context.index) ]
 
 class _Index:
     def __init__(self, filter: Filter):
@@ -68,14 +66,21 @@ class _Index:
         return lines
 
     def _get_section_lines(self, rule: Rule):
+        rule_sections = (sub for sub in self._get_all_sections() if sub.rule == rule)
+        rule_section = next(rule_sections, None)
+
+        if rule_section in self._sections:
+            return rule_section.get_lines_for_rule(self._subid_length)
+
+        section_id = rule_section.get_padded_subid(self._subid_length)
+        return rule_section.get_lines_for_rule(self._subid_length, section_id)
+
+    def _get_all_sections(self):
         for section in self._sections:
-            if section.rule == rule:
-                return section.get_lines_for_rule(self._subid_length)
-            if subsection := next((sub for sub in section.subsections if sub.rule == rule), None):
-                section_id = section.get_padded_subid(self._subid_length)
-                return subsection.get_lines_for_rule(self._subid_length, section_id)
-        raise RuntimeError(f"'{rule}' was not registered in .index's index. This should never happen.")
-    
+            yield section            
+            for subsection in section.subsections:
+                yield subsection
+
     def _get_header_lines(self, description: str = ""):
         title_lines = [ _render_line("", "", description) ] if description != "" else []
         return title_lines + [
@@ -135,5 +140,3 @@ def _render_line(left_text: str, center_text: str, right_text: str, padding_toke
     padding = padding_token * (_MAX_LINE_LENGTH  - len(left_text) - len(center_text) - len(right_text))
     padding_split_index = (len(padding) - len(right_text) - len(left_text)) // 2
     return Delimiter.COMMENT_START + left_text + padding[padding_split_index:] + center_text + padding[:padding_split_index] + right_text
-
-_index: _Index = None

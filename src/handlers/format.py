@@ -1,16 +1,17 @@
 import re
-from core import Delimiter, Line, Block, Filter
+from core import Delimiter, Line, Block
+from .context import Context
 
 NAME = "format"
 
 _RULE_PATTERN = fr"\s*{Delimiter.COMMENT_START}\{Delimiter.RULE_SEPARATOR}.+"
 
-def handle(filter: Filter, block: Block, _):
+def handle(block: Block, context: Context):
     """Removes rules, trailing whitespace from lines and extraneous empty lines. Options are ignored."""
     raw_lines = _get_formatted_raw_lines(block.lines)
-    raw_lines += [ "\n" ] if block != filter.blocks[-1] else []
+    raw_lines += [ "\n" ] if block != context.filter.blocks[-1] else []
 
-    if block == filter.blocks[0] and len(raw_lines) > 0 and raw_lines[0].strip() == "":
+    if block == context.filter.blocks[0] and len(raw_lines) > 0 and raw_lines[0].strip() == "":
         raw_lines = raw_lines[1:]
 
     return raw_lines

@@ -1,7 +1,8 @@
 import pytest
 from commands import generate
-from commands.generate import _HANDLER_NOT_FOUND_ERROR, _HANDLER_NOT_PROVIDED_ERROR, _TOO_LITTLE_ARGUMENTS_ERROR
+from commands.generate import _CONTEXT_INITIALIZER_NOT_FOUND_ERROR, _HANDLER_NOT_FOUND_ERROR, _HANDLER_NOT_PROVIDED_ERROR, _TOO_LITTLE_ARGUMENTS_ERROR
 from core import Delimiter, ExpectedError, Filter, Block
+from handlers.context import Context
 from pytest import MonkeyPatch
 from test_utilities import create_filter, FunctionMock
 
@@ -12,9 +13,9 @@ class _MockHandler:
         self.filter_handled = None
         self.block_handled = None
     
-    def handle(self, filter: Filter, block: Block, options: list[str]):
-        self.options_handled = options
-        self.filter_handled = filter
+    def handle(self, block: Block, context: Context):
+        self.options_handled = context.options
+        self.filter_handled = context.filter
         self.block_handled = block
         return [ "line 1", "line 2" ]
 
@@ -28,9 +29,11 @@ def filter(monkeypatch: MonkeyPatch):
 def mock_handler(monkeypatch: MonkeyPatch):
     mock_handler = _MockHandler()
     handlers_dict = { mock_handler.name: mock_handler.handle }
+    context_initialiers_dict = { mock_handler.name: Context }
     
-    # performing this setattr is fine because it is an import from another module
+    # performing these setattr is fine because they are an import from another module
     monkeypatch.setattr(generate, 'HANDLERS', handlers_dict)
+    monkeypatch.setattr(generate, 'CONTEXT_INITIALIZERS', context_initialiers_dict)
     
     return mock_handler
 
@@ -47,6 +50,17 @@ def test_execute_given_a_handler_name_should_apply_it_and_save_the_new_filter(
     assert mock_handler.block_handled == filter.blocks[0]
     assert mock_handler.options_handled == OPTIONS
     assert save_filter_mock.get_invocation_count() == 1
+
+def test_execute_given_unknown_handler_name_for_context_initializer_should_raise(
+        filter: Filter, mock_handler: _MockHandler):
+
+    ARGS = [ filter.filepath, f"{Delimiter.HANDLER_START}{mock_handler.name}" ]
+    del(generate.CONTEXT_INITIALIZERS[mock_handler.name])
+
+    with pytest.raises(ValueError) as error:
+        generate.execute(ARGS)
+    
+    assert str(error.value) == _CONTEXT_INITIALIZER_NOT_FOUND_ERROR.format(mock_handler.name)
 
 def test_execute_given_less_than_2_args_should_raise():
     ARGS = [ "one" ]

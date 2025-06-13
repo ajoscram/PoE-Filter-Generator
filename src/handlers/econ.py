@@ -19,7 +19,6 @@ _QUERY_TYPES_BY_MNEMONIC: dict[str, set[QueryType]] = {
     "cur": { QueryType.CURRENCY },
     "fra": { QueryType.FRAGMENT },
     "gem": { QueryType.GEM },
-    "mem": { QueryType.MEMORY },
     "oil": { QueryType.OIL },
     "inc": { QueryType.INCUBATOR },
     "sca": { QueryType.SCARAB },
@@ -33,7 +32,6 @@ _QUERY_TYPES_BY_MNEMONIC: dict[str, set[QueryType]] = {
     "tat": { QueryType.TATTOO },
     "omn": { QueryType.OMEN },
     "mbr": { QueryType.ALLFLAME_EMBER },
-    "run": { QueryType.RUNE },
     "uni": UNIQUE_QUERY_TYPES,
 }
 
@@ -52,11 +50,10 @@ def handle(block: Block, context: Context):
     rules = block.get_rules(NAME)
     if len(rules) > 0:
 
-        values_by_operand = _get_values_by_operand(rules, _get_league_name(context.options), block.get_sieve())
-        for operand, value in values_by_operand.items():
-            block.upsert(operand, value)
-        
-        if any(len(values) == 0 for values in values_by_operand.values()):
+        bases = [ f'"{base}"' for base in _get_bases(rules, block.get_sieve(), context) ]
+        if len(bases) > 0:
+            block.upsert(Operand.BASE_TYPE, bases)
+        else:
             block.comment_out()
 
     return block.get_raw_lines()
@@ -67,22 +64,17 @@ def _get_league_name(options: list[str]):
     ruthless = _RUTHLESS_OPTION in options
     return ggg.get_league_name(standard, hardcore, ruthless)
 
-def _get_values_by_operand(rules: list[Rule], league_name: str, sieve: Sieve):
+def _get_bases(rules: list[Rule], sieve: Sieve, context: Context):
+    bases: list[str] = []
+    league_name = _get_league_name(context.options)
 
-    values_by_operand: dict[str, set[str]] = {}
     for rule in rules:
-
         params = _get_params(rule, league_name)
+
         for query_type in params.query_types:
+            bases += ninja.get_bases(query_type, params.league_name, sieve, params.value_range)
 
-            if query_type == QueryType.MEMORY:
-                explicit_mods = ninja.get_mods(query_type, params.league_name, sieve, params.value_range)
-                _upsert_to_dictionary(values_by_operand, Operand.HAS_EXPLICIT_MOD, explicit_mods)
-                    
-            base_types = ninja.get_bases(query_type, params.league_name, sieve, params.value_range)
-            _upsert_to_dictionary(values_by_operand, Operand.BASE_TYPE, base_types)
-
-    return values_by_operand
+    return bases
 
 def _get_params(rule: Rule, league_name: str):
     parts = rule.description.split()
@@ -103,8 +95,3 @@ def _get_params(rule: Rule, league_name: str):
     upper = float(parts[2]) if len(parts) == 3 else None
  
     return _Params(query_types, league_name, ValueRange(lower, upper))
-
-def _upsert_to_dictionary(dictionary: dict[str, set[str]], key: str, values: set[str]):
-    if key not in dictionary:
-        dictionary[key] = set()
-    dictionary[key].update( f'"{value}"' for value in values)

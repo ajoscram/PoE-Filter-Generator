@@ -8,6 +8,7 @@
     - All harbinger staff pieces
     - Allflame embers
     - Transfigured gems
+* Comply with `python.analysis.typeCheckingMode`
 
 # Ideas
 * Add a new command `:publish` to upload filters to GGG with

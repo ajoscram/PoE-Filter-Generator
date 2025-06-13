@@ -72,21 +72,6 @@ def test_handle_given_a_valid_mnemonic_should_set_the_base_types_to_the_block(mo
     for base_type in BASE_TYPES:
         assert f'"{base_type}"' in lines[0]
 
-def test_handle_given_memory_should_set_has_explicit_mod_to_the_block(monkeypatch: MonkeyPatch):
-    LOWER_BOUND = 1
-    UPPER_BOUND = 4
-    BASE_TYPE = "base_type"
-    MOD = "mod"
-    MNEMONIC = _get_mnemonic(QueryType.MEMORY)
-    FILTER = create_filter(f"{Operand.HAS_EXPLICIT_MOD} {Delimiter.RULE_START}{ECON} {MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
-    get_mods_mock = FunctionMock(monkeypatch, ninja.get_mods, { MOD })
-    _ = FunctionMock(monkeypatch, ninja.get_bases, { BASE_TYPE })
-
-    lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
-
-    assert get_mods_mock.received(QueryType.MEMORY, _LEAGUE_NAME, ValueRange(LOWER_BOUND, UPPER_BOUND))
-    assert f'"{MOD}"' in lines[0]
-
 def _get_mnemonic(query_type: QueryType):
     return next(mnemonic
         for mnemonic, query_types in _QUERY_TYPES_BY_MNEMONIC.items()

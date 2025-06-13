@@ -3,7 +3,6 @@ import pytest, ninja, repoe
 from pytest import MonkeyPatch
 from ninja import ValueRange
 from ninja.constants import *
-from ninja.query import _MEMORY_SPLITTER, _UNKNOWN_GET_MODS_QUERY_TYPE
 from test_utilities import FunctionMock, WebGetMock, create_sieve_for_text, create_sieve_for_pattern
 from ninja.validation import _REPLICA_ITEM_NAME_EXCEPTIONS
 from core import Operand
@@ -157,19 +156,4 @@ def test_get_bases_given_corrupted_gem_should_return_depending_on_sieve(web_get_
 
     base_types = ninja.get_bases(QueryType.GEM, _LEAGUE_NAME, SIEVE, _RANGE)
 
-    assert (_BASE_TYPE in base_types) == (corrupted == True)
-
-def test_get_mods_given_memory_should_return_suffix_in_records_name(web_get_mock: WebGetMock):
-    MOD = "of Suffixing"
-    NAME = f"Master's {_MEMORY_SPLITTER}{MOD}"
-    web_get_mock.result = _Response(name=NAME)
-
-    mods = ninja.get_mods(QueryType.MEMORY, _LEAGUE_NAME, _DEFAULT_SIEVE, _RANGE)
-
-    assert MOD in mods
-
-def test_get_mods_given_invalid_query_type_should_raise():
-    with pytest.raises(ValueError) as error:
-        ninja.get_mods(QueryType.CURRENCY, _LEAGUE_NAME, _DEFAULT_SIEVE, _RANGE)
-
-    assert str(error.value) == _UNKNOWN_GET_MODS_QUERY_TYPE.format(QueryType.CURRENCY)
+    assert (_BASE_TYPE in base_types) == corrupted

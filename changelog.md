@@ -1,4 +1,5 @@
 # 1.5.1
+* Removed support for memories and runes because they were removed from the game.
 
 # 1.5.0
 * Fixed a bug where the `.alias` handler wouldn't keep spaces in-between the text of alias pairs declared via the command line.

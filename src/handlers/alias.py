@@ -43,7 +43,7 @@ class _Alias:
         self.source = source
 
 class AliasContext(Context):
-    def __init__(self, filter, options):
+    def __init__(self, filter: Filter, options: list[str]):
         super().__init__(filter, options)
         self.aliases: list[_Alias] = _get_aliases(filter, options)
 

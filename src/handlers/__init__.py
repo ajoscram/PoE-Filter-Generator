@@ -7,7 +7,7 @@ from . import econ, format, if_, import_, index, strict, tag, alias, game
 CONTEXT_INITIALIZERS: dict[str, Callable[[Filter, list[str]], Context]] = {
     econ.NAME: Context,
     format.NAME: Context,
-    import_.NAME: Context,
+    import_.NAME: import_.ImportContext,
     index.NAME: index.IndexContext,
     strict.NAME: Context,
     tag.NAME: Context,

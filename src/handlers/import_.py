@@ -51,35 +51,31 @@ class _Import:
         string += f" {_Navigation.SPLIT} " + self.line_pattern if self.line_pattern is not None else ""
         return string
 
-class _Context:
-    def __init__(self, roots: dict[str, str], imports: list[_Import]):
-        self.roots = roots
-        self.imports = imports
+class ImportContext(Context):
+    def __init__(self, filter: Filter, options: list[str], roots: dict[str, str] = None):
+        super().__init__(filter, options)
+        self.roots = roots or _get_roots(options)
+        self.imports: list[_Import] = []
     
     def get_current_filepath(self):
         return self.imports[-1].filepath
     
     def get_original_filepath(self):
         return self.imports[0].filepath
-
+    
     def clone(self, new_import: _Import):
-        return _Context(self.roots, self.imports + [ new_import ])
+        new_context = ImportContext(self.filter, self.options, self.roots)
+        new_context.imports = self.imports + [ new_import ]
+        return new_context
 
 _filter_cache: dict[str, Filter] = {}
 
-def handle(block: Block, context: Context):
+def handle(block: Block, context: ImportContext):
     """Handles text import from filter files.
     Absolute paths can be defined via the options."""
-    roots = _get_roots(context.options)
     initial_import = _get_initial_import(context.filter.filepath, block)
-    context = _Context(roots, [ initial_import ])
+    context = context.clone(initial_import)
     return [ str(line) for line in _get_lines_from_block(block, context, True) ]
-
-def _get_initial_import(filepath: str, block: Block):
-    name_rules = block.get_rules(_NAME_RULE)
-    blockname = name_rules[-1].description.strip() \
-        if len(name_rules) > 0 else None
-    return _Import(filepath, blockname=blockname)
 
 def _get_roots(options: list[str]):
     if len(options) == 0:
@@ -90,6 +86,12 @@ def _get_roots(options: list[str]):
 
     return { name: value for name, value in root_names_to_values }
 
+def _get_initial_import(filepath: str, block: Block):
+    name_rules = block.get_rules(_NAME_RULE)
+    blockname = name_rules[-1].description.strip() \
+        if len(name_rules) > 0 else None
+    return _Import(filepath, blockname=blockname)
+
 def _get_root_name_and_value_from_entry(entry: str):
     parts = entry.split(Delimiter.PAIR_SEPARATOR)
     if len(parts) != 2:
@@ -97,23 +99,23 @@ def _get_root_name_and_value_from_entry(entry: str):
 
     return parts[0].strip(), parts[1].strip()
 
-def _get_lines_from_filter(filter: Filter, context: _Context) -> list[Line]:
+def _get_lines_from_filter(filter: Filter, context: ImportContext) -> list[Line]:
     return [ line
         for block in filter.blocks
         for line in _get_lines_from_block(block, context, True) ]
 
-def _get_lines_from_block(block: Block, context: _Context, include_blockstarts: bool) -> list[Line]:
+def _get_lines_from_block(block: Block, context: ImportContext, include_blockstarts: bool) -> list[Line]:
     return [ line
         for block_line in block.lines
         for line in _get_lines_from_line(block_line, context, include_blockstarts) ]
 
-def _get_lines_from_line(line: Line, context: _Context, include_blockstarts: bool) -> list[Line]:
+def _get_lines_from_line(line: Line, context: ImportContext, include_blockstarts: bool) -> list[Line]:
     first_line = [ line ] if include_blockstarts or not line.is_block_starter() else []
     return first_line + [ line
         for rule in line.get_rules(NAME)
         for line in _get_lines_from_rule(rule, context) ]
 
-def _get_lines_from_rule(rule: Rule, context: _Context) -> list[Line]:
+def _get_lines_from_rule(rule: Rule, context: ImportContext) -> list[Line]:
     new_import = _parse_import(rule, context)
 
     filter = _get_filter(new_import.filepath)
@@ -127,7 +129,7 @@ def _get_lines_from_rule(rule: Rule, context: _Context) -> list[Line]:
     line = _get_line(block, new_import.line_pattern, new_import.filepath)
     return _get_lines_from_line(line, context.clone(new_import), True)
 
-def _parse_import(rule: Rule, context: _Context):
+def _parse_import(rule: Rule, context: ImportContext):
     parts = [ part.strip() for part in rule.description.split(_Navigation.SPLIT) ]
     if len(parts) > 3:
         error = _FORMAT_ERROR.format(rule.description, _TOO_MANY_SPLITS_ERROR_TEXT)
@@ -182,7 +184,7 @@ def _get_blockname(block: Block):
     name_rules = block.get_rules(_NAME_RULE)
     return name_rules[-1].description if len(name_rules) > 0 else None
 
-def _parse_rule_filepath(navigation: str, rule: Rule, context: _Context):
+def _parse_rule_filepath(navigation: str, rule: Rule, context: ImportContext):
     if navigation == "":
         return context.get_current_filepath()
     
@@ -191,7 +193,7 @@ def _parse_rule_filepath(navigation: str, rule: Rule, context: _Context):
     filepath = _transform_navigation_to_real_path(navigation)
     return _get_full_filepath(root_dir, filepath)
 
-def _split_root_name_and_navigation(rule_filepath: str, rule: Rule, context: _Context):
+def _split_root_name_and_navigation(rule_filepath: str, rule: Rule, context: ImportContext):
     parts = [ part.strip() for part in rule_filepath.split(_Navigation.ROOT) ]
     
     if len(parts) > 2:
@@ -200,7 +202,7 @@ def _split_root_name_and_navigation(rule_filepath: str, rule: Rule, context: _Co
 
     return (None, parts[0]) if len(parts) == 1 else (parts[0], parts[1])
 
-def _get_root_dir(root: str | None, rule: Rule, context: _Context):
+def _get_root_dir(root: str | None, rule: Rule, context: ImportContext):
     match root:
         case None:
             root_dir = os.path.dirname(context.get_current_filepath())

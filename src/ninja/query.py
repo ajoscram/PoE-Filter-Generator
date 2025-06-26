@@ -15,11 +15,8 @@ def get_bases(
     """Returns a set of base types for a `QueryType` and `league_name`.
     The items obtained are filtered by the `sieve` if applicable, and must fall in the `value_range` specified."""
     records = _get_records(query_type, league_name, sieve, value_range)
-    match query_type:
-        case QueryType.FRAGMENT | QueryType.CURRENCY:
-            return { record[Field.CURRENCY_BASE_TYPE] for record in records }
-        case _:
-            return { record[Field.ITEM_BASE_TYPE] for record in records }
+    base_name_field = _get_base_name_field(query_type)
+    return { record[base_name_field] for record in records }
 
 def _get_records(query_type: QueryType, league_name: str, sieve: Sieve, value_range: ValueRange):
     url = _get_url(query_type, league_name)
@@ -27,6 +24,13 @@ def _get_records(query_type: QueryType, league_name: str, sieve: Sieve, value_ra
     return [ record
         for record in web.get(url, web.Expiration.DAILY, formatter=_format_records)
         if validator(record, value_range, sieve) ]
+
+def _get_base_name_field(query_type: QueryType):
+    match query_type:
+        case QueryType.FRAGMENT | QueryType.CURRENCY:
+            return Field.CURRENCY_BASE_TYPE
+        case _:
+            return Field.ITEM_BASE_TYPE
 
 def _get_url(query_type: QueryType, league_name: str):
     match query_type:

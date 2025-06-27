@@ -76,18 +76,6 @@ def test_get_bases_given_outside_value_bounds_should_not_return_it(value: int, w
 
     assert len(base_types) == 0
 
-@pytest.mark.parametrize("item_level", [ 3, 4 ])
-def test_get_bases_given_allflame_ember_should_return_depending_on_sieve(
-    web_get_mock: WebGetMock, item_level: int):
-    
-    SIEVE_ITEM_LEVEL = 3
-    SIEVE = create_sieve_for_pattern({ Operand.ITEM_LEVEL: SIEVE_ITEM_LEVEL })
-    web_get_mock.result = _Response(level_required=item_level)
-
-    base_types = ninja.get_bases(QueryType.ALLFLAME_EMBER, _LEAGUE_NAME, SIEVE, _RANGE)
-
-    assert (_BASE_TYPE in base_types) == (item_level == SIEVE_ITEM_LEVEL)
-
 @pytest.mark.parametrize("replica", [ True, False ])
 def test_get_bases_given_replica_unique_base_should_return_depending_on_sieve(
     web_get_mock: WebGetMock, replica: bool):

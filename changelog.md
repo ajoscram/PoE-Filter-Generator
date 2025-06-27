@@ -1,5 +1,7 @@
 # 1.5.1
-* Removed support for memories and runes because they were removed from the game.
+* Removed `.econ` support for memories and runes because they were removed from the game.
+* Removed the `.econ` functionality that checked for **Item Level** in **Allflame Embers** because they no longer have one.
+* Added `.econ` support for **Runegrafts**. They use the old rune mnemonic (`run`).
 
 # 1.5.0
 * Fixed a bug where the `.alias` handler wouldn't keep spaces in-between the text of alias pairs declared via the command line.

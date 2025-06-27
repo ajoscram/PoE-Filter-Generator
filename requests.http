@@ -3,9 +3,9 @@ GET https://api.pathofexile.com/leagues?type=main&realm=pc
 User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/
 
 ### PoE Ninja queries
-@league = Necropolis
-@item_type = Memory
-@currency_type = Currency
+@league = Mercenaries
+@item_type = Runegraft
+@currency_type = Runes
 
 #### Currency or Frags
 GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currency_type}}

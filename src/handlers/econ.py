@@ -32,6 +32,7 @@ _QUERY_TYPES_BY_MNEMONIC: dict[str, set[QueryType]] = {
     "tat": { QueryType.TATTOO },
     "omn": { QueryType.OMEN },
     "mbr": { QueryType.ALLFLAME_EMBER },
+    "run": { QueryType.RUNEGRAFT },
     "uni": UNIQUE_QUERY_TYPES,
 }
 

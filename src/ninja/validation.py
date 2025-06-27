@@ -13,8 +13,6 @@ def get_validator(type: QueryType) -> Callable[[dict[str], ValueRange, Sieve], b
             return _is_currency_valid
         case QueryType.GEM:
             return _is_gem_valid
-        case QueryType.ALLFLAME_EMBER:
-            return _is_allflame_ember_valid
         case x if x in UNIQUE_QUERY_TYPES:
             return _is_unique_valid
         case _:
@@ -40,10 +38,6 @@ def _is_gem_valid(record: dict[str], range: ValueRange, sieve: Sieve):
             if Field.GEM_QUALITY in record else 0,
         Operand.CORRUPTED: record[Field.CORRUPTED] \
             if Field.CORRUPTED in record else False }
-    return pattern in sieve and _is_item_valid(record, range, sieve)
-
-def _is_allflame_ember_valid(record: dict[str], range: ValueRange, sieve: Sieve):
-    pattern = { Operand.ITEM_LEVEL: record[Field.LEVEL_REQUIRED] }
     return pattern in sieve and _is_item_valid(record, range, sieve)
 
 def _is_item_valid(record: dict[str], range: ValueRange, _):

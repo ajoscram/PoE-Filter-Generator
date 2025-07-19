@@ -1,7 +1,7 @@
 import os, pytest
 from pytest import MonkeyPatch
 from core import ExpectedError, Filter, Operand, Delimiter
-from handlers import import_, Context
+from handlers import import_
 from handlers.import_ import _FORMAT_ERROR, _ROOT_FORMAT_ERROR, _ROOT_NOT_FOUND_ERROR, _TOO_MANY_ROOTS_ERROR_TEXT, _TOO_MANY_SPLITS_ERROR_TEXT, _Navigation, _NAME_RULE, _BLOCK_NAME_ERROR_TEXT, _BLOCK_NOT_FOUND_ERROR, _CIRCULAR_REFERENCE_ERROR, _EMPTY_PARAMETER_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _FILTER_EXTENSION, _LINE_PATTERN_NOT_FOUND_ERROR, _LINE_PATTERN_ERROR_TEXT, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, NAME as IMPORT, ImportContext
 from test_utilities import create_filter, FunctionMock
 
@@ -10,7 +10,6 @@ _TARGET_BLOCK_CONTENTS = "block contents here"
 
 @pytest.fixture(autouse=True)
 def setup(monkeypatch: MonkeyPatch):
-    import_._filter_cache = {}
     _ = FunctionMock(monkeypatch, os.path.normpath, lambda x: x)
     _ = FunctionMock(monkeypatch, os.path.samefile, lambda x, y: x == y)
     _ = FunctionMock(monkeypatch, os.path.abspath, lambda x: x)

@@ -1,3 +1,5 @@
+# 1.5.2
+
 # 1.5.1
 * Removed `.econ` support for memories and runes because they were removed from the game.
 * Removed the `.econ` functionality that checked for **Item Level** in **Allflame Embers** because they no longer have one.

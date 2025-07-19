@@ -52,9 +52,10 @@ class _Import:
         return string
 
 class ImportContext(Context):
-    def __init__(self, filter: Filter, options: list[str], roots: dict[str, str] = None):
+    def __init__(self, filter: Filter, options: list[str], roots: dict[str, str] = None, cache: dict[str, Filter] = None):
         super().__init__(filter, options)
         self.roots = roots or _get_roots(options)
+        self.cache = cache or {}
         self.imports: list[_Import] = []
     
     def get_current_filepath(self):
@@ -64,11 +65,9 @@ class ImportContext(Context):
         return self.imports[0].filepath
     
     def clone(self, new_import: _Import):
-        new_context = ImportContext(self.filter, self.options, self.roots)
+        new_context = ImportContext(self.filter, self.options, self.roots, self.cache)
         new_context.imports = self.imports + [ new_import ]
         return new_context
-
-_filter_cache: dict[str, Filter] = {}
 
 def handle(block: Block, context: ImportContext):
     """Handles text import from filter files.
@@ -118,7 +117,7 @@ def _get_lines_from_line(line: Line, context: ImportContext, include_blockstarts
 def _get_lines_from_rule(rule: Rule, context: ImportContext) -> list[Line]:
     new_import = _parse_import(rule, context)
 
-    filter = _get_filter(new_import.filepath)
+    filter = _get_filter(new_import.filepath, context)
     if new_import.blockname is None:
         return _get_lines_from_filter(filter, context.clone(new_import))
 
@@ -157,13 +156,13 @@ def _parse_import(rule: Rule, context: ImportContext):
 
     return import_
 
-def _get_filter(filepath: str):
+def _get_filter(filepath: str, context: ImportContext):
     absolute_filepath = os.path.abspath(filepath)
 
-    if absolute_filepath not in _filter_cache:
-        _filter_cache[absolute_filepath] = Filter.load(filepath)
+    if absolute_filepath not in context.cache:
+        context.cache[absolute_filepath] = Filter.load(filepath)
 
-    return _filter_cache[absolute_filepath]
+    return context.cache[absolute_filepath]
 
 def _get_block(filter: Filter, blockname: str):
     for block in filter.blocks:

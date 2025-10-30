@@ -1,4 +1,4 @@
-from core import Delimiter, Rule, Line, Block, Filter
+from core import Delimiter, Rule, Line, Block, Filter, ExpectedError
 from .context import Context
 
 _INDEX_RULE_NAME = "index"
@@ -16,72 +16,66 @@ _SECTION_SEPARATOR = Delimiter.COMMENT_START + _LINE_PADDING * _MAX_LINE_LENGTH
 _INDEX_HEADER = "INDEX"
 _INDEX_HINT = "CTRL+F the IDs to jump to any section in the document."
 
+_SUBSECTION_MISSING_PARENT_SECTION_ERROR = "The subsection '{0}' was declared before any section that could parent it."
+
 class IndexContext(Context):
     def __init__(self, filter, options):
         super().__init__(filter, options)
         self.index = _Index(filter)
 
-def handle(block: Block, context: IndexContext):
-    """Adds indices and addressable sections."""
-    return [ raw_line
-        for line in block.lines
-        for raw_line in _get_raw_lines_from_line(line, context.index) ]
+class _Id:
+    def __init__(self, major: int = 0, minor: int = 0):
+        self.major = major
+        self.minor = minor        
+        self.length = 0
+
+    def update(self, rule: Rule):
+        if rule.name == _SECTION_RULE_NAME:
+            self.major += 1
+            self.minor = 0
+        elif rule.name == _SUBSECTION_RULE_NAME:
+            self.minor += 1
+        
+        major_length = len(str(self.major))
+        minor_length = len(str(self.minor))
+        self.length = max(major_length, minor_length, self.length)
+
+    def _pad(self, sub_id: int):
+        return _ID_PADDING * (self.length - len(str(sub_id))) + str(sub_id)
+
+    def __str__(self):
+        padded_major = self._pad(self.major)
+        padded_minor = self._pad(self.minor)
+        return f"[{padded_major}_{padded_minor}]"
 
 class _Index:
     def __init__(self, filter: Filter):
-        self._subid_length = 0
-        self._sections: list[_Section] = []
-
-        rules = (rule
+        id = _Id()
+        self._sections: list[_Section] = [ self._get_section(rule, id)
             for block in filter.blocks
-            for rule in block.get_rules(_SECTION_RULE_NAMES))
-    
-        for rule in rules:
-            self.append(rule)
-    
-    def append(self, rule: Rule):
-        section_list = self._sections[-1].subsections \
-            if rule.name == _SUBSECTION_RULE_NAME else self._sections
-        
-        section = _Section(rule, len(section_list) + 1)
-        section_list.append(section)
-
-        new_id_length = len(str(len(section_list)))
-        if new_id_length > self._subid_length:
-            self._subid_length = new_id_length
+            for rule in block.get_rules(_SECTION_RULE_NAMES) ]
+        for section in self._sections:
+            section.id.length = id.length
     
     def get_lines(self, rule: Rule):
         if rule.name == _INDEX_RULE_NAME:
-            return self._get_index_lines(rule.description.strip())
+            return self._get_index_lines(rule.description)
         return self._get_section_lines(rule)
 
-    def _get_index_lines(self, description: str = ""):
-        lines = self._get_header_lines(description)
-        for section in self._sections:
-            lines += section.get_lines_for_index(self._subid_length)
-            section_id = section.get_padded_subid(self._subid_length)
-            for subsection in section.subsections:
-                lines += subsection.get_lines_for_index(
-                    self._subid_length, section_id)
-        return lines
+    def _get_section(self, rule: Rule, id: _Id):
 
-    def _get_section_lines(self, rule: Rule):
-        rule_sections = (sub for sub in self._get_all_sections() if sub.rule == rule)
-        rule_section = next(rule_sections, None)
+        if id.major == 0 and rule.name == _SUBSECTION_RULE_NAME:
+            raise ExpectedError(_SUBSECTION_MISSING_PARENT_SECTION_ERROR.format(rule.description), rule.line_number)
 
-        if rule_section in self._sections:
-            return rule_section.get_lines_for_rule(self._subid_length)
+        id.update(rule)
+        return _Section(rule, _Id(id.major, id.minor))
 
-        section_id = rule_section.get_padded_subid(self._subid_length)
-        return rule_section.get_lines_for_rule(self._subid_length, section_id)
+    def _get_index_lines(self, description: str):
+        return self._get_header_lines(description) + [ line
+            for section in self._sections
+            for line in section.get_index_lines() ]
 
-    def _get_all_sections(self):
-        for section in self._sections:
-            yield section            
-            for subsection in section.subsections:
-                yield subsection
-
-    def _get_header_lines(self, description: str = ""):
+    def _get_header_lines(self, description: str):
         title_lines = [ _render_line("", "", description) ] if description != "" else []
         return title_lines + [
             _SECTION_SEPARATOR,
@@ -90,41 +84,41 @@ class _Index:
             Delimiter.COMMENT_START,
             _render_line("", _INDEX_HINT, "") ]
 
+    def _get_section_lines(self, rule: Rule):
+        section = next(section for section in self._sections if section.rule == rule)
+        return section.get_rule_lines()
+
 class _Section:
-    def __init__(self, rule: Rule, subid: int):
-        self._subid = str(subid)
+    def __init__(self, rule: Rule, id: _Id):
         self.rule = rule
-        self.subsections: list[_Section] = []
+        self.id = id
 
-    def get_lines_for_rule(self, id_length: int, parent_id: str | None = None):
-        id = self.get_id(id_length, parent_id)
-        if self._is_subsection():
-            return [ _render_line(
-                f" {self.rule.description} ", "", f" {id}", _LINE_PADDING) ]
+    def get_rule_lines(self):
+        is_subsection = self._is_subsection()
+        line = _render_line(
+            f" {self.rule.description} " if is_subsection else "",
+            "" if is_subsection else self.rule.description,
+            f" {self.id}",
+            _LINE_PADDING if is_subsection else " ")
+        return [ line ] if is_subsection else [ _SECTION_SEPARATOR, line, _SECTION_SEPARATOR ]
 
-        return [
-            _SECTION_SEPARATOR,
-            _render_line("", self.rule.description, id),
-            _SECTION_SEPARATOR ]
-
-    def get_lines_for_index(self, id_length: int, parent_id: str | None = None):
-        id = self.get_id(id_length, parent_id)
-        indent = ' ' * (8 if self._is_subsection() else 4)
-        lines = [ Delimiter.COMMENT_START ] if not self._is_subsection() else []
-        lines += [ _render_line(f"{indent}{self.rule.description} ", "", f" {id}", ".") ]
-        return lines
-
-    def get_id(self, id_length: int, parent_padded_id: str | None = None):
-        padded_subid = self.get_padded_subid(id_length)
-        if parent_padded_id != None:
-            return f"[{parent_padded_id}_{padded_subid}]"
-        return f"[{padded_subid}_{_ID_PADDING * id_length}]"
-
-    def get_padded_subid(self, id_length: int):
-        return _ID_PADDING * (id_length - len(self._subid)) + self._subid
-
+    def get_index_lines(self):
+        is_subsection = self._is_subsection()
+        line = _render_line(
+            f"{' ' * (8 if is_subsection else 4)}{self.rule.description} ",
+            "",
+            f" {self.id}",
+            ".")
+        return [ line ] if is_subsection else [ Delimiter.COMMENT_START, line ]
+    
     def _is_subsection(self):
         return self.rule.name == _SUBSECTION_RULE_NAME
+
+def handle(block: Block, context: IndexContext):
+    """Adds indices and addressable sections."""
+    return [ raw_line
+        for line in block.lines
+        for raw_line in _get_raw_lines_from_line(line, context.index) ]
 
 def _get_raw_lines_from_line(line: Line, index: _Index):
     raw_lines = [ rule_line
@@ -134,7 +128,7 @@ def _get_raw_lines_from_line(line: Line, index: _Index):
     if len(raw_lines) > 0:
         raw_lines = [ "\n" ] + raw_lines + [ "\n" ]
 
-    return [ str(line) ] + raw_lines 
+    return [ str(line) ] + raw_lines
 
 def _render_line(left_text: str, center_text: str, right_text: str, padding_token: str = " "):
     padding = padding_token * (_MAX_LINE_LENGTH  - len(left_text) - len(center_text) - len(right_text))

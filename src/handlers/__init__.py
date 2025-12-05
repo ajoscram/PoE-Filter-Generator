@@ -21,6 +21,6 @@ HANDLERS: dict[str, Handler] = {
     strict.NAME: Handler(strict.handle, Context),
     tag.NAME: Handler(tag.handle, Context),
     if_.NAME: Handler(if_.handle, Context),
-    alias.NAME: Handler(alias.handle, alias.Context),
+    alias.NAME: Handler(alias.handle, alias.AliasContext),
     game.NAME: Handler(game.handle, Context),
 }

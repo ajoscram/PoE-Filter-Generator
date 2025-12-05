@@ -1,29 +1,26 @@
 """Contains all handlers used to modify filters and their respective context initializers."""
+from dataclasses import dataclass
 from typing import Callable
 from core import Filter, Block
 from .context import Context
 from . import econ, format, if_, import_, index, strict, tag, alias, game
 
-CONTEXT_INITIALIZERS: dict[str, Callable[[Filter, list[str]], Context]] = {
-    econ.NAME: Context,
-    format.NAME: Context,
-    import_.NAME: import_.ImportContext,
-    index.NAME: index.IndexContext,
-    strict.NAME: Context,
-    tag.NAME: Context,
-    if_.NAME: Context,
-    alias.NAME: alias.AliasContext,
-    game.NAME: Context,
-}
+type ContextInitializer = Callable[[Filter, list[str]], Context]
+type HandleFunction = Callable[[Block, Context], list[str]]
 
-HANDLERS: dict[str, Callable[[Block, Context], list[str]]] = {
-    econ.NAME: econ.handle,
-    format.NAME: format.handle,
-    import_.NAME: import_.handle,
-    index.NAME: index.handle,
-    strict.NAME: strict.handle,
-    tag.NAME: tag.handle,
-    if_.NAME: if_.handle,
-    alias.NAME: alias.handle,
-    game.NAME: game.handle,
+@dataclass
+class Handler:
+    handle: HandleFunction
+    initialize_context: ContextInitializer
+
+HANDLERS: dict[str, Handler] = {
+    econ.NAME: Handler(econ.handle, Context),
+    format.NAME: Handler(format.handle, Context),
+    import_.NAME: Handler(import_.handle, import_.ImportContext),
+    index.NAME: Handler(index.handle, index.IndexContext),
+    strict.NAME: Handler(strict.handle, Context),
+    tag.NAME: Handler(tag.handle, Context),
+    if_.NAME: Handler(if_.handle, Context),
+    alias.NAME: Handler(alias.handle, alias.Context),
+    game.NAME: Handler(game.handle, Context),
 }

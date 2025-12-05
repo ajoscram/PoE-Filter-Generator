@@ -1,3 +1,5 @@
+# 1.5.3
+
 # 1.5.2
 * Fixed a bug where `.index` would write the wrong section number identifier for subsections.
 * Fixed a bug where writing a `.subsection` before any `.section`s would cause the program to crash when invoking `.index`.

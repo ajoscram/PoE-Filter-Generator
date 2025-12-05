@@ -1,6 +1,6 @@
 import console
 from core import Delimiter, ExpectedError, Filter, Block
-from handlers import HANDLERS, CONTEXT_INITIALIZERS
+from handlers import HANDLERS
 
 NAME = "generate"
 
@@ -10,7 +10,6 @@ _READING_FILTER_MESSAGE = "Reading filter file from '{0}'..."
 _FILTER_SAVED_MESSAGE = "Filter saved to '{0}'."
 
 _HANDLER_NOT_FOUND_ERROR = "Handler '{0}' was not found."
-_CONTEXT_INITIALIZER_NOT_FOUND_ERROR = "A context initializer for handler '{0}' was not found."
 _HANDLER_NOT_PROVIDED_ERROR = "No handlers were provided. You must provide at least one handler to modify your filter file."
 _TOO_LITTLE_ARGUMENTS_ERROR = "Too little arguments were provided. At least a path to a filter file and a handler to use are expected."
 
@@ -77,14 +76,11 @@ def _create_invocations(raw_args: list[str]):
 def _generate_filter(filter: Filter, handler_name: str, options: list[str]):
     if handler_name not in HANDLERS:
         raise ExpectedError(_HANDLER_NOT_FOUND_ERROR.format(handler_name))
+    
     handler = HANDLERS[handler_name]
-
-    if handler_name not in CONTEXT_INITIALIZERS:
-        raise ValueError(_CONTEXT_INITIALIZER_NOT_FOUND_ERROR.format(handler_name))
-    context = CONTEXT_INITIALIZERS[handler_name](filter, options)
-
+    context = handler.initialize_context(filter, options)
     generated_raw_lines = [ line
         for block in filter.blocks
-        for line in handler(block, context) ]
+        for line in handler.handle(block, context) ]
 
     return Filter(filter.filepath, Block.extract(generated_raw_lines))

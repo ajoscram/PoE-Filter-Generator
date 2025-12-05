@@ -29,7 +29,7 @@ class _Id:
         self.minor = minor        
         self.length = 0
 
-    def update(self, rule: Rule):
+    def increment(self, rule: Rule):
         if rule.name == _SECTION_RULE_NAME:
             self.major += 1
             self.minor = 0
@@ -67,7 +67,7 @@ class _Index:
         if id.major == 0 and rule.name == _SUBSECTION_RULE_NAME:
             raise ExpectedError(_SUBSECTION_MISSING_PARENT_SECTION_ERROR.format(rule.description), rule.line_number)
 
-        id.update(rule)
+        id.increment(rule)
         return _Section(rule, _Id(id.major, id.minor))
 
     def _get_index_lines(self, description: str):

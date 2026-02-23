@@ -40,8 +40,7 @@ def get(
     - `formatter` applies a transformation function to the data received before caching and returning.
     - If it fails with an HTTP error and its code is a key in the `custom_http_errors` dictionary,
     the custom error message is displayed instead."""
-    data = cache.try_get(url)
-    if data == None:
+    if (data := cache.try_get(url)) == None:
         response = _get_response(url, custom_http_errors)
         data = response.json() if _is_json(response) else response.text
         data = formatter(data)

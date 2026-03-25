@@ -1,8 +1,11 @@
 # Backlog
+* Add `:publish` to upload filters to GGG with
+    https://www.pathofexile.com/developer/docs/authorization
+    https://docs.python.org/3/library/webbrowser.html
+
 * `.import`'s error messages with arrows in them are kinda shit, should improve
 * Add Cluster Jewels to `.econ`
 * `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block (?)
-* Add a way for `.if` to target other named blocks (?)
 * Let the RePoE dev know about the following base types not currently being fetched:
     https://github.com/repoe-fork/repoe-fork.github.io
     - All harbinger staff pieces
@@ -11,7 +14,7 @@
 * Comply with `python.analysis.typeCheckingMode`
 
 # Ideas
-* Add a new command `:publish` to upload filters to GGG with
+* Add a way for `.if` to target other named blocks (?)
 * Make the `FileCache.clear` method smarter by deleting the files listed in entries instead of the whole directory (?)
 * Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
 * Move to Python virtual environments

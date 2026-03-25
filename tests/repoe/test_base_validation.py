@@ -2,7 +2,7 @@ import pytest
 from pytest import MonkeyPatch
 from repoe import base_validation, gem
 from repoe.constants import Field
-from repoe.base_validation import _ReleaseState, _BaseTypeName, _UNRECOGNIZED_BASE_ID_ERROR
+from repoe.base_validation import _ClassName, _ReleaseState, _BaseTypeName, _UNRECOGNIZED_BASE_ID_ERROR
 from test_utilities import FunctionMock
 
 _BASE_NAME = "base_name"
@@ -41,6 +41,7 @@ def is_base_gem_mock(monkeypatch: MonkeyPatch):
     ("category/item", { }, True),
     ("category/itemRoyale", { }, False),
     ("category/item", { "release_state": _ReleaseState.UNRELEASED }, False),
+    ("category/item", { "item_class": _ClassName.REMOVED_ITEM }, False),
 ])
 def test_validate_given_a_base_id_and_info_should_return_expectedly(
     id_suffix: str, info: dict[str], expected: bool):
@@ -62,5 +63,6 @@ def test_validate_given_unrecognized_base_id_structure_should_raise():
 
 def _create_info(
     name: str = _BASE_NAME,
-    release_state: _ReleaseState = _ReleaseState.RELEASED):
-    return { Field.NAME: name, Field.RELEASE_STATE: release_state }
+    release_state: _ReleaseState = _ReleaseState.RELEASED,
+    item_class: _ClassName = _ClassName.GOLD):
+    return { Field.NAME: name, Field.RELEASE_STATE: release_state, Field.CLASS: item_class }

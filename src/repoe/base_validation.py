@@ -3,6 +3,10 @@ from . import gem
 from .constants import Field, ROYALE_PATTERN
 from .matchable import Matchable
 
+class _ClassName(StrEnum):
+    GOLD = "Gold"
+    REMOVED_ITEM = "RemovedItem"
+
 class _BaseTypeName(StrEnum):
     BLADE_TRAP = "Blade Trap"
     ENERGY_BLADE = "Energy Blade"
@@ -138,4 +142,5 @@ def _is_quiver_valid(id: str, info: dict[str]):
 def _is_misc_valid(id: str, info: dict[str]):
     royale = Matchable(id) == ROYALE_PATTERN
     unreleased = info[Field.RELEASE_STATE] == _ReleaseState.UNRELEASED
-    return not unreleased and not royale
+    removed = info[Field.CLASS] == _ClassName.REMOVED_ITEM
+    return not (unreleased or royale or removed)

@@ -35,8 +35,7 @@ class _IDPrefixPattern(StrEnum):
 class _IDSuffixPattern(StrEnum):
     VOIDSTONE = r"\w+Primordial\d"
     MAVEN_INVITATION = r"Maven/(.+)"
-    CURRENT_SERIES_MAP = r"MapWorlds.+"
-    HARBINGER_MAP_DUPE = r".+Harbinger(?:Mid|High|Uber)"
+    CURRENT_SERIES_MAP = r"MapKey.+"
     MAVEN_ATLAS_INVITATION = r".+Atlas1"
     RELIC_DUPE = r"^Relic\dx\d"
     QUIVER_DUPE = r"Quiver(?:Descent|\d+)"
@@ -103,8 +102,6 @@ def _is_map_fragment_valid(id: str):
 
 def _is_map_valid(id: str):
     match Matchable(id):
-        case _IDSuffixPattern.HARBINGER_MAP_DUPE:
-            return False
         case _IDSuffixPattern.CURRENT_SERIES_MAP:
             return True
         case _:

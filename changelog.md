@@ -1,5 +1,6 @@
 # 1.5.3
 * Fixed a bug where `.game` was crashing when trying to obtain a class for **Grafts**, which are now removed in-game.
+* Fixed a bug where the new maps were not recognised as valid base types.
 
 # 1.5.2
 * Fixed a bug where `.index` would write the wrong section number identifier for subsections.

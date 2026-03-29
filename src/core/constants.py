@@ -1,11 +1,11 @@
 from enum import StrEnum
 
 class Delimiter(StrEnum):
-    """Represents various delimiter tokens that can be found on filters."""
+    """Represents various delimiter tokens that can be found on filters or the command line."""
     LIST_ENTRY_SEPARATOR = ","
     PAIR_SEPARATOR = "="
     COMMENT_START = "#"
-    COMMAND_START = ":"
+    COMMAND_START = "-"
     RULE_SEPARATOR = "."
     HANDLER_START = RULE_SEPARATOR
     RULE_START = COMMENT_START + RULE_SEPARATOR

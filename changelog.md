@@ -48,7 +48,7 @@
 * Added `.econ` support for **Allflame Embers**. Note that even though Filled Coffins were added to poe.ninja, they cannot be discriminated filter-wise.
 
 # 1.4.5
-* Added the `:watch` command, which allows automatic execution of the `:generate` command when `.filter` files are changed. More information can be found on the [`:watch` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:watch).
+* Added the `-watch` command, which allows automatic execution of the `-generate` command when `.filter` files are changed. More information can be found on the [`-watch` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-watch).
 
 # 1.4.4
 * `.econ` now always overrides the `BaseType` rules in the block, even if no applicable base types are found. This case always comments out the block regardless.
@@ -68,19 +68,19 @@
 * Added **Omens** and **Tattoos** to `.econ`.
 * Added a caching system to significantly improve performance for web requests.
 * Added a `.game` handler, which allows pulling game data into the filter. More information can be found on the [`.game` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.game).
-* Added a `:clean` command which allows for manual deletion of the cache. More information can be found on the [`:clean` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:clean).
-* The `:help` command now displays a list of the terms that can be queried with it after displaying [the Usage article](https://github.com/ajoscram/PoE-Filter-Generator/wiki/Usage).
-* The `:path` command now supports an argument called `remove`, which removes the directory where the PFG executable resides from the PATH environment variable.
+* Added a `-clean` command which allows for manual deletion of the cache. More information can be found on the [`-clean` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-clean).
+* The `-help` command now displays a list of the terms that can be queried with it after displaying [the Usage article](https://github.com/ajoscram/PoE-Filter-Generator/wiki/Usage).
+* The `-path` command now supports an argument called `remove`, which removes the directory where the PFG executable resides from the PATH environment variable.
 * Fixed a bug where empty strings (`""`) could not count as admissible values in filter lines.
 * Moved from using the PoE Wiki to [RePoE](https://lvlvllvlvllvlvl.github.io/RePoE) for the primary game data source.
 * Moved to Python 3.12.
 
 # 1.4.0
 * Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).
-* Added the `:generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did. More information can be found on the [`:generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:generate).
-* Added the `:help` command, which provides information for a term found within the PFG wiki (commands, handlers, blocks, rules, etc). More information can be found on the [`:help` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:help).
-* Added the `:path` command, which adds the tool's current path to the user's Windows PATH environment variable. More information can be found on the [`:path` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:path).
-* Added the `:update` command, which updates the tool to the most recent version available. More information can be found on the [`:update` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/:update).
+* Added the `-generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did. More information can be found on the [`-generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-generate).
+* Added the `-help` command, which provides information for a term found within the PFG wiki (commands, handlers, blocks, rules, etc). More information can be found on the [`-help` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-help).
+* Added the `-path` command, which adds the tool's current path to the user's Windows PATH environment variable. More information can be found on the [`-path` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-path).
+* Added the `-update` command, which updates the tool to the most recent version available. More information can be found on the [`-update` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-update).
 * Revamped the visuals of the tool with different colors to provide context to messages shown on the console.
 * Implemented a system to show contextual usage hints for a user when an error happens.
 

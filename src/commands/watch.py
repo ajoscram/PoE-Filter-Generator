@@ -1,6 +1,6 @@
 import console, os, sys, watcher
 from . import generate
-from core import ExpectedError, ERROR_EXIT_CODE
+from core import ExpectedError, ERROR_EXIT_CODE, Delimiter
 
 NAME = "watch"
 
@@ -29,7 +29,7 @@ class _GenerateCallable:
             sys.exit(ERROR_EXIT_CODE)
 
 def execute(args: list[str]):
-    """Executes the `:generate` command when files within the directory or
+    """Executes the `-generate` command when files within the directory or
     subdirectories of the filter passed are changed."""
     directory = _get_dir_to_watch(args)
     console.write(_WATCHING_FILES_MESSAGE.format(directory))

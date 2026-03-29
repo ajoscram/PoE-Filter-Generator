@@ -16,7 +16,7 @@ _PATH_SET_COMPLETE_MESSAGE = "Restart your console for changes to take effect."
 _PATH_ALREADY_SET_MESSAGE = "The current directory is already a part of the user's PATH. No need to add it again!"
 _PATH_ALREADY_REMOVED_MESSAGE = "The current directory could not be found as a part of the user's PATH. No need to remove it!"
 
-_ARGS_ERROR = "The :path command only accepts 'remove' as a possible argument. You've provided: {0}"
+_ARGS_ERROR = "The -path command only accepts 'remove' as a possible argument. You've provided: {0}"
 _NOT_ON_WINDOWS_ERROR = "This command is only available on Windows systems."
 _POWERSHELL_NOT_FOUND_ERROR = "Could not find PowerShell, which is required for this command. Please ensure PowerShell is installed on your computer."
 _COMMAND_EXECUTION_ERROR = """An error occurred while executing a PowerShell command. Debug information:

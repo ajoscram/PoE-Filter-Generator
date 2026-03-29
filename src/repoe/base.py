@@ -9,7 +9,7 @@ _URL = "https://repoe-fork.github.io/base_items.min.json"
 
 _BASE_NAME_NOT_FOUND_ERROR = """The base item name '{0}' could not be identified when attempting to get its class name.
 
-\tThis problem is likely solved by deleting PFG's cache with the command [cyan]pfg :clean[/cyan]."""
+\tThis problem is likely solved by deleting PFG's cache with the command [cyan]pfg -clean[/cyan]."""
 
 def get_bases(sieve: Sieve) -> set[str]:
     """Returns the set of base type names that match the `sieve` received."""

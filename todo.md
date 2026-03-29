@@ -2,13 +2,12 @@
 * Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
     - change commands to use `-` instead of `:`. 
 
-* Add `:publish` to upload filters to GGG with
+* Add `-publish` to upload filters to GGG with
     https://www.pathofexile.com/developer/docs/authorization
     https://docs.python.org/3/library/webbrowser.html
 
 * `.import`'s error messages with arrows in them are kinda shit, should improve
 * Add Cluster Jewels to `.econ`
-* `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block (?)
 * Let the RePoE dev know about the following base types not currently being fetched:
     https://github.com/repoe-fork/repoe-fork.github.io
     - All harbinger staff pieces
@@ -17,6 +16,7 @@
 * Comply with `python.analysis.typeCheckingMode`
 
 # Ideas
+* `.format` should remove item filter lines that apply a style if that style is being replaced by another style in the same block (?)
 * Add a way for `.if` to target other named blocks (?)
 * Make the `FileCache.clear` method smarter by deleting the files listed in entries instead of the whole directory (?)
 * Move to Python virtual environments
@@ -25,7 +25,7 @@
 * Update how `ExpectedError`s work:
     - Provide a possible solution alongside the error if possible (maybe?).
     - Define a color scheme for the text in the program and use those rules across all strings shown to the user.
-* Use levenshtein distances to improve `:help`'s searching of the correct page.
+* Use levenshtein distances to improve `-help`'s searching of the correct page.
     If the user types something slightly different than any existing page, then the closest page within a distance threshold is used instead.
 * Express progress of tasks incrementally in the CLI via a progress bar:
     - https://rich.readthedocs.io/en/stable/reference/progress.html#rich.progress.track

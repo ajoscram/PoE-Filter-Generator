@@ -1,4 +1,7 @@
 # Backlog
+* Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
+    - change commands to use `-` instead of `:`. 
+
 * Add `:publish` to upload filters to GGG with
     https://www.pathofexile.com/developer/docs/authorization
     https://docs.python.org/3/library/webbrowser.html
@@ -16,7 +19,6 @@
 # Ideas
 * Add a way for `.if` to target other named blocks (?)
 * Make the `FileCache.clear` method smarter by deleting the files listed in entries instead of the whole directory (?)
-* Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
 * Move to Python virtual environments
     - VSCode really didn't like this. This should only be re-tried if it becomes a need in the future.
 * Add E2E testing that actually goes to the internet and does things.

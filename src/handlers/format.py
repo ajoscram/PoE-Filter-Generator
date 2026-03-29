@@ -18,6 +18,12 @@ def handle(block: Block, context: Context):
 
 def _get_formatted_raw_lines(lines: list[Line]) -> list[str]:
     match lines:
+        case [ first, *rest ] if len(first.get_rules(NAME)) > 0 and not first.has_filter_info():
+            return []
+
+        case [ first, *rest ] if len(first.get_rules(NAME)) > 0:
+            return _get_formatted_raw_lines(rest)
+
         case [ first, second, *rest ] if first.is_empty() and (second.has_filter_info() or second.is_empty()):
             return _get_formatted_raw_lines([ second ] + rest)
 

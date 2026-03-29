@@ -23,7 +23,7 @@ def test_handle_given_if_was_placed_on_blockstarter_should_comment_out_the_block
     lines = if_.handle(filter.blocks[0], Context(filter, None))
     
     for line in lines:
-        assert line.startswith(Delimiter.COMMENT_START)
+        assert line.startswith(Delimiter.COMMENT_RULE_START)
 
 def test_handle_given_if_was_placed_on_empty_line_should_comment_out_lines_starting_from_it():
     filter = create_filter(
@@ -34,7 +34,7 @@ def test_handle_given_if_was_placed_on_empty_line_should_comment_out_lines_start
     lines = if_.handle(filter.blocks[0], Context(filter, None))
 
     for line in lines[1:]:
-        assert line.startswith(Delimiter.COMMENT_START)
+        assert line.startswith(Delimiter.COMMENT_RULE_START)
 
 def test_handle_given_if_was_placed_on_non_empty_line_should_comment_out_that_line():
     filter = create_filter(
@@ -44,8 +44,8 @@ def test_handle_given_if_was_placed_on_non_empty_line_should_comment_out_that_li
     
     lines = if_.handle(filter.blocks[0], Context(filter, None))
     
-    assert lines[1].startswith(Delimiter.COMMENT_START)
-    assert not lines[2].startswith(Delimiter.COMMENT_START)
+    assert lines[1].startswith(Delimiter.COMMENT_RULE_START)
+    assert not lines[2].startswith(Delimiter.COMMENT_RULE_START)
 
 def test_given_whitespace_description_on_rule_should_raise():
     filter = create_filter(f"{Delimiter.RULE_START}{IF}    ")

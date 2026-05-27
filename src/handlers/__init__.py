@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Callable
 from core import Filter, Block
 from .context import Context
-from . import econ, format, if_, import_, index, strict, tag, alias, game
+from . import econ, format, if_, import_, index, strict, tag, alias, game, multi
 
 type ContextInitializer = Callable[[Filter, list[str]], Context]
 type HandleFunction = Callable[[Block, Context], list[str]]
@@ -23,4 +23,5 @@ HANDLERS: dict[str, Handler] = {
     if_.NAME: Handler(if_.handle, Context),
     alias.NAME: Handler(alias.handle, alias.AliasContext),
     game.NAME: Handler(game.handle, Context),
+    multi.NAME: Handler(multi.handle, Context),
 }

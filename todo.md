@@ -1,6 +1,7 @@
 # Backlog
 * Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
-    - change commands to use `-` instead of `:`. 
+    - change command and handler filenames to NOT use the goofy periods and dashes
+    - this change needs to be reflected in `-help` as well
 
 * Add `-publish` to upload filters to GGG with
     https://www.pathofexile.com/developer/docs/authorization

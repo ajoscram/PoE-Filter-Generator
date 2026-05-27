@@ -1,7 +1,7 @@
 import pytest
 from core import Delimiter, ExpectedError
 from handlers import index
-from handlers.index import _SUBSECTION_MISSING_PARENT_SECTION_ERROR, IndexContext, _INDEX_RULE_NAME, _SECTION_RULE_NAME, _SUBSECTION_RULE_NAME, _INDEX_HEADER, _INDEX_HINT
+from handlers.index import IndexContext, _SUBSECTION_MISSING_PARENT_SECTION_ERROR, _INDEX_RULE_NAME, _SECTION_RULE_NAME, _SUBSECTION_RULE_NAME, _INDEX_HEADER, _INDEX_HINT
 from test_utilities import create_filter
 
 def test_handle_given_an_index_section_and_subsection_should_write_them():

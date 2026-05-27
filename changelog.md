@@ -1,7 +1,8 @@
 # 1.5.3
 * Fixed a bug where `.game` was crashing when trying to obtain a class for **Grafts**, which are now removed in-game.
 * Fixed a bug where the new maps were not recognised as valid base types.
-* The `.format` handler now recognizes rules of the same name in order to remove them upon its invocation. More information is available in the [`.format` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.format).
+* The `.format` handler now recognizes rules of the same name in order to remove lines that contain them on invocation. More information is available in the [`.format` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.format).
+* Added the `.multi` handler, which allows generating multiple blocks from a single one. More information can be found in the [`.multi` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.multi).
 
 # 1.5.2
 * Fixed a bug where `.index` would write the wrong section number identifier for subsections.

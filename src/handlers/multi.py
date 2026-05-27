@@ -29,7 +29,7 @@ def _get_block_parts(rules: list[Rule], block: Block, filepath: str):
     prefix_line_index = rules[0].line_number - block.line_number
     prefix = block.lines[:prefix_line_index]
 
-    suffix_line_index = rules[-1].line_number - block.line_number + 1 \
+    suffix_line_index = rules[-1].line_number - block.line_number \
         if _has_end_param(rules[-1]) else len(block.lines)
     suffix = block.lines[suffix_line_index:]
     
@@ -44,11 +44,9 @@ def _get_multis(rules: list[Rule], block: Block, filepath: str):
         line_index = rule.line_number - block.line_number
 
         if _has_end_param(rule):
-            if rule != rules[-1]:
-                raise ExpectedError(_PREMATURE_END_PARAM_ERROR, rule.line_number, filepath)
-            
-            multis[-1] += [block.lines[line_index]]
-            break
+            if rule == rules[-1]:
+                break
+            raise ExpectedError(_PREMATURE_END_PARAM_ERROR, rule.line_number, filepath)
 
         end_line_index = rules[rule_index + 1].line_number - block.line_number \
             if rule != rules[-1] else len(block.lines)

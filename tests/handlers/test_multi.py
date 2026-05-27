@@ -6,7 +6,6 @@ from handlers import multi, Context
 
 _FIRST_LINE = "first"
 _SECOND_LINE = "second"
-_SUFFIX_LINE = "suffix"
 
 @pytest.mark.parametrize("text", [
     f"{Operand.SHOW}\n{Delimiter.RULE_START}{NAME}\n{_FIRST_LINE}",
@@ -23,10 +22,8 @@ def test_handle_given_an_idempotent_number_of_multi_rules_should_return_the_same
 def test_handle_given_multiple_multi_rules_should_create_a_block_for_each():
     filter = create_filter(
     f"""{Operand.SHOW}
-        {Delimiter.RULE_START}{NAME}
-        {_FIRST_LINE}
-        {Delimiter.RULE_START}{NAME}
-        {_SECOND_LINE}""")
+        {_FIRST_LINE} {Delimiter.RULE_START}{NAME}
+        {_SECOND_LINE} {Delimiter.RULE_START}{NAME}""")
     
     lines = multi.handle(filter.blocks[0], Context(filter, []))
     blocks = Block.extract(lines)
@@ -40,8 +37,7 @@ def test_handle_given_multiple_multi_rules_should_create_a_block_for_each():
 def test_handle_given_end_param_should_include_the_last_multi_in_the_last_block():
     filter = create_filter(
     f"""{Operand.SHOW}
-        {Delimiter.RULE_START}{NAME}
-        {_FIRST_LINE}
+        {_FIRST_LINE} {Delimiter.RULE_START}{NAME}
         {Delimiter.RULE_START}{NAME} {_END_PARAM}""")
     
     lines = multi.handle(filter.blocks[0], Context(filter, []))
@@ -51,29 +47,25 @@ def test_handle_given_end_param_should_include_the_last_multi_in_the_last_block(
     assert f"{Delimiter.RULE_START}{NAME} {_END_PARAM}" in str(blocks[0])
 
 def test_handle_given_end_param_should_put_suffix_lines_on_all_blocks():
+    SUFFIX_LINE = "suffix"
     filter = create_filter(
     f"""{Operand.SHOW}
-        {Delimiter.RULE_START}{NAME}
-        {_FIRST_LINE}
-        {Delimiter.RULE_START}{NAME}
-        {_SECOND_LINE}
-        {Delimiter.RULE_START}{NAME} {_END_PARAM}
-        {_SUFFIX_LINE}""")
+        {_FIRST_LINE} {Delimiter.RULE_START}{NAME}
+        {_SECOND_LINE} {Delimiter.RULE_START}{NAME}
+        {SUFFIX_LINE} {Delimiter.RULE_START}{NAME} {_END_PARAM}""")
     
     lines = multi.handle(filter.blocks[0], Context(filter, []))
     blocks = Block.extract(lines)
 
     assert len(blocks) == 2
-    assert _SUFFIX_LINE in str(blocks[0])  
-    assert _SUFFIX_LINE in str(blocks[1])
+    assert SUFFIX_LINE in str(blocks[0])
+    assert SUFFIX_LINE in str(blocks[1])
 
 def test_handle_given_premature_end_param_should_raise():
     filter = create_filter(
     f"""{Operand.SHOW}
-        {Delimiter.RULE_START}{NAME} {_END_PARAM}
-        {_FIRST_LINE}
-        {Delimiter.RULE_START}{NAME}
-        {_SECOND_LINE}""")
+        {_FIRST_LINE} {Delimiter.RULE_START}{NAME} {_END_PARAM}
+        {_SECOND_LINE} {Delimiter.RULE_START}{NAME}""")
     
     with pytest.raises(ExpectedError) as error:
         multi.handle(filter.blocks[0], Context(filter, []))

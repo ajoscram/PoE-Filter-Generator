@@ -1,8 +1,16 @@
 from enum import StrEnum
 
+type Record = dict[str]
+"""A record for an item obtained from `poe.ninja`."""
+
+type RecordsJSON = dict[str]
+"""The entire response with all records contained fetched from `poe.ninja`."""
+
 class Field(StrEnum):
     """Represents the JSON fields that appear on poe.ninja reponnses."""
+    ID = "id"
     LINES = "lines"
+    ITEMS = "items"
     LINKS = "links"
     CLASS = "itemClass"
     NAME = "name"
@@ -10,14 +18,9 @@ class Field(StrEnum):
     LEVEL_REQUIRED = "levelRequired"
     CORRUPTED = "corrupted"
     GEM_LEVEL = "gemLevel"
-
-    # currency exclusive
-    CURRENCY_BASE_TYPE = "currencyTypeName"
-    CURRENCY_VALUE = "chaosEquivalent"
-    
-    # item exclusive
-    ITEM_BASE_TYPE = "baseType"
-    ITEM_VALUE_FIELD = "chaosValue"
+    PRIMARY_VALUE = "primaryValue"
+    BASE_TYPE = "baseType"
+    CHAOS_VALUE = "chaosValue"
 
 class QueryType(StrEnum):
     """Represents the item types that can be queried via `poe.ninja`."""
@@ -38,6 +41,10 @@ class QueryType(StrEnum):
     OMEN = "Omen"
     ALLFLAME_EMBER = "AllflameEmber"
     RUNEGRAFT = "Runegraft"
+    RUNIC_ARTIFACT = "Artifact"
+    ASTROLABE = "Astrolabe"
+    DJINN_COIN = "DjinnCoin"
+    WOMBGIFT = "Wombgift"
     UNIQUE_WEAPON = "UniqueWeapon"
     UNIQUE_ARMOUR = "UniqueArmour"
     UNIQUE_ACCESSORY = "UniqueAccessory"
@@ -45,9 +52,4 @@ class QueryType(StrEnum):
     UNIQUE_JEWEL = "UniqueJewel"
     UNIQUE_MAP = "UniqueMap"
     UNIQUE_RELIC = "UniqueRelic"
-
-UNIQUE_QUERY_TYPES = {
-    QueryType.UNIQUE_ACCESSORY, QueryType.UNIQUE_ARMOUR, \
-    QueryType.UNIQUE_JEWEL, QueryType.UNIQUE_FLASK, \
-    QueryType.UNIQUE_MAP, QueryType.UNIQUE_WEAPON, \
-    QueryType.UNIQUE_RELIC }
+    UNIQUE_TINCTURE = "UniqueTincture"

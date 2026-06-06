@@ -3,15 +3,15 @@ GET https://api.pathofexile.com/leagues?type=main&realm=pc
 User-Agent: PoE Filter Generator https://github.com/ajoscram/PoE-Filter-Generator/
 
 ### PoE Ninja queries
-@league = Mercenaries
-@item_type = Runegraft
-@currency_type = Runes
+@league = Mirage
+@currency_type = Runegraft
+@item_type = UniqueRelic
 
-#### Currency or Frags
-GET https://poe.ninja/api/data/currencyoverview?league={{league}}&type={{currency_type}}
+#### Exchange
+GET https://poe.ninja/poe1/api/economy/exchange/current/overview?league={{league}}&type={{currency_type}}
 
-#### Items
-GET https://poe.ninja/api/data/itemoverview?league={{league}}&type={{item_type}}
+#### Stash
+GET https://poe.ninja/poe1/api/economy/stash/current/item/overview?league={{league}}&type={{item_type}}
 
 ### RePoE Queries
 #### Docs: https://github.com/brather1ng/RePoE/tree/master/RePoE/docs

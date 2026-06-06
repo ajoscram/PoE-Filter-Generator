@@ -1,14 +1,14 @@
 # Backlog
-* Add Wiki to the repo as a submodule, to avoid having to edit via GitHub's poopy editor
-    - change command and handler filenames to NOT use the goofy periods and dashes
-    - this change needs to be reflected in `-help` as well
+
+* Add `.econ` support for Cluster Jewels
+
+* `-help` should change links to local files (a.k.a. dot-slash `./`) into links to the documentation on the web.
 
 * Add `-publish` to upload filters to GGG with
     https://www.pathofexile.com/developer/docs/authorization
     https://docs.python.org/3/library/webbrowser.html
 
 * `.import`'s error messages with arrows in them are kinda shit, should improve
-* Add Cluster Jewels to `.econ`
 * Let the RePoE dev know about the following base types not currently being fetched:
     https://github.com/repoe-fork/repoe-fork.github.io
     - All harbinger staff pieces

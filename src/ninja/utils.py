@@ -1,0 +1,68 @@
+from typing import Callable
+from core import Sieve, Operand
+from .value_range import ValueRange
+from .constants import Field, Record, RecordsJSON
+
+_REPLICA_ITEM_NAME_EXCEPTIONS = [ "Replica Dragonfang's Flight" ]
+
+type BaseTypeGetter = Callable[[Record, RecordsJSON], str]
+"""Represents any function that obtains a `BaseType` from a `Record`."""
+
+def get_base_type(record: Record, _):
+    """Gets a `BaseType` from the `record`'s property with the same name."""
+    return record[Field.BASE_TYPE]
+
+def get_base_type_by_name(record: Record, _)  :
+    """Gets a `BaseType` from the `record`'s `name`."""
+    return record[Field.NAME]
+
+def get_base_type_from_items(record: Record, records_json: RecordsJSON) -> str:
+    """Gets a `BaseType` from the `record`'s `id` by looking it up in the `records_json`'s `items` property."""
+    id = record[Field.ID]
+    items = records_json[Field.ITEMS]
+    item = next(i for i in items if i[Field.ID] == id)
+    return item[Field.NAME]
+
+type ValueGetter = Callable[[Record], float]
+"""Represents any function that obtains `Record`'s value in chaos."""
+
+def get_value_by_chaos(record: Record) -> float:
+    """Gets the `record`'s value via a property with the same name."""
+    return record[Field.CHAOS_VALUE]
+
+def get_value_by_primary(record: Record) -> float:
+    """Gets the `record`'s value via it's primary value."""
+    return record[Field.PRIMARY_VALUE]
+
+type Validator = Callable[[Record, ValueRange, Sieve], bool]
+"""Validates that a `record` is within the `ValueRange` and meets the `Sieve`'s criteria if applicable."""
+
+def is_item_valid(record: Record, range: ValueRange, _):
+    """Checks if any `record` is valid."""
+    return record[Field.CHAOS_VALUE] in range
+
+def is_unique_valid(record: Record, range: ValueRange, sieve: Sieve):
+    """Checks if a unique item's `record` is valid."""
+    name: str = record[Field.NAME]
+    is_replica = name.startswith(f"{Operand.REPLICA} ") and name not in _REPLICA_ITEM_NAME_EXCEPTIONS
+    links = record[Field.LINKS] if Field.LINKS in record else 0
+    pattern = {
+        Operand.CLASS: record[Field.CLASS],
+        Operand.REPLICA: is_replica,
+        Operand.LINKED_SOCKETS: links }
+    return pattern in sieve and is_item_valid(record, range, sieve)
+
+def is_gem_valid(record: Record, range: ValueRange, sieve: Sieve):
+    """Checks if a gem's `record` is valid."""
+    pattern = {
+        Operand.GEM_LEVEL: record[Field.GEM_LEVEL],
+        Operand.QUALITY: record[Field.GEM_QUALITY] \
+            if Field.GEM_QUALITY in record else 0,
+        Operand.CORRUPTED: record[Field.CORRUPTED] \
+            if Field.CORRUPTED in record else False }
+    return pattern in sieve and is_item_valid(record, range, sieve)
+
+def is_wombgift_valid(record: Record, range: ValueRange, sieve: Sieve):
+    """Checks if a wombgift's `record` is valid."""
+    pattern = { Operand.ITEM_LEVEL: record[Field.LEVEL_REQUIRED] }
+    return pattern in sieve and is_item_valid(record, range, sieve)

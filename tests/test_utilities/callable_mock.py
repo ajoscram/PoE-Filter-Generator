@@ -35,7 +35,7 @@ class CallableMock:
         
         if callable(result):
             return result(*args, **kwargs)
-        
+
         return result
 
     def received(self, *args, **kwargs):

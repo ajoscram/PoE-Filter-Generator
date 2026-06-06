@@ -14,4 +14,11 @@ class WebGetMock(FunctionMock):
     
     def __call__(self, *args, **kwargs):
         result = super().__call__(*args, **kwargs)
-        return kwargs[_FORMATTER](result) if _FORMATTER in kwargs else result
+
+        if _FORMATTER in kwargs:
+            return kwargs[_FORMATTER](result)
+        
+        if len(args) >= 3: # the formatter is always the 3rd parameter
+            return args[2](result)
+        
+        return result

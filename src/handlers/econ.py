@@ -1,6 +1,6 @@
 import ggg, ninja
 from core import ExpectedError, Block, Rule, Sieve, Operand
-from ninja import QueryType, ValueRange, UNIQUE_QUERY_TYPES
+from ninja import QueryType, ValueRange
 from .context import Context
 
 NAME = "econ"
@@ -14,6 +14,17 @@ _RULE_MNEMONIC_ERROR = "The .econ rule expects a valid type mnemonic, got '{0}'.
 _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 _LOWER_BOUND_NAME = "lower"
 _UPPER_BOUND_NAME = "upper"
+
+_UNIQUE_QUERY_TYPES = {
+    QueryType.UNIQUE_ACCESSORY, \
+    QueryType.UNIQUE_ARMOUR, \
+    QueryType.UNIQUE_JEWEL, \
+    QueryType.UNIQUE_FLASK, \
+    QueryType.UNIQUE_MAP, \
+    QueryType.UNIQUE_WEAPON, \
+    QueryType.UNIQUE_RELIC, \
+    QueryType.UNIQUE_TINCTURE,
+}
 
 _QUERY_TYPES_BY_MNEMONIC: dict[str, set[QueryType]] = {
     "cur": { QueryType.CURRENCY },
@@ -33,7 +44,11 @@ _QUERY_TYPES_BY_MNEMONIC: dict[str, set[QueryType]] = {
     "omn": { QueryType.OMEN },
     "mbr": { QueryType.ALLFLAME_EMBER },
     "run": { QueryType.RUNEGRAFT },
-    "uni": UNIQUE_QUERY_TYPES,
+    "ast": { QueryType.ASTROLABE },
+    "dji": { QueryType.DJINN_COIN },
+    "art": { QueryType.RUNIC_ARTIFACT },
+    "wom": { QueryType.WOMBGIFT },
+    "uni": _UNIQUE_QUERY_TYPES,
 }
 
 class _Params:

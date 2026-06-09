@@ -1,6 +1,7 @@
 import ggg, ninja
+from dataclasses import dataclass
 from core import ExpectedError, Block, Rule, Sieve, Operand
-from ninja import QueryType, ValueRange
+from ninja import BaseQueryType, ValueRange
 from .context import Context
 
 NAME = "econ"
@@ -15,47 +16,50 @@ _RULE_BOUNDS_ERROR = "The .econ rule expects a numerical {0} bound, got '{1}'."
 _LOWER_BOUND_NAME = "lower"
 _UPPER_BOUND_NAME = "upper"
 
-_UNIQUE_QUERY_TYPES = {
-    QueryType.UNIQUE_ACCESSORY, \
-    QueryType.UNIQUE_ARMOUR, \
-    QueryType.UNIQUE_JEWEL, \
-    QueryType.UNIQUE_FLASK, \
-    QueryType.UNIQUE_MAP, \
-    QueryType.UNIQUE_WEAPON, \
-    QueryType.UNIQUE_RELIC, \
-    QueryType.UNIQUE_TINCTURE,
+_UNIQUE_BASE_QUERY_TYPES = {
+    BaseQueryType.UNIQUE_ACCESSORY, \
+    BaseQueryType.UNIQUE_ARMOUR, \
+    BaseQueryType.UNIQUE_JEWEL, \
+    BaseQueryType.UNIQUE_FLASK, \
+    BaseQueryType.UNIQUE_MAP, \
+    BaseQueryType.UNIQUE_WEAPON, \
+    BaseQueryType.UNIQUE_RELIC, \
+    BaseQueryType.UNIQUE_TINCTURE,
 }
 
-_QUERY_TYPES_BY_MNEMONIC: dict[str, set[QueryType]] = {
-    "cur": { QueryType.CURRENCY },
-    "fra": { QueryType.FRAGMENT },
-    "gem": { QueryType.GEM },
-    "oil": { QueryType.OIL },
-    "inc": { QueryType.INCUBATOR },
-    "sca": { QueryType.SCARAB },
-    "fos": { QueryType.FOSSIL },
-    "res": { QueryType.RESONATOR },
-    "ess": { QueryType.ESSENCE },
-    "div": { QueryType.DIVINATION_CARD },
-    "inv": { QueryType.INVITATION },
-    "via": { QueryType.VIAL },
-    "del": { QueryType.DELIRIUM_ORB },
-    "tat": { QueryType.TATTOO },
-    "omn": { QueryType.OMEN },
-    "mbr": { QueryType.ALLFLAME_EMBER },
-    "run": { QueryType.RUNEGRAFT },
-    "ast": { QueryType.ASTROLABE },
-    "dji": { QueryType.DJINN_COIN },
-    "art": { QueryType.RUNIC_ARTIFACT },
-    "wom": { QueryType.WOMBGIFT },
-    "uni": _UNIQUE_QUERY_TYPES,
+_CLUSTER_JEWEL_ENCHANT_MNEMONIC = "clj"
+
+_BASE_QUERY_TYPES_BY_MNEMONIC: dict[str, set[BaseQueryType]] = {
+    "cur": { BaseQueryType.CURRENCY },
+    "fra": { BaseQueryType.FRAGMENT },
+    "gem": { BaseQueryType.GEM },
+    "oil": { BaseQueryType.OIL },
+    "inc": { BaseQueryType.INCUBATOR },
+    "sca": { BaseQueryType.SCARAB },
+    "fos": { BaseQueryType.FOSSIL },
+    "res": { BaseQueryType.RESONATOR },
+    "ess": { BaseQueryType.ESSENCE },
+    "div": { BaseQueryType.DIVINATION_CARD },
+    "inv": { BaseQueryType.INVITATION },
+    "via": { BaseQueryType.VIAL },
+    "del": { BaseQueryType.DELIRIUM_ORB },
+    "tat": { BaseQueryType.TATTOO },
+    "omn": { BaseQueryType.OMEN },
+    "mbr": { BaseQueryType.ALLFLAME_EMBER },
+    "run": { BaseQueryType.RUNEGRAFT },
+    "ast": { BaseQueryType.ASTROLABE },
+    "dji": { BaseQueryType.DJINN_COIN },
+    "art": { BaseQueryType.RUNIC_ARTIFACT },
+    "wom": { BaseQueryType.WOMBGIFT },
+    "uni": _UNIQUE_BASE_QUERY_TYPES,
 }
 
+@dataclass
 class _Params:
-    def __init__(self, query_types: set[QueryType], league_name: str, value_range: ValueRange):
-        self.query_types = query_types
-        self.league_name = league_name
-        self.value_range = value_range
+    mnemonic: str
+    league_name: str
+    value_range: ValueRange
+    line_number: int
 
 def handle(block: Block, context: Context):
     """Handles creation of economy adjusted filters.
@@ -63,16 +67,34 @@ def handle(block: Block, context: Context):
     - if `hc` is passed hardcore leagues will be queried, otherwise softcore is queried instead.
     - if `std` is passed then standard leagues will be queried, otherwise the temp league is queried instead.
     - if `rth` is passed then ruthless leagues will be queried."""
-    rules = block.get_rules(NAME)
-    if len(rules) > 0:
+    sieve = block.get_sieve()
+    league_name = _get_league_name(context.options)
+    params_list = [ _get_params(rule, league_name) for rule in block.get_rules(NAME) ]
 
-        bases = [ f'"{base}"' for base in _get_bases(rules, block.get_sieve(), context) ]
-        if len(bases) > 0:
-            block.upsert(Operand.BASE_TYPE, bases)
-        else:
-            block.comment_out()
+    operands_and_values = [ _get_operand_and_values(params, sieve) for params in params_list ]
+    for (operand, values) in operands_and_values:
+        block.upsert(operand, [ f'"{value}"' for value in values ])
+
+    if any(len(values) == 0 for (_, values) in operands_and_values):
+        block.comment_out()
 
     return block.get_raw_lines()
+
+def _get_operand_and_values(params: _Params, sieve: Sieve):    
+    if params.mnemonic in _BASE_QUERY_TYPES_BY_MNEMONIC:
+        return (Operand.BASE_TYPE, _get_base_types(params, sieve))
+
+    if params.mnemonic == _CLUSTER_JEWEL_ENCHANT_MNEMONIC:
+        return (Operand.ENCHANTMENT_PASSIVE_NODE,
+            ninja.get_cluster_enchants(params.league_name, sieve, params.value_range))
+
+    raise ExpectedError(_RULE_MNEMONIC_ERROR.format(params.mnemonic), params.line_number)
+
+def _get_base_types(params: _Params, sieve: Sieve):
+    return { base
+        for query_type in _BASE_QUERY_TYPES_BY_MNEMONIC[params.mnemonic]
+        for base in ninja.get_base_types(
+            query_type, params.league_name, sieve, params.value_range) }
 
 def _get_league_name(options: list[str]):
     standard = _STANDARD_OPTION in options
@@ -80,27 +102,12 @@ def _get_league_name(options: list[str]):
     ruthless = _RUTHLESS_OPTION in options
     return ggg.get_league_name(standard, hardcore, ruthless)
 
-def _get_bases(rules: list[Rule], sieve: Sieve, context: Context):
-    bases: list[str] = []
-    league_name = _get_league_name(context.options)
-
-    for rule in rules:
-        params = _get_params(rule, league_name)
-
-        for query_type in params.query_types:
-            bases += ninja.get_bases(query_type, params.league_name, sieve, params.value_range)
-
-    return bases
-
 def _get_params(rule: Rule, league_name: str):
     parts = rule.description.split()
     if len(parts) not in [2, 3]:
         raise ExpectedError(_RULE_PARAMETER_COUNT_ERROR.format(len(parts)), rule.line_number)
-    
+
     mnemonic = parts[0]
-    if mnemonic not in _QUERY_TYPES_BY_MNEMONIC:
-        raise ExpectedError(_RULE_MNEMONIC_ERROR.format(mnemonic), rule.line_number)
-    query_types = _QUERY_TYPES_BY_MNEMONIC[mnemonic]
 
     if not parts[1].isdigit():
         raise ExpectedError(_RULE_BOUNDS_ERROR.format(_LOWER_BOUND_NAME, parts[1]), rule.line_number)
@@ -110,4 +117,4 @@ def _get_params(rule: Rule, league_name: str):
         raise ExpectedError(_RULE_BOUNDS_ERROR.format(_UPPER_BOUND_NAME, parts[2]), rule.line_number)
     upper = float(parts[2]) if len(parts) == 3 else None
  
-    return _Params(query_types, league_name, ValueRange(lower, upper))
+    return _Params(mnemonic, league_name, ValueRange(lower, upper), rule.line_number)

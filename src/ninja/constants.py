@@ -7,7 +7,7 @@ type RecordsJSON = dict[str]
 """The entire response with all records contained fetched from `poe.ninja`."""
 
 class Field(StrEnum):
-    """Represents the JSON fields that appear on poe.ninja reponnses."""
+    """Represents the JSON fields that appear on poe.ninja reponses."""
     ID = "id"
     LINES = "lines"
     ITEMS = "items"
@@ -21,9 +21,11 @@ class Field(StrEnum):
     PRIMARY_VALUE = "primaryValue"
     BASE_TYPE = "baseType"
     CHAOS_VALUE = "chaosValue"
+    VARIANT = "variant"
+    TARGET = "target" # this is an artificial field added during formatting
 
-class QueryType(StrEnum):
-    """Represents the item types that can be queried via `poe.ninja`."""
+class BaseQueryType(StrEnum):
+    """Represents the base item types that can be queried via `poe.ninja`."""
     CURRENCY = "Currency"
     FRAGMENT = "Fragment"
     GEM = "SkillGem"
@@ -53,3 +55,7 @@ class QueryType(StrEnum):
     UNIQUE_MAP = "UniqueMap"
     UNIQUE_RELIC = "UniqueRelic"
     UNIQUE_TINCTURE = "UniqueTincture"
+
+class MiscQueryType(StrEnum):
+    """Represents miscellaneous types that can be queried via `poe.ninja`."""
+    CLUSTER_JEWEL = "ClusterJewel"

@@ -38,6 +38,8 @@ class Operand(StrEnum):
     QUALITY = "Quality"
     GEM_LEVEL = "GemLevel"
     HAS_EXPLICIT_MOD = "HasExplicitMod"
+    ENCHANTMENT_PASSIVE_NODE = "EnchantmentPassiveNode"
+    ENCHANTMENT_PASSIVE_NUM = "EnchantmentPassiveNum"
 
 BLOCK_STARTERS = [ Operand.HIDE, Operand.SHOW, Operand.MINIMAL ]
 

@@ -1,7 +1,7 @@
 # 1.5.3
 * Added the `.multi` handler, which allows generating multiple blocks from a single one. More information can be found in the [`.multi` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.multi).
 * The `.format` handler now recognizes rules of the same name in order to remove lines that contain them on invocation. More information is available in the [`.format` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.format).
-* Added the following `.econ` mnemonics: `ast` (**Astrolabes**), `dji` (**Djinn Coins**) and `wom` (**Wombgifts**). More information is available in the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
+* Added the following `.econ` mnemonics: `ast` (**Astrolabes**), `dji` (**Djinn Coins**), `wom` (**Wombgifts**) and `clj` (**Cluster Jewels**). More information is available in the [`.econ` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.econ).
 * `.econ`'s `uni` mnemonic now supports **Unique Tinctures**.
 * Fixed a bug where `.econ` failed with a 404 error due to `poe.ninja` changing their API.
 * Fixed a bug where `.game` was crashing when trying to obtain a class for **Grafts**, which are now removed in-game.

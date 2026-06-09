@@ -27,7 +27,7 @@ def get_target_from_items(record: Record, records_json: RecordsJSON) -> str:
 def get_target_for_cluster(record: Record, _):
     """Gets a cluster jewel's enchant name to be used as a """
     jewel_stats: str = record[Field.NAME]
-    first_stat = jewel_stats.split(",")[0] # any stat would match, but the zeroth is guaranteed
+    first_stat = jewel_stats.split(",")[0]
     return repoe.get_cluster_enchant(first_stat)
 
 type ValueGetter = Callable[[Record], float]

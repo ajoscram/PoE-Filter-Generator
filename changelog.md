@@ -1,3 +1,5 @@
+# 1.5.4
+
 # 1.5.3
 * Added the `.multi` handler, which allows generating multiple blocks from a single one. More information can be found in the [`.multi` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.multi).
 * The `.format` handler now recognizes rules of the same name in order to remove lines that contain them on invocation. More information is available in the [`.format` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.format).

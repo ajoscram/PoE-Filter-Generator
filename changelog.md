@@ -1,4 +1,5 @@
 # 1.5.4
+* Added `.econ` support for narrowing down **Foulborn items** with the `uni` mnemonic.
 
 # 1.5.3
 * Added the `.multi` handler, which allows generating multiple blocks from a single one. More information can be found in the [`.multi` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.multi).

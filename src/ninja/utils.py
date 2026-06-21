@@ -51,11 +51,13 @@ def is_item_valid(record: Record, range: ValueRange, _):
 def is_unique_valid(record: Record, range: ValueRange, sieve: Sieve):
     """Checks if a unique item's `record` is valid."""
     name: str = record[Field.NAME]
+    is_foulborn = name.startswith(f"{Operand.FOULBORN} ")
     is_replica = name.startswith(f"{Operand.REPLICA} ") and name not in _REPLICA_ITEM_NAME_EXCEPTIONS
     links = record[Field.LINKS] if Field.LINKS in record else 0
     pattern = {
         Operand.CLASS: record[Field.CLASS],
         Operand.REPLICA: is_replica,
+        Operand.FOULBORN: is_foulborn,
         Operand.LINKED_SOCKETS: links }
     return pattern in sieve and is_item_valid(record, range, sieve)
 

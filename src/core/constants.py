@@ -31,6 +31,7 @@ class Operand(StrEnum):
     BASE_TYPE = "BaseType"
     LINKED_SOCKETS = "LinkedSockets"
     REPLICA = "Replica"
+    FOULBORN = "Foulborn"
     DROP_LEVEL = "DropLevel"
     ITEM_LEVEL = "ItemLevel"
     AREA_LEVEL = "AreaLevel"

@@ -115,7 +115,19 @@ def test_get_base_types_given_a_range_should_return_if_in_it(
 
     assert (_BASE_TYPE in base_types) == is_in_range
 
-@pytest.mark.parametrize("replica", [ True, False, ])
+@pytest.mark.parametrize("foulborn", [ True, False ])
+def test_get_base_types_given_foulborn_unique_should_return_depending_on_sieve(
+    web_get_mock: WebGetMock, foulborn: bool):
+
+    NAME = f"{Operand.FOULBORN} {_BASE_TYPE}"
+    SIEVE = create_sieve_for_pattern({ Operand.FOULBORN: foulborn })
+    web_get_mock.result = _UniqueResponse(name=NAME)
+    
+    base_types = ninja.get_base_types(BaseQueryType.UNIQUE_ARMOUR, _LEAGUE_NAME, SIEVE, _RANGE)
+
+    assert (_BASE_TYPE in base_types) == foulborn
+
+@pytest.mark.parametrize("replica", [ True, False ])
 def test_get_base_types_given_replica_unique_should_return_depending_on_sieve(
     web_get_mock: WebGetMock, replica: bool):
 

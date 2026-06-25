@@ -1,7 +1,4 @@
 # Backlog
-
-* Add `.econ` support for Cluster Jewels
-
 * `-help` should change links to local files (a.k.a. dot-slash `./`) into links to the documentation on the web.
 
 * Add `-publish` to upload filters to GGG with

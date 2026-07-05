@@ -1,6 +1,7 @@
-import os.path, re
+import os.path, re, utils
 from enum import StrEnum
-from core import Rule, Line, Block, Filter, ExpectedError, Delimiter
+from typing import Generator
+from core import Rule, Line, Block, Filter, ExpectedError
 from .context import Context
 
 NAME = "import"
@@ -11,7 +12,6 @@ _FILTER_DOES_NOT_EXIST_ERROR = "Could not resolve the import '{0}' to a filter f
 _BLOCK_NOT_FOUND_ERROR = "The block with name '{0}' was not found."
 _LINE_PATTERN_NOT_FOUND_ERROR = "The line pattern '{0}' was not found in block '{1}'."
 _ROOT_NOT_FOUND_ERROR = "The root '{0}' in import '{1}' was not received via the handler's options."
-_ROOT_FORMAT_ERROR = "The root '{0}' declared via .import's options is formatted incorrectly."
 
 _FORMAT_ERROR = "The import '{0}' could not be parsed because {1}."
 _TOO_MANY_SPLITS_ERROR_TEXT = "it contained more than two arrows (`->`)"
@@ -30,6 +30,7 @@ class _Navigation(StrEnum):
     IN = ">"
     OUT = "<"
     SPLIT = "->"
+    TEMPLATE = "{"
 
 class _Import:
     def __init__(self, filepath: str, blockname: str = None, line_pattern: str = None):
@@ -77,44 +78,34 @@ def handle(block: Block, context: ImportContext):
     return [ str(line) for line in _get_lines_from_block(block, context, True) ]
 
 def _get_roots(options: list[str]):
-    if len(options) == 0:
-        return {}
-    
-    root_names_to_values = (_get_root_name_and_value_from_entry(entry)
-        for entry in " ".join(options).split(Delimiter.LIST_ENTRY_SEPARATOR))
-
-    return { name: value for name, value in root_names_to_values }
+    return { name: value
+        for name, value in utils.parse_key_value_list(" ".join(options)) }
 
 def _get_initial_import(filepath: str, block: Block):
     name_rules = block.get_rules(_NAME_RULE)
     blockname = name_rules[-1].description.strip() \
         if len(name_rules) > 0 else None
-    return _Import(filepath, blockname=blockname)
+    return _Import(filepath, blockname)
 
-def _get_root_name_and_value_from_entry(entry: str):
-    parts = entry.split(Delimiter.PAIR_SEPARATOR)
-    if len(parts) != 2:
-        raise ExpectedError(_ROOT_FORMAT_ERROR.format(entry))
-
-    return parts[0].strip(), parts[1].strip()
-
-def _get_lines_from_filter(filter: Filter, context: ImportContext) -> list[Line]:
-    return [ line
+def _get_lines_from_filter(filter: Filter, context: ImportContext) -> Generator[Line, None, None]:
+    return (line
         for block in filter.blocks
-        for line in _get_lines_from_block(block, context, True) ]
+        for line in _get_lines_from_block(block, context, True))
 
-def _get_lines_from_block(block: Block, context: ImportContext, include_blockstarts: bool) -> list[Line]:
-    return [ line
+def _get_lines_from_block(block: Block, context: ImportContext, include_blockstarts: bool) -> Generator[Line, None, None]:
+    return (line
         for block_line in block.lines
-        for line in _get_lines_from_line(block_line, context, include_blockstarts) ]
+        for line in _get_lines_from_line(block_line, context, include_blockstarts))
 
-def _get_lines_from_line(line: Line, context: ImportContext, include_blockstarts: bool) -> list[Line]:
-    first_line = [ line ] if include_blockstarts or not line.is_block_starter() else []
-    return first_line + [ line
-        for rule in line.get_rules(NAME)
-        for line in _get_lines_from_rule(rule, context) ]
+def _get_lines_from_line(line: Line, context: ImportContext, include_blockstarts: bool) -> Generator[Line, None, None]:
+    if include_blockstarts or not line.is_block_starter():
+        yield line
 
-def _get_lines_from_rule(rule: Rule, context: ImportContext) -> list[Line]:
+    for rule in line.get_rules(NAME):
+        for line in _get_lines_from_rule(rule, context):
+            yield line
+
+def _get_lines_from_rule(rule: Rule, context: ImportContext) -> Generator[Line, None, None]:
     new_import = _parse_import(rule, context)
 
     filter = _get_filter(new_import.filepath, context)

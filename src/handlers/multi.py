@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from core import Block, Line, Rule, ExpectedError
 from .context import Context
 
@@ -9,8 +9,8 @@ _PREMATURE_END_PARAM_ERROR = "The 'end' parameter can only be used in the last .
 @dataclass
 class _BlockParts:
     prefix: list[Line]
-    suffix: list[Line] = field(default_factory=lambda: [])
-    multis: list[list[Line]] = field(default_factory=lambda: [])
+    suffix: list[Line]
+    multis: list[list[Line]]
 
 def handle(block: Block, context: Context):
     """Generates multiple block from a single one."""

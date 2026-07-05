@@ -1,7 +1,7 @@
 import pytest
 from core import Delimiter, ExpectedError
 from handlers import alias
-from handlers.alias import AliasContext, _ALIAS_NAME_ERROR_DESCRIPTOR, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS_ERROR_DESCRIPTOR, _DUPLICATE_ALIAS_NAME_ERROR, _EMPTY_PARAMETER_ERROR, _ALIAS_FORMAT_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _REPLACEMENT_ERROR_DESCRIPTOR, _RULE_SOURCE_NAME, NAME as ALIAS
+from handlers.alias import AliasContext, _CONTAINED_ALIAS_NAME_ERROR, _CONTAINS_ERROR_DESCRIPTOR, _DUPLICATE_ALIAS_NAME_ERROR, _IS_CONTAINED_BY_ERROR_DESCRIPTOR, _RULE_SOURCE_NAME, NAME as ALIAS
 from test_utilities import create_filter
 
 _ALIAS_NAME = "NAME"
@@ -49,30 +49,6 @@ def test_handle_given_options_as_received_in_the_command_line_should_keep_spaces
     lines = alias.handle(filter.blocks[0], AliasContext(filter, OPTIONS))
 
     assert lines[0] == REPLACEMENT
-
-def test_handle_given_incorrect_description_format_should_raise():
-    DESCRIPTION = "incorrect description"
-    filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")
-
-    with pytest.raises(ExpectedError) as error:
-        _ = alias.handle(filter.blocks[0], AliasContext(filter, []))
-
-    assert error.value.line_number == filter.blocks[0].lines[0].number
-    assert error.value.message == _ALIAS_FORMAT_ERROR.format(DESCRIPTION)
-
-@pytest.mark.parametrize("name, replacement, error_descriptor", [
-    ("", _ALIAS_REPLACEMENT, _ALIAS_NAME_ERROR_DESCRIPTOR),
-    (_ALIAS_NAME, "", _REPLACEMENT_ERROR_DESCRIPTOR)
-])
-def test_handle_given_empty_alias_part_should_raise(name: str, replacement: str, error_descriptor: str):
-    DESCRIPTION = f"{name}{Delimiter.PAIR_SEPARATOR}{replacement}"
-    filter = create_filter(f"{Delimiter.RULE_START}{ALIAS} {DESCRIPTION}")
-
-    with pytest.raises(ExpectedError) as error:
-        _ = alias.handle(filter.blocks[0], AliasContext(filter, []))
-    
-    assert error.value.line_number == filter.blocks[0].lines[0].number
-    assert error.value.message == _EMPTY_PARAMETER_ERROR.format(error_descriptor, DESCRIPTION)
 
 def test_handle_given_duplicate_alias_name_should_raise():
     filter = create_filter(

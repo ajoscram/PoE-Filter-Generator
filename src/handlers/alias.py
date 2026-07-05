@@ -1,20 +1,12 @@
 import re, utils
-from core import Delimiter, Block, Filter, Rule, ExpectedError
+from core import Delimiter, Block, Filter, ExpectedError
 from .context import Context
 
 NAME = "alias"
 
 _OPTIONS_SOURCE_NAME = "the handler's options"
 _RULE_SOURCE_NAME = "line {0}"
-
-_ALIAS_PARTS_PATTERN = f"([^{Delimiter.PAIR_SEPARATOR}]*){Delimiter.PAIR_SEPARATOR}(.*)"
-_ALIAS_ENTRIES_PATTERN = f"([^{Delimiter.LIST_ENTRY_SEPARATOR}]+){Delimiter.LIST_ENTRY_SEPARATOR}?"
 _ALIAS_RULE_PATTERN = f"\\{Delimiter.RULE_SEPARATOR}{NAME}[^\\{Delimiter.RULE_SEPARATOR}]*"
-
-_ALIAS_FORMAT_ERROR = "The alias '{0}' is formatted incorrectly. Make sure it looks like this:\n\n\talias_name = replacement text"
-_EMPTY_PARAMETER_ERROR = "Empty alias {0} on '{1}'."
-_REPLACEMENT_ERROR_DESCRIPTOR = "replacement"
-_ALIAS_NAME_ERROR_DESCRIPTOR = "name"
 
 _DUPLICATE_ALIAS_NAME_ERROR = "The alias name '{0}' was already declared on {1}."
 _CONTAINED_ALIAS_NAME_ERROR = "The alias name '{0}' {1} the alias name '{2}' which is declared on {3}."
@@ -22,19 +14,9 @@ _IS_CONTAINED_BY_ERROR_DESCRIPTOR = "is contained by"
 _CONTAINS_ERROR_DESCRIPTOR = "contains"
 
 class _Source:
-    def __init__(self, name: str, raw_text: str, line_number: int | None = None):
+    def __init__(self, name: str, line_number: int | None = None):
         self.name = name
-        self.raw_text = raw_text
         self.line_number = line_number
-    
-    @classmethod
-    def from_options(cls, raw_text: str):
-        return _Source(_OPTIONS_SOURCE_NAME, raw_text)
-
-    @classmethod
-    def from_rule(cls, raw_text: str, rule: Rule):
-        name = _RULE_SOURCE_NAME.format(rule.line_number)
-        return _Source(name, raw_text, rule.line_number)
 
 class _Alias:
     def __init__(self, name: str, replacement: str, source: _Source):
@@ -55,34 +37,18 @@ def handle(block: Block, context: AliasContext):
         for raw_line in block.get_raw_lines() ]
 
 def _get_aliases(filter: Filter, options: list[str]):
-    aliases = [ _get_alias(_Source.from_options(entry))
-        for entry in re.findall(_ALIAS_ENTRIES_PATTERN, " ".join(options)) ]
+    options_source = _Source(_OPTIONS_SOURCE_NAME)
+
+    aliases = [ _Alias(name, replacement, options_source)
+        for name, replacement in utils.parse_key_value_list(" ".join(options)) ]
     
-    aliases += [ _get_alias(_Source.from_rule(entry, rule))
+    aliases += [ _Alias(name, replacement, _Source(_RULE_SOURCE_NAME.format(rule.line_number), rule.line_number))
         for block in filter.blocks
         for rule in block.get_rules(NAME)
-        for entry in re.findall(_ALIAS_ENTRIES_PATTERN, rule.description) ]
+        for name, replacement in utils.parse_key_value_list(rule.description, rule.line_number) ]
     
     _validate_aliases(aliases)
     return aliases
-
-def _get_alias(source: _Source):
-    parts = re.match(_ALIAS_PARTS_PATTERN, source.raw_text)
-    if parts == None or len(parts.groups()) != 2:
-        error = _ALIAS_FORMAT_ERROR.format(source.raw_text)
-        raise ExpectedError(error, source.line_number)
-    
-    name = parts[1].strip()
-    if name == "":
-        error = _EMPTY_PARAMETER_ERROR.format(_ALIAS_NAME_ERROR_DESCRIPTOR, source.raw_text)
-        raise ExpectedError(error, source.line_number)
-
-    replacement = parts[2].strip()
-    if replacement == "":
-        error = _EMPTY_PARAMETER_ERROR.format(_REPLACEMENT_ERROR_DESCRIPTOR, source.raw_text)
-        raise ExpectedError(error, source.line_number)
-    
-    return _Alias(name, replacement, source)
 
 def _validate_aliases(aliases: list[_Alias]) -> None:
     match aliases:

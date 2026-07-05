@@ -2,7 +2,7 @@ import os, pytest
 from pytest import MonkeyPatch
 from core import ExpectedError, Filter, Operand, Delimiter
 from handlers import import_
-from handlers.import_ import _FORMAT_ERROR, _ROOT_FORMAT_ERROR, _ROOT_NOT_FOUND_ERROR, _TOO_MANY_ROOTS_ERROR_TEXT, _TOO_MANY_SPLITS_ERROR_TEXT, _Navigation, _NAME_RULE, _BLOCK_NAME_ERROR_TEXT, _BLOCK_NOT_FOUND_ERROR, _CIRCULAR_REFERENCE_ERROR, _EMPTY_PARAMETER_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _FILTER_EXTENSION, _LINE_PATTERN_NOT_FOUND_ERROR, _LINE_PATTERN_ERROR_TEXT, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, NAME as IMPORT, ImportContext
+from handlers.import_ import _FORMAT_ERROR, _ROOT_NOT_FOUND_ERROR, _TOO_MANY_ROOTS_ERROR_TEXT, _TOO_MANY_SPLITS_ERROR_TEXT, _Navigation, _NAME_RULE, _BLOCK_NAME_ERROR_TEXT, _BLOCK_NOT_FOUND_ERROR, _CIRCULAR_REFERENCE_ERROR, _EMPTY_PARAMETER_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _FILTER_EXTENSION, _LINE_PATTERN_NOT_FOUND_ERROR, _LINE_PATTERN_ERROR_TEXT, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, NAME as IMPORT, ImportContext
 from test_utilities import create_filter, FunctionMock
 
 _TARGET_BLOCK_NAME = "block_name"
@@ -158,15 +158,6 @@ def test_handle_given_a_circular_reference_should_raise():
     assert f"{filter.filepath} {IMPORT_DESCRIPTION}{_LOOP_REPEATS_HERE_ERROR_TEXT}" in error.value.message
     assert error.value.line_number == filter.blocks[0].lines[1].number
     assert error.value.filepath == filter.filepath
-
-def test_handle_given_misformatted_root_entry_in_options_should_raise():
-    ROOT_ENTRY = "misformatted_root"
-    filter = create_filter(f"{Operand.SHOW}")
-
-    with pytest.raises(ExpectedError) as error:
-        import_.handle(filter.blocks[0], ImportContext(filter, [ ROOT_ENTRY ]))
-    
-    assert error.value.message == _ROOT_FORMAT_ERROR.format(ROOT_ENTRY)
 
 def test_handle_given_too_many_roots_in_import_should_raise():
     MISFORMATTED_DESCRIPTION = f"misformatted {_Navigation.ROOT} root {_Navigation.ROOT} attempt"

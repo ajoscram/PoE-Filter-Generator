@@ -28,9 +28,9 @@ def path_isfile_mock(monkeypatch: MonkeyPatch):
 def test_handle_given_a_filter_import_should_import_the_filter_text(monkeypatch: MonkeyPatch, dirname_mock: FunctionMock):
     DIRECTORY = "directory"
     target_filter = create_filter("target filter contents", filepath="target_filter")
-    filter = create_filter(f"{Delimiter.RULE_START}{RuleName.IMPORT} {target_filter.filepath}", filepath="import_filter")
     filter_load_mock = FunctionMock(monkeypatch, Filter.load, target_filter, Filter)
     dirname_mock.result = DIRECTORY
+    filter = create_filter(f"{Delimiter.RULE_START}{RuleName.IMPORT} {target_filter.filepath}", filepath="import_filter")
 
     lines = import_.handle(filter.blocks[0], ImportContext(filter, []))
 
@@ -53,9 +53,9 @@ def test_handle_given_an_empty_root_should_resolve_to_the_filters_directory(
     monkeypatch: MonkeyPatch, dirname_mock: FunctionMock):
 
     target_filter = create_filter("target filter contents", filepath="target_filter")
-    filter = create_filter(f"{Delimiter.RULE_START}{RuleName.IMPORT} {Splitter.ROOT} {target_filter.filepath}")
     filter_load_mock = FunctionMock(monkeypatch, Filter.load, target_filter, Filter)
     dirname_mock.result = "" # empty string means current filter's directory
+    filter = create_filter(f"{Delimiter.RULE_START}{RuleName.IMPORT} {Splitter.ROOT} {target_filter.filepath}")
 
     lines = import_.handle(filter.blocks[0], ImportContext(filter, []))
 
@@ -77,6 +77,18 @@ def test_handle_given_a_root_should_resolve_to_the_directory_passed_via_options(
 
     assert filter_load_mock.received(f"{ROOT_NAVIGATION}/{target_filter.filepath}{_FILTER_EXTENSION}")
     assert lines[-1] == str(target_filter.blocks[0].lines[0])
+
+def test_handle_given_templates_should_replace_the_text_being_templated(monkeypatch: MonkeyPatch):
+    TEXT_TO_REPLACE = "text_to_replace"
+    REPLACEMENT_TEXT = "replacement_text"
+    TEMPLATE = f"{Splitter.TEMPLATE} {TEXT_TO_REPLACE}{Delimiter.PAIR_SEPARATOR}{REPLACEMENT_TEXT}"
+    target_filter = create_filter(TEXT_TO_REPLACE, filepath="target_filter")
+    filter = create_filter(f"{Delimiter.RULE_START}{RuleName.IMPORT} {target_filter.filepath} {TEMPLATE}", filepath="import_filter")
+    _ = FunctionMock(monkeypatch, Filter.load, target_filter, Filter)
+
+    lines = import_.handle(filter.blocks[0], ImportContext(filter, []))
+
+    assert lines[-1] == REPLACEMENT_TEXT
 
 def test_handle_given_import_file_doesnt_exist_should_raise(path_isfile_mock: FunctionMock):
     UNEXISTENT_FILEPATH = "unexistent_filepath"

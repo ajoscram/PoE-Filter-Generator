@@ -24,6 +24,12 @@ class ImportContext(Context):
     def original_filepath(self):
         return self.imports[0].filepath
     
+    @property
+    def templates(self):
+        return { name: replacement
+            for import_ in self.imports
+            for name, replacement in import_.templates.items() }
+
     def clone(self, new_import: Import):
         return ImportContext(
             self.filter,

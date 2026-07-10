@@ -5,7 +5,7 @@ from test_utilities import create_filter, FunctionMock
 from handlers import import_
 from handlers.import_.import_context import ImportContext
 from handlers.import_.constants import Splitter, RuleName
-from handlers.import_.handle import _BLOCK_NOT_FOUND_ERROR
+from handlers.import_.functions import _BLOCK_NOT_FOUND_ERROR
 from handlers.import_.parse import _CIRCULAR_REFERENCE_ERROR, _EMPTY_SEGMENT_ERROR, _FILTER_DOES_NOT_EXIST_ERROR, _LOOP_REPEATS_HERE_ERROR_TEXT, _LOOP_STARTS_HERE_ERROR_TEXT, _ROOT_NOT_FOUND_ERROR, _SEGMENT_FORMAT_ERROR, _FILTER_EXTENSION, _BLOCKNAME_SEGMENT, _NAVIGATION_SEGMENT, _TEMPLATE_SEGMENT
 
 _TARGET_BLOCK_NAME = "block_name"

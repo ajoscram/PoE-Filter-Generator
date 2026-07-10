@@ -1,7 +1,8 @@
+from dataclasses import dataclass
 from core import Filter
 
+@dataclass
 class Context:
     """A container for several contextual clues passed to Handlers."""
-    def __init__(self, filter: Filter, options: list[str]):
-        self.filter = filter
-        self.options = options
+    filter: Filter
+    options: list[str]

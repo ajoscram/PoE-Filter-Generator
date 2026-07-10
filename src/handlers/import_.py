@@ -1,4 +1,6 @@
 import os.path, re, utils
+from abc import ABC
+from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Generator
 from core import Rule, Line, Block, Filter, ExpectedError
@@ -10,65 +12,95 @@ _FILTER_EXTENSION = ".filter"
 
 _FILTER_DOES_NOT_EXIST_ERROR = "Could not resolve the import '{0}' to a filter file on your disk."
 _BLOCK_NOT_FOUND_ERROR = "The block with name '{0}' was not found."
-_LINE_PATTERN_NOT_FOUND_ERROR = "The line pattern '{0}' was not found in block '{1}'."
 _ROOT_NOT_FOUND_ERROR = "The root '{0}' in import '{1}' was not received via the handler's options."
 
-_FORMAT_ERROR = "The import '{0}' could not be parsed because {1}."
-_TOO_MANY_SPLITS_ERROR_TEXT = "it contained more than two arrows (`->`)"
-_TOO_MANY_ROOTS_ERROR_TEXT = "it contained more than one root separator (`|`)"
-
-_EMPTY_PARAMETER_ERROR = "The import '{0}' has no {1}. Make sure to provide one after the arrow."
-_BLOCK_NAME_ERROR_TEXT = "block name"
-_LINE_PATTERN_ERROR_TEXT = "line pattern"
+_SEGMENT_ERROR_PRELUDE = "The import '{0}' is formatted incorrectly. "
+_SEGMENT_FORMAT_ERROR = _SEGMENT_ERROR_PRELUDE + "It's {1} '{2}' contains a {3} separator (`{4}`)."
+_EMPTY_SEGMENT_ERROR = _SEGMENT_ERROR_PRELUDE + "It's {1} is empty."
 
 _CIRCULAR_REFERENCE_ERROR = "The import '{0}' creates a circular reference loop:\n{1}"
 _LOOP_STARTS_HERE_ERROR_TEXT = " (LOOP STARTS HERE)"
 _LOOP_REPEATS_HERE_ERROR_TEXT = " (LOOP REPEATS HERE)"
 
 class _Navigation(StrEnum):
-    ROOT = "|"
     IN = ">"
     OUT = "<"
-    SPLIT = "->"
+
+class _Splitter(StrEnum):
+    ROOT = "|"
+    BLOCKNAME = "->"
     TEMPLATE = "{"
 
+@dataclass
 class _Import:
-    def __init__(self, filepath: str, blockname: str = None, line_pattern: str = None):
-        self.filepath = filepath
-        self.blockname = blockname
-        self.line_pattern = line_pattern
+    filepath: str
+    blockname: str | None
+    templates: dict[str, str] = field(default_factory=dict[str, str])
 
     def __eq__(self, other):
         if not isinstance(other, _Import):
             return False
+
         equivalent_filepath = os.path.samefile(self.filepath, other.filepath)
         same_block = self.blockname == other.blockname
-        same_line_pattern = self.line_pattern == other.line_pattern
-        return equivalent_filepath and same_block and same_line_pattern
+        return equivalent_filepath and same_block
 
     def __str__(self):
         string = self.filepath
-        string += f" {_Navigation.SPLIT} " + self.blockname if self.blockname is not None else ""
-        string += f" {_Navigation.SPLIT} " + self.line_pattern if self.line_pattern is not None else ""
+        string += f" {_Splitter.BLOCKNAME} " + self.blockname if self.blockname is not None else ""
         return string
 
+@dataclass
 class ImportContext(Context):
-    def __init__(self, filter: Filter, options: list[str], roots: dict[str, str] = None, cache: dict[str, Filter] = None):
-        super().__init__(filter, options)
-        self.roots = roots or _get_roots(options)
-        self.cache = cache or {}
-        self.imports: list[_Import] = []
+    """Represents a Context used by the .import handler"""
+    roots: dict[str, str] = None
+    cache: dict[str, Filter] = field(default_factory=dict[str, Filter])
+    imports: list[_Import] = field(default_factory=list[_Import])
+
+    def __post_init__(self):
+        if self.roots is None:
+            self.roots = { name: value
+                for name, value in utils.parse_key_value_list(" ".join(self.options)) }
     
-    def get_current_filepath(self):
+    @property
+    def current_filepath(self):
         return self.imports[-1].filepath
     
-    def get_original_filepath(self):
+    @property
+    def original_filepath(self):
         return self.imports[0].filepath
     
     def clone(self, new_import: _Import):
-        new_context = ImportContext(self.filter, self.options, self.roots, self.cache)
-        new_context.imports = self.imports + [ new_import ]
-        return new_context
+        return ImportContext(
+            self.filter,
+            self.options,
+            self.roots,
+            self.cache,
+            self.imports + [new_import])
+
+@dataclass
+class _ImportSegment(ABC):
+    name: str
+    regex: str
+    allows_empty: bool = False
+
+@dataclass
+class _NamedImportSegment(_ImportSegment):
+    def __init__(self, name: str , regex: str):
+        super().__init__(name, regex.format(name=name), allows_empty=True)
+
+class _SplitterImportSegment(_ImportSegment):
+    def __init__(self, splitter: _Splitter, regex: str, allows_empty: bool = False):
+        super().__init__(
+            splitter.name.lower(),
+            regex.format(name=splitter.name.lower(), splitter=splitter.value),
+            allows_empty)
+
+_ROOT_SEGMENT = _SplitterImportSegment(_Splitter.ROOT, r"(?:(?P<{name}>.*?)\s*\{splitter})", allows_empty=True)
+_NAVIGATION_SEGMENT = _NamedImportSegment("navigation", r"(?P<{name}>.*?)")
+_BLOCKNAME_SEGMENT = _SplitterImportSegment(_Splitter.BLOCKNAME, r"(?:{splitter}\s*(?P<{name}>.*?))")
+_TEMPLATE_SEGMENT = _SplitterImportSegment(_Splitter.TEMPLATE, r"(?:{splitter}\s*(?P<{name}>.*?))")
+_IMPORT_REGEX = fr"^\s*{_ROOT_SEGMENT.regex}?\s*{_NAVIGATION_SEGMENT.regex}\s*{_BLOCKNAME_SEGMENT.regex}?\s*{_TEMPLATE_SEGMENT.regex}?\s*$"
 
 def handle(block: Block, context: ImportContext):
     """Handles text import from filter files.
@@ -76,10 +108,6 @@ def handle(block: Block, context: ImportContext):
     initial_import = _get_initial_import(context.filter.filepath, block)
     context = context.clone(initial_import)
     return [ str(line) for line in _get_lines_from_block(block, context, True) ]
-
-def _get_roots(options: list[str]):
-    return { name: value
-        for name, value in utils.parse_key_value_list(" ".join(options)) }
 
 def _get_initial_import(filepath: str, block: Block):
     name_rules = block.get_rules(_NAME_RULE)
@@ -99,7 +127,7 @@ def _get_lines_from_block(block: Block, context: ImportContext, include_blocksta
 
 def _get_lines_from_line(line: Line, context: ImportContext, include_blockstarts: bool) -> Generator[Line, None, None]:
     if include_blockstarts or not line.is_block_starter():
-        yield line
+        yield line # TODO: account for templating
 
     for rule in line.get_rules(NAME):
         for line in _get_lines_from_rule(rule, context):
@@ -113,39 +141,50 @@ def _get_lines_from_rule(rule: Rule, context: ImportContext) -> Generator[Line, 
         return _get_lines_from_filter(filter, context.clone(new_import))
 
     block = _get_block(filter, new_import.blockname)
-    if new_import.line_pattern is None:
-        return _get_lines_from_block(block, context.clone(new_import), False)
-
-    line = _get_line(block, new_import.line_pattern, new_import.filepath)
-    return _get_lines_from_line(line, context.clone(new_import), True)
+    return _get_lines_from_block(block, context.clone(new_import), False)
 
 def _parse_import(rule: Rule, context: ImportContext):
-    parts = [ part.strip() for part in rule.description.split(_Navigation.SPLIT) ]
-    if len(parts) > 3:
-        error = _FORMAT_ERROR.format(rule.description, _TOO_MANY_SPLITS_ERROR_TEXT)
-        raise ExpectedError(error, rule.line_number, context.get_current_filepath())
-
-    filepath = _parse_rule_filepath(parts[0], rule, context)
+    match = re.search(_IMPORT_REGEX, rule.description)
+    root = _get_segment_text(_ROOT_SEGMENT, match, rule, context)
+    navigation = _get_segment_text(_NAVIGATION_SEGMENT, match, rule, context)
+    blockname = _get_segment_text(_BLOCKNAME_SEGMENT, match, rule, context)
+    templates_text = _get_segment_text(_TEMPLATE_SEGMENT, match, rule, context)
+    
+    templates = {} if templates_text is None else \
+        { key: value for key, value in utils.parse_key_value_list(templates_text, rule.line_number) } 
+    
+    filepath = _parse_rule_filepath(root, navigation, rule, context)
     if not os.path.isfile(filepath):
         error = _FILTER_DOES_NOT_EXIST_ERROR.format(rule.description)
-        raise ExpectedError(error, rule.line_number, context.get_current_filepath())
+        raise ExpectedError(error, rule.line_number, context.current_filepath)
 
-    blockname = parts[1] if len(parts) > 1 else None
-    if blockname == "":
-        error = _EMPTY_PARAMETER_ERROR.format(rule.description, _BLOCK_NAME_ERROR_TEXT)
-        raise ExpectedError(error, rule.line_number, context.get_current_filepath())
-    
-    line_pattern = parts[2] if len(parts) > 2 else None
-    if line_pattern == "":
-        error = _EMPTY_PARAMETER_ERROR.format(rule.description, _LINE_PATTERN_ERROR_TEXT)
-        raise ExpectedError(error, rule.line_number, context.get_current_filepath())
-
-    import_ = _Import(filepath, blockname, line_pattern)
+    import_ = _Import(filepath, blockname, templates)
     if any(import_ == previous for previous in context.imports):
         error = _create_circular_reference_error(rule.description, context.imports, import_)
-        raise ExpectedError(error, rule.line_number, context.get_current_filepath())
+        raise ExpectedError(error, rule.line_number, context.current_filepath)
 
     return import_
+
+def _get_segment_text(segment: _ImportSegment, match: re.Match[str], rule: Rule, context: ImportContext):
+    text = match.group(segment.name)
+    if text is None:
+        return text
+
+    if not segment.allows_empty and text == "":
+        error = _EMPTY_SEGMENT_ERROR.format(rule.description, segment.name)
+        raise ExpectedError(error, rule.line_number, context.current_filepath)
+
+    for splitter in _Splitter:
+        if splitter in text:
+            error = _SEGMENT_FORMAT_ERROR.format(
+                rule.description,
+                segment.name,
+                text,
+                splitter.name.lower(),
+                splitter)
+            raise ExpectedError(error, rule.line_number, context.current_filepath)
+
+    return text
 
 def _get_filter(filepath: str, context: ImportContext):
     absolute_filepath = os.path.abspath(filepath)
@@ -162,56 +201,38 @@ def _get_block(filter: Filter, blockname: str):
     error = _BLOCK_NOT_FOUND_ERROR.format(blockname)
     raise ExpectedError(error, filepath=filter.filepath)
 
-def _get_line(block: Block, line_pattern: str, filepath: str):
-    for line in block.lines:
-        if line_pattern in line:
-            return line
-    blockname = _get_blockname(block)
-    error = _LINE_PATTERN_NOT_FOUND_ERROR.format(line_pattern, blockname)
-    raise ExpectedError(error, block.line_number, filepath)
-
 def _get_blockname(block: Block):
     name_rules = block.get_rules(_NAME_RULE)
     return name_rules[-1].description if len(name_rules) > 0 else None
 
-def _parse_rule_filepath(navigation: str, rule: Rule, context: ImportContext):
+def _parse_rule_filepath(root: str, navigation: str, rule: Rule, context: ImportContext):
     if navigation == "":
-        return context.get_current_filepath()
+        return context.current_filepath
     
-    (root_name, navigation) = _split_root_name_and_navigation(navigation, rule, context)
-    root_dir = _get_root_dir(root_name, rule, context)
+    root_dir = _transform_root_to_dir(root, rule, context)
     filepath = _transform_navigation_to_real_path(navigation)
     return _get_full_filepath(root_dir, filepath)
 
-def _split_root_name_and_navigation(rule_filepath: str, rule: Rule, context: ImportContext):
-    parts = [ part.strip() for part in rule_filepath.split(_Navigation.ROOT) ]
-    
-    if len(parts) > 2:
-        error = _FORMAT_ERROR.format(rule.description, _TOO_MANY_ROOTS_ERROR_TEXT)
-        raise ExpectedError(error, rule.line_number, context.get_current_filepath())
-
-    return (None, parts[0]) if len(parts) == 1 else (parts[0], parts[1])
-
-def _get_root_dir(root: str | None, rule: Rule, context: ImportContext):
+def _transform_root_to_dir(root: str | None, rule: Rule, context: ImportContext):
     match root:
         case None:
-            root_dir = os.path.dirname(context.get_current_filepath())
+            root_dir = os.path.dirname(context.current_filepath)
         case "":
-            root_dir = os.path.dirname(context.get_original_filepath())
+            root_dir = os.path.dirname(context.original_filepath)
         case _ if root not in context.roots:
             error = _ROOT_NOT_FOUND_ERROR.format(root, rule.description)
-            raise ExpectedError(error, rule.line_number, context.get_current_filepath())
+            raise ExpectedError(error, rule.line_number, context.current_filepath)
         case _:
-            path_prefix = os.path.dirname(context.get_original_filepath())
+            path_prefix = os.path.dirname(context.original_filepath)
             path_suffix = _transform_navigation_to_real_path(context.roots[root])
             root_dir = os.path.join(path_prefix, path_suffix)
 
     return re.sub("([\\w\\.])$", "\\1/", root_dir)
 
-def _transform_navigation_to_real_path(navigation_path: str):
-    translated_path = re.sub(f"\\s*{_Navigation.IN}\\s*", "/", navigation_path)
-    translated_path = re.sub(f"\\s*{_Navigation.OUT}\\s*", "../", translated_path)
-    return re.sub("([^\\.^/])\\.", "\\1/.", translated_path)
+def _transform_navigation_to_real_path(navigation: str):
+    real_path = re.sub(f"\\s*{_Navigation.IN}\\s*", "/", navigation)
+    real_path = re.sub(f"\\s*{_Navigation.OUT}\\s*", "../", real_path)
+    return re.sub("([^\\.^/])\\.", "\\1/.", real_path)
 
 def _get_full_filepath(root_dir: str, filepath_suffix: str):
     filepath = root_dir + filepath_suffix + _FILTER_EXTENSION

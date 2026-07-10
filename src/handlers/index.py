@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from core import Delimiter, Rule, Line, Block, Filter, ExpectedError
 from .context import Context
 
@@ -18,16 +19,11 @@ _INDEX_HINT = "CTRL+F the IDs to jump to any section in the document."
 
 _SUBSECTION_MISSING_PARENT_SECTION_ERROR = "The subsection '{0}' was declared before any section that could parent it."
 
-class IndexContext(Context):
-    def __init__(self, filter, options):
-        super().__init__(filter, options)
-        self.index = _Index(filter)
-
+@dataclass
 class _Id:
-    def __init__(self, major: int = 0, minor: int = 0):
-        self.major = major
-        self.minor = minor        
-        self.length = 0
+    major: int = 0
+    minor: int = 0
+    length: int = field(init=False, default=0)
 
     def increment(self, rule: Rule):
         if rule.name == _SECTION_RULE_NAME:
@@ -39,6 +35,9 @@ class _Id:
         major_length = len(str(self.major))
         minor_length = len(str(self.minor))
         self.length = max(major_length, minor_length, self.length)
+    
+    def clone(self):
+        return _Id(self.major, self.minor)
 
     def _pad(self, sub_id: int):
         return _ID_PADDING * (self.length - len(str(sub_id))) + str(sub_id)
@@ -48,50 +47,10 @@ class _Id:
         padded_minor = self._pad(self.minor)
         return f"[{padded_major}_{padded_minor}]"
 
-class _Index:
-    def __init__(self, filter: Filter):
-        id = _Id()
-        self._sections: list[_Section] = [ self._get_section(rule, id)
-            for block in filter.blocks
-            for rule in block.get_rules(_SECTION_RULE_NAMES) ]
-        for section in self._sections:
-            section.id.length = id.length
-    
-    def get_lines(self, rule: Rule):
-        if rule.name == _INDEX_RULE_NAME:
-            return self._get_index_lines(rule.description)
-        return self._get_section_lines(rule)
-
-    def _get_section(self, rule: Rule, id: _Id):
-
-        if id.major == 0 and rule.name == _SUBSECTION_RULE_NAME:
-            raise ExpectedError(_SUBSECTION_MISSING_PARENT_SECTION_ERROR.format(rule.description), rule.line_number)
-
-        id.increment(rule)
-        return _Section(rule, _Id(id.major, id.minor))
-
-    def _get_index_lines(self, description: str):
-        return self._get_header_lines(description) + [ line
-            for section in self._sections
-            for line in section.get_index_lines() ]
-
-    def _get_header_lines(self, description: str):
-        title_lines = [ _render_line("", "", description) ] if description != "" else []
-        return title_lines + [
-            _SECTION_SEPARATOR,
-            _render_line("", _INDEX_HEADER, ""),
-            _SECTION_SEPARATOR,
-            Delimiter.COMMENT_START,
-            _render_line("", _INDEX_HINT, "") ]
-
-    def _get_section_lines(self, rule: Rule):
-        section = next(section for section in self._sections if section.rule == rule)
-        return section.get_rule_lines()
-
+@dataclass
 class _Section:
-    def __init__(self, rule: Rule, id: _Id):
-        self.rule = rule
-        self.id = id
+    rule: Rule
+    id: _Id
 
     def get_rule_lines(self):
         is_subsection = self._is_subsection()
@@ -113,6 +72,56 @@ class _Section:
     
     def _is_subsection(self):
         return self.rule.name == _SUBSECTION_RULE_NAME
+
+class _Index:
+    _sections: list[_Section]
+
+    def __init__(self, filter: Filter):
+        id = _Id()
+
+        self._sections = [ self._get_section(rule, id)
+            for block in filter.blocks
+            for rule in block.get_rules(_SECTION_RULE_NAMES) ]
+        
+        for section in self._sections:
+            section.id.length = id.length
+    
+    def get_lines(self, rule: Rule):
+        return self._get_index_lines(rule.description) if rule.name == _INDEX_RULE_NAME \
+            else self._get_section_lines(rule)
+
+    def _get_section(self, rule: Rule, id: _Id):
+        if id.major == 0 and rule.name == _SUBSECTION_RULE_NAME:
+            raise ExpectedError(_SUBSECTION_MISSING_PARENT_SECTION_ERROR.format(rule.description), rule.line_number)
+
+        id.increment(rule)
+        return _Section(rule, id.clone())
+
+    def _get_index_lines(self, description: str):
+        return self._get_header_lines(description) + [ line
+            for section in self._sections
+            for line in section.get_index_lines() ]
+
+    def _get_header_lines(self, description: str):
+        title_lines = [ _render_line("", "", description) ] if description != "" else []
+        return title_lines + [
+            _SECTION_SEPARATOR,
+            _render_line("", _INDEX_HEADER, ""),
+            _SECTION_SEPARATOR,
+            Delimiter.COMMENT_START,
+            _render_line("", _INDEX_HINT, "") ]
+
+    def _get_section_lines(self, rule: Rule):
+        section = next(section for section in self._sections if section.rule == rule)
+        return section.get_rule_lines()
+
+@dataclass
+class IndexContext(Context):
+    """Represents a Context used by the .import handler"""
+    index: _Index = field(init=False)
+
+    def __post_init__(self):
+        self.index = _Index(self.filter)
 
 def handle(block: Block, context: IndexContext):
     """Adds indices and addressable sections."""

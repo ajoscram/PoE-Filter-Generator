@@ -1,4 +1,5 @@
 import re, utils
+from dataclasses import dataclass, field
 from core import Delimiter, Block, Filter, ExpectedError
 from .context import Context
 
@@ -13,21 +14,24 @@ _CONTAINED_ALIAS_NAME_ERROR = "The alias name '{0}' {1} the alias name '{2}' whi
 _IS_CONTAINED_BY_ERROR_DESCRIPTOR = "is contained by"
 _CONTAINS_ERROR_DESCRIPTOR = "contains"
 
+@dataclass
 class _Source:
-    def __init__(self, name: str, line_number: int | None = None):
-        self.name = name
-        self.line_number = line_number
+    name: str
+    line_number: int | None = None
 
+@dataclass
 class _Alias:
-    def __init__(self, name: str, replacement: str, source: _Source):
-        self.name = name
-        self.replacement = replacement
-        self.source = source
+    name: str
+    replacement: str
+    source: _Source
 
+@dataclass
 class AliasContext(Context):
-    def __init__(self, filter: Filter, options: list[str]):
-        super().__init__(filter, options)
-        self.aliases: list[_Alias] = _get_aliases(filter, options)
+    """Represents a Context used by the .alias handler"""
+    aliases: list[_Alias] = field(init=False)
+
+    def __post_init__(self):
+        self.aliases: list[_Alias] = _get_aliases(self.filter, self.options)
 
 def handle(block: Block, context: AliasContext):
     """Finds and replaces aliased text for a replacement.

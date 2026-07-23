@@ -14,6 +14,46 @@ _BASE_QUERY_TYPE = BaseQueryType.CURRENCY # chosen arbitrarily
 def get_league_name_mock(monkeypatch: MonkeyPatch):
     return FunctionMock(monkeypatch, ggg.get_league_name, _LEAGUE_NAME)
 
+def test_handle_given_a_valid_mnemonic_should_set_the_base_types_to_the_block(monkeypatch: MonkeyPatch):
+    LOWER_BOUND = 1
+    UPPER_BOUND = 4
+    BASE_TYPES = { "base 1", "base 2" }
+    MNEMONIC = _get_mnemonic(_BASE_QUERY_TYPE)
+    FILTER = create_filter(f"{Operand.BASE_TYPE} {Delimiter.RULE_START}{ECON} {MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
+    ninja_mock = FunctionMock(monkeypatch, ninja.get_base_types, BASE_TYPES)
+
+    lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
+
+    assert ninja_mock.received(_BASE_QUERY_TYPE, _LEAGUE_NAME, ValueRange(LOWER_BOUND, UPPER_BOUND))
+    for base_type in BASE_TYPES:
+        assert f'"{base_type}"' in lines[0]
+
+def test_handle_given_multiple_rules_in_the_same_block_should_aggregate_all_of_the_results_on_the_block(monkeypatch: MonkeyPatch):
+    FIRST_BASE_TYPES = { "base 1", "base 2" }
+    SECOND_BASE_TYPES = { "base 3", "base 4" }
+    FIRST_MNEMONIC = _get_mnemonic(BaseQueryType.GEM) # chosen arbitrarily
+    SECOND_MNEMONIC = _get_mnemonic(BaseQueryType.CURRENCY) # chosen arbitrarily
+    FILTER = create_filter(f"{Operand.BASE_TYPE} {Delimiter.RULE_START}{ECON} {FIRST_MNEMONIC} 1 {Delimiter.RULE_SEPARATOR}{ECON} {SECOND_MNEMONIC} 1")
+    _ = FunctionMock(monkeypatch, ninja.get_base_types, (x for x in [ FIRST_BASE_TYPES, SECOND_BASE_TYPES ]))
+
+    lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
+
+    for base_type in FIRST_BASE_TYPES | SECOND_BASE_TYPES:
+            assert f'"{base_type}"' in lines[0]
+        
+def test_handle_given_a_cluster_jewel_mnemonic_should_set_the_enchantment_passive_nodes_to_the_block(monkeypatch: MonkeyPatch):
+    LOWER_BOUND = 1
+    UPPER_BOUND = 4
+    ENCHANTS = { "enchant 1", "enchant 2" }
+    FILTER = create_filter(f"{Operand.ENCHANTMENT_PASSIVE_NODE} {Delimiter.RULE_START}{ECON} {_CLUSTER_JEWEL_ENCHANT_MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
+    ninja_mock = FunctionMock(monkeypatch, ninja.get_cluster_enchants, ENCHANTS)
+
+    lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
+
+    assert ninja_mock.received(_LEAGUE_NAME, ValueRange(LOWER_BOUND, UPPER_BOUND))
+    for base_type in ENCHANTS:
+        assert f'"{base_type}"' in lines[0]
+
 @pytest.mark.parametrize("param_count", [1, 4])
 def test_handle_given_incorrect_rule_params_count_should_raise(param_count: int):
     PARAMS = [ str(i) for i in range(param_count) ]
@@ -57,33 +97,6 @@ def test_handle_given_no_base_types_are_found_should_comment_out_the_block(monke
     lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
 
     assert lines[0].startswith(Delimiter.COMMENT_START)
-
-def test_handle_given_a_valid_mnemonic_should_set_the_base_types_to_the_block(monkeypatch: MonkeyPatch):
-    LOWER_BOUND = 1
-    UPPER_BOUND = 4
-    BASE_TYPES = { "base 1", "base 2" }
-    MNEMONIC = _get_mnemonic(_BASE_QUERY_TYPE)
-    FILTER = create_filter(f"{Operand.BASE_TYPE} {Delimiter.RULE_START}{ECON} {MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
-    ninja_mock = FunctionMock(monkeypatch, ninja.get_base_types, BASE_TYPES)
-
-    lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
-
-    assert ninja_mock.received(_BASE_QUERY_TYPE, _LEAGUE_NAME, ValueRange(LOWER_BOUND, UPPER_BOUND))
-    for base_type in BASE_TYPES:
-        assert f'"{base_type}"' in lines[0]
-    
-def test_handle_given_a_cluster_jewel_mnemonic_should_set_the_enchantment_passive_nodes_to_the_block(monkeypatch: MonkeyPatch):
-    LOWER_BOUND = 1
-    UPPER_BOUND = 4
-    ENCHANTS = { "enchant 1", "enchant 2" }
-    FILTER = create_filter(f"{Operand.ENCHANTMENT_PASSIVE_NODE} {Delimiter.RULE_START}{ECON} {_CLUSTER_JEWEL_ENCHANT_MNEMONIC} {LOWER_BOUND} {UPPER_BOUND}")
-    ninja_mock = FunctionMock(monkeypatch, ninja.get_cluster_enchants, ENCHANTS)
-
-    lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
-
-    assert ninja_mock.received(_LEAGUE_NAME, ValueRange(LOWER_BOUND, UPPER_BOUND))
-    for base_type in ENCHANTS:
-        assert f'"{base_type}"' in lines[0]
 
 def _get_mnemonic(query_type: BaseQueryType):
     return next(mnemonic

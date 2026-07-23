@@ -25,6 +25,8 @@ def get_class_for_base(base_name: str) -> str:
         return "Pieces"
     if "Allflame Ember" in base_name:
         return "Embers of the Allflame"
+    if base_name in [ "Heavy Quiver", "Cured Quiver" ]: # this needs investigating, maybe legitimate bases are getting discarded?
+        return "Quivers"
 
     bases = _get_bases()
     base_name = _get_searchable_base_name(base_name, bases)                                                        

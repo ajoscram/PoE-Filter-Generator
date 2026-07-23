@@ -1,5 +1,8 @@
 # Backlog
 * `-help` should change links to local files (a.k.a. dot-slash `./`) into links to the documentation on the web.
+* `-help` needs to account for new `.import` structure for links to documentation.
+
+* Give `.format` a `sort` option that sorts lines with code by block instructions/conditions/actions, and then alphabetically within those two groups.
 
 * Add `-publish` to upload filters to GGG with
     https://www.pathofexile.com/developer/docs/authorization

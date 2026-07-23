@@ -2,6 +2,8 @@
 * Added `.econ` support for narrowing down **Foulborn items** with the `uni` mnemonic.
 * Fixed a crash when using the `clj` (cluster jewel) mnemonic for the `.econ` handler.
 * `.import` now supports **templating**, a technique used to change text on a per-import basis. More information is available in the [`.import` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.import).
+* Fixed a bug where some drop-disabled quiver base types available in standard were not being assigned a class to correctly during `.econ` unique queries.
+* Fixed a bug where using multiple `.econ` rules in the same block would yield only results for the last one declared instead of all of them.
 
 # 1.5.3
 * Added the `.multi` handler, which allows generating multiple blocks from a single one. More information can be found in the [`.multi` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/.multi).

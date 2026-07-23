@@ -72,7 +72,8 @@ def handle(block: Block, context: Context):
     params_list = [ _get_params(rule, league_name) for rule in block.get_rules(NAME) ]
 
     operands_and_values = [ _get_operand_and_values(params, sieve) for params in params_list ]
-    for (operand, values) in operands_and_values:
+    operands_and_values = _aggregate_operands_and_values(operands_and_values)
+    for operand, values in operands_and_values:
         block.upsert(operand, [ f'"{value}"' for value in values ])
 
     if any(len(values) == 0 for (_, values) in operands_and_values):
@@ -89,6 +90,16 @@ def _get_operand_and_values(params: _Params, sieve: Sieve):
             ninja.get_cluster_enchants(params.league_name, sieve, params.value_range))
 
     raise ExpectedError(_RULE_MNEMONIC_ERROR.format(params.mnemonic), params.line_number)
+
+def _aggregate_operands_and_values(operands_and_values: list[tuple[Operand, list[str]]]):
+    result = {}
+
+    for (operand, values) in operands_and_values:
+        if operand not in result:
+            result[operand] = []
+        result[operand] += values
+
+    return result.items()
 
 def _get_base_types(params: _Params, sieve: Sieve):
     return { base

@@ -1,3 +1,6 @@
+# 1.5.5
+* Added `.econ` support for **Ducats** (`duc`) and **Enshrouding Crystals** (`enc`).
+
 # 1.5.4
 * Added `.econ` support for narrowing down **Foulborn items** with the `uni` mnemonic.
 * Fixed a crash when using the `clj` (cluster jewel) mnemonic for the `.econ` handler.

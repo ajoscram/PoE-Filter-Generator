@@ -51,6 +51,8 @@ _BASE_QUERY_TYPES_BY_MNEMONIC: dict[str, set[BaseQueryType]] = {
     "dji": { BaseQueryType.DJINN_COIN },
     "art": { BaseQueryType.RUNIC_ARTIFACT },
     "wom": { BaseQueryType.WOMBGIFT },
+    "duc": { BaseQueryType.DUCAT },
+    "enc": { BaseQueryType.ENSHROUDING_CRYSTAL },
     "uni": _UNIQUE_BASE_QUERY_TYPES,
 }
 

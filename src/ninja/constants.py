@@ -47,6 +47,8 @@ class BaseQueryType(StrEnum):
     ASTROLABE = "Astrolabe"
     DJINN_COIN = "DjinnCoin"
     WOMBGIFT = "Wombgift"
+    DUCAT = "Ducat"
+    ENSHROUDING_CRYSTAL = "EnshroudingCrystal"
     UNIQUE_WEAPON = "UniqueWeapon"
     UNIQUE_ARMOUR = "UniqueArmour"
     UNIQUE_ACCESSORY = "UniqueAccessory"

@@ -1,5 +1,6 @@
 # 1.5.5
 * Added `.econ` support for **Ducats** (`duc`) and **Enshrouding Crystals** (`enc`).
+* Added **comment rules**. More information is available in the [rules wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/rules).
 
 # 1.5.4
 * Added `.econ` support for narrowing down **Foulborn items** with the `uni` mnemonic.
@@ -90,7 +91,7 @@
 * Moved to Python 3.12.
 
 # 1.4.0
-* Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a colon (`:`).
+* Added commands, which are now the primary unit of execution for this tool instead of handlers. Command names start with a dash (`-`).
 * Added the `-generate` command, which performs all filter generation. This command is also implied if it is not provided, so previous PFG invocations work the same way as they did. More information can be found on the [`-generate` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-generate).
 * Added the `-help` command, which provides information for a term found within the PFG wiki (commands, handlers, blocks, rules, etc). More information can be found on the [`-help` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-help).
 * Added the `-path` command, which adds the tool's current path to the user's Windows PATH environment variable. More information can be found on the [`-path` wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/-path).

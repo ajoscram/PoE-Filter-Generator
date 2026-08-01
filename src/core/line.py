@@ -58,7 +58,7 @@ class Line:
     
     def comment_out(self):
         """Comments the line out by prepending a `#.#` to the line's text."""
-        self._set_parts(Delimiter.COMMENT_RULE_START + str(self))
+        self._set_parts(Delimiter.COMMENT_RULE_START + " " + str(self))
 
     def __contains__(self, string: str):
         """Returns whether or not this line contains the string."""

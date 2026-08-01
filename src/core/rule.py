@@ -24,9 +24,18 @@ class Rule:
         """Returns all rules in a text as a list of rules."""
         if not _should_extract(text):
             return []
+
         text = text[text.index(Delimiter.RULE_START) + len(Delimiter.RULE_START):]
         rule_strings = text.split(Delimiter.RULE_SEPARATOR)
-        return [ _get_rule(rule_string, line_number) for rule_string in rule_strings ]
+        rules = [ _get_rule(rule_string, line_number) for rule_string in rule_strings ]
+
+        for index, rule in enumerate(rules):
+            if rule.name == Delimiter.COMMENT_START and rule != rules[-1]:
+                description_suffix = Delimiter.RULE_SEPARATOR.join(rule_strings[index + 1:])
+                rule.description += " " + Delimiter.RULE_SEPARATOR + description_suffix
+                return rules[:index + 1]
+
+        return rules
 
 def _should_extract(text: str):
     split_text = text.split(Delimiter.RULE_START)
@@ -35,6 +44,7 @@ def _should_extract(text: str):
 def _get_rule(text: str, line_number: int):
     if text.strip() == "":
         raise ExpectedError(_EMPTY_RULE_ERROR, line_number)
+
     fields = text.split(maxsplit=1)
     name = fields[0].strip()
     description = fields[1].strip() if len(fields) == 2 else ""

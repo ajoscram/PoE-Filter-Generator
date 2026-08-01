@@ -30,7 +30,7 @@ class Rule:
         rules = [ _get_rule(rule_string, line_number) for rule_string in rule_strings ]
 
         for index, rule in enumerate(rules):
-            if rule.name == Delimiter.COMMENT_START and rule != rules[-1]:
+            if rule.name.startswith(Delimiter.COMMENT_START) and rule != rules[-1]:
                 description_suffix = Delimiter.RULE_SEPARATOR.join(rule_strings[index + 1:])
                 rule.description += " " + Delimiter.RULE_SEPARATOR + description_suffix
                 return rules[:index + 1]

@@ -96,7 +96,7 @@ def test_handle_given_no_base_types_are_found_should_comment_out_the_block(monke
 
     lines = econ.handle(FILTER.blocks[0], Context(FILTER, []))
 
-    assert lines[0].startswith(Delimiter.COMMENT_START)
+    assert lines[0].startswith(Delimiter.COMMENT_RULE_START)
 
 def _get_mnemonic(query_type: BaseQueryType):
     return next(mnemonic

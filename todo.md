@@ -1,4 +1,6 @@
 # Backlog
+* Can vestigial unique items be supported by `.econ`?
+
 * `-help` should change links to local files (a.k.a. dot-slash `./`) into links to the documentation on the web.
 * `-help` needs to account for new `.import` structure for links to documentation.
 

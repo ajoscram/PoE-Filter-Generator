@@ -1,7 +1,7 @@
 from handlers import format, Context
 from core import Operand, Delimiter
 from test_utilities import create_filter
-from handlers.format import NAME
+from handlers.format import _INDENT, NAME
 
 def test_handle_given_item_filter_lines_with_rules_should_remove_the_rules_but_keep_the_line():
     RULE_TEXT = f"{Delimiter.RULE_START}rule {Delimiter.RULE_SEPARATOR}other_rule"
@@ -76,3 +76,12 @@ def test_handle_given_format_rule_in_empty_line_should_remove_all_remaining_line
 
     assert len(lines) == 1
     assert lines[0] == Operand.SHOW
+
+def test_handle_given_non_blockstarter_line_should_indent_it():
+    NON_BLOCKSTARTER = "Operand"
+    filter = create_filter(f"{Operand.SHOW}\n{NON_BLOCKSTARTER}")
+    
+    lines = format.handle(filter.blocks[0], Context(filter, None))
+
+    assert len(lines) == 2
+    assert lines[1].startswith(_INDENT)

@@ -1,52 +1,50 @@
 import re
+from typing import Iterator
 from core import Delimiter, Line, Block
 from .context import Context
 
 NAME = "format"
 
 _RULE_PATTERN = fr"\s*{Delimiter.COMMENT_START}\{Delimiter.RULE_SEPARATOR}.+"
+_INDENT = " " * 4
 
 def handle(block: Block, context: Context):
     """Removes rules, trailing whitespace from lines and extraneous empty lines. Options are ignored."""
-    raw_lines = _get_formatted_raw_lines(block.lines)
-    raw_lines += [ "\n" ] if block != context.filter.blocks[-1] else []
+    lines = _get_valid_lines(block.lines)
+    raw_lines = [ _get_formatted_raw_line(line) for line in lines ]
+
+    if block != context.filter.blocks[-1]:
+        raw_lines += [ "\n" ]
 
     if block == context.filter.blocks[0] and len(raw_lines) > 0 and raw_lines[0].strip() == "":
         raw_lines = raw_lines[1:]
 
     return raw_lines
 
-def _get_formatted_raw_lines(lines: list[Line]) -> list[str]:
-    match lines:
-        case [ first, *rest ] if len(first.get_rules(NAME)) > 0 and not first.has_filter_info():
-            return []
+def _get_valid_lines(lines: list[Line]) -> Iterator[Line]:
+    for index, line in enumerate(lines):
 
-        case [ first, *rest ] if len(first.get_rules(NAME)) > 0:
-            return _get_formatted_raw_lines(rest)
+        has_format_rules = len(line.get_rules(NAME)) > 0
+        if has_format_rules and not line.has_filter_info():
+            break
+        if has_format_rules:
+            continue
 
-        case [ first, second, *rest ] if first.is_empty() and (second.has_filter_info() or second.is_empty()):
-            return _get_formatted_raw_lines([ second ] + rest)
+        line_is_removable = not (line.has_filter_info() or line.has_comment())
+        if line_is_removable and line != lines[-1] and not lines[index + 1].has_comment():
+            continue
+        if line_is_removable and line == lines[-1]:
+            continue
 
-        case [ first, second, *rest ] if first.is_empty() and not (second.has_filter_info() or second.has_comment()):
-            return _get_formatted_raw_lines([ first ] + rest)
+        yield line
 
-        case [ first, *rest ] if first.has_rules() and not first.has_filter_info():
-            return _get_formatted_raw_lines(rest)
+def _get_formatted_raw_line(line: Line):
+    raw_line = str(line).strip()
 
-        case [ first, *rest ] if first.has_rules() and first.has_filter_info():
-            text = re.sub(_RULE_PATTERN, "", str(first))
-            line = Line(text, first.number)
-            return _get_formatted_raw_lines([ line ] + rest)
-        
-        case [ first, *rest ] if first.has_filter_info():
-            text = " " * (0 if first.is_block_starter() else 4) + str(first).strip()
-            return [ text ] + _get_formatted_raw_lines(rest)
-        
-        case [ first ] if first.is_empty():
-            return []
+    if line.has_rules():
+        raw_line = re.sub(_RULE_PATTERN, "", raw_line)
 
-        case [ first, *rest ]:
-            return [ str(first).rstrip() ] + _get_formatted_raw_lines(rest)
+    if line.has_filter_info() and not line.is_block_starter():
+        return _INDENT + raw_line
 
-        case []:
-            return []
+    return raw_line

@@ -1,6 +1,7 @@
 # 1.5.5
 * Added `.econ` support for **Ducats** (`duc`) and **Enshrouding Crystals** (`enc`).
 * Added **comment rules**. More information is available in the [rules wiki page](https://github.com/ajoscram/PoE-Filter-Generator/wiki/rules).
+* Fixed a bug where `.format` would crash at really large block sizes.
 
 # 1.5.4
 * Added `.econ` support for narrowing down **Foulborn items** with the `uni` mnemonic.
